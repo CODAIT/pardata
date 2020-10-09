@@ -1,0 +1,43 @@
+api_name: com.ibm.dax_api.v1
+last_updated: 2020-10-08
+datasets:
+  gmb:
+    "1.0.2":
+      name: Groningen Meaning Bank Modified
+      published: 2019-12-19
+      homepage: https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/
+      download_url: https://dax-cdn.cdn.appdomain.cloud/dax-groningen-meaning-bank-modified/1.0.2/groningen-meaning-bank-modified.tar.gz
+      license: cdla_sharing
+      estimated_size: 10M
+      description: "A dataset of multi-sentence texts, together with annotations for parts-of-speech, named entities, lexical categories and other natural language structural phenomena."
+      subdatasets: 
+        gmb_subset_full:
+          name: GMB Subset Full
+          description: A full version of the raw dataset. Used to train MAX model – Named Entity Tagger.
+          format: txt
+          path: gmb_subset_full.txt
+  wikitext103:
+    "1.0.1":
+      name: WikiText-103
+      published: 2020-03-17
+      homepage: https://developer.ibm.com/exchanges/data/all/wikitext-103/
+      download_url: https://dax-cdn.cdn.appdomain.cloud/dax-wikitext-103/1.0.1/wikitext-103.tar.gz
+      license: cc_by_30
+      estimated_size: 181M
+      description: "The WikiText-103 dataset is a collection of over 100 million tokens extracted from the set of verified ‘Good’ and ‘Featured’ articles on Wikipedia."
+      subdatasets:
+        train:
+          name: Train Tokens
+          description: Tokens in the training subset
+          format: txt
+          path: wiki.train.tokens
+        valid:
+          name: Validation Tokens
+          description: Tokens in the validation subset
+          format: txt
+          path: wiki.valid.tokens
+        test:
+          name: Test Tokens
+          description: Tokens in the testing subset
+          format: txt
+          path: wiki.test.tokens
