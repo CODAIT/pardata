@@ -1,4 +1,4 @@
-api_name: com.ibm.dax_api.v1
+api_name: com.ibm.pydax.v1
 last_updated: 2020-10-08
 datasets:
   gmb:
