@@ -1,5 +1,5 @@
 #
-# Copyright 2019-2020 IBM Corp. All Rights Reserved.
+# Copyright 2020 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     data_files=[("", ["LICENSE"])],
     python_requires=">=3.6",
-    install_requires=["pandas >= 1.1.0"],
+    install_requires=[
+        "pandas >= 1.1.0",
+        "requests >= 2.24.0"],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
