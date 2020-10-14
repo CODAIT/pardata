@@ -1,3 +1,5 @@
+last_updated: 2020-10-14
+
 licenses:
   cdla_sharing:
     name: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
@@ -19,25 +21,3 @@ licenses:
     commercial_use: true
     copyleft: false
     url: https://creativecommons.org/licenses/by/3.0/
-
-formats:
-  csv:
-    name: Comma-Separated Values
-    mime_type: text/csv
-    url: https://en.wikipedia.org/wiki/Comma-separated_values
-  jpeg:
-    name: Joint Photographic Experts Group
-    mime_type: image/jpeg
-    url: https://en.wikipedia.org/wiki/JPEG
-  json:
-    name: JavaScript Object Notation
-    mime_type: application/json
-    url: https://www.json.org/json-en.html
-  wav:
-    name: Waveform Audio Format
-    mime_type: audio/wav
-    url: https://en.wikipedia.org/wiki/WAV
-  txt:
-    name: Plain Text
-    mime_type: text/plain
-    url: https://en.wikipedia.org/wiki/Plain_text

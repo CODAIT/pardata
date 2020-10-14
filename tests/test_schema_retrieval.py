@@ -25,9 +25,10 @@ class TestSchemaRetrieval:
     def test_basic_schema_retrieval(self):
         "Test the basic functioning of retrieving schema files."
 
-        datasets, metadata = _schema_retrieval.retrieve_schema_files()
+        schemata = _schema_retrieval.retrieve_schema_files()
 
         # We assert they are identical to the examples for now, because we don't host them on any websites. Probably
         # this will change in the future.
-        assert datasets == pathlib.Path('examples/schema-datasets.yaml').read_text()
-        assert metadata == pathlib.Path('examples/schema-metadata.yaml').read_text()
+        assert schemata['datasets'] == pathlib.Path('examples/schema-datasets.yaml').read_text()
+        assert schemata['formats'] == pathlib.Path('examples/schema-formats.yaml').read_text()
+        assert schemata['licenses'] == pathlib.Path('examples/schema-licenses.yaml').read_text()

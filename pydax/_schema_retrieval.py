@@ -17,25 +17,36 @@
 "Retrieve remote schema file."
 
 
-from typing import Tuple
+from typing import Dict
 
 import requests
 
+# These three shall be made configurable in the future
+SCHEMA_DATASETS_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
+                       '4d9d2dfa22c13f1bc4d8d9068638cac9c85afee1/schema-datasets.yaml?'
+                       'token=AABVD5XY77RMMDELIF7TMA27SCRBY')
+SCHEMA_FORMATS_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
+                      '4d9d2dfa22c13f1bc4d8d9068638cac9c85afee1/schema-formats.yaml?'
+                      'token=AABVD5WTPC3S6DRS2MCPG2K7SCRGM')
+SCHEMA_LICENSES_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
+                       '4d9d2dfa22c13f1bc4d8d9068638cac9c85afee1/schema-licenses.yaml?'
+                       'token=AABVD5S7ATCJODC3TWIVE627SCRKE')
 
-# These two shall be made configurable in the future
-SCHEMA_DATASETS_URL = ('https://raw.github.ibm.com/CODAIT/dax-api/master/examples/schema-datasets.yaml'
-                       '?token=AABVD5UVIVNN5WTXWAROZJC7RYJC6')
-SCHEMA_METADATA_URL = ('https://raw.github.ibm.com/CODAIT/dax-api/master/examples/schema-metadata.yaml'
-                       '?token=AABVD5WRQ5YEVSGNNPTUEJ27RYI5K')
 
-
-def retrieve_schema_files() -> Tuple[str, str]:
+def retrieve_schema_files() -> Dict[str, str]:
     """Retrieve the schema files.
 
-    :return: A 2-tuple consisting of the string of the dataset schema and the string of the metadata schema.
+    :return: A dict in which the kind of the schema is a key (`datasets`, `formats`, or `licenses`), and its value is
+    the content of the corresponding schema file.
+
     """
 
     datasets = requests.get(SCHEMA_DATASETS_URL, allow_redirects=True)
-    metadata = requests.get(SCHEMA_METADATA_URL, allow_redirects=True)
+    formats = requests.get(SCHEMA_FORMATS_URL, allow_redirects=True)
+    licenses = requests.get(SCHEMA_LICENSES_URL, allow_redirects=True)
 
-    return datasets.text, metadata.text
+    return {
+        'datasets': datasets.text,
+        'formats': formats.text,
+        'licenses': licenses.text,
+    }
