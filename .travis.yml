@@ -1,0 +1,19 @@
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+install:
+  - pip install -r requirements-dev.txt
+  - pip install -e .
+script:
+  - flake8 .
+  - bandit -r .
+  - mypy pydax
+  - coverage run -m pytest
+  - coverage report
+
+# build master branch only
+branches:
+  only:
+  - master

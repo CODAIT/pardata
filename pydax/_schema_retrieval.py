@@ -17,6 +17,8 @@
 "Retrieve remote schema file."
 
 
+from typing import Tuple
+
 import requests
 
 
@@ -27,7 +29,7 @@ SCHEMA_METADATA_URL = ('https://raw.github.ibm.com/CODAIT/dax-api/master/example
                        '?token=AABVD5WRQ5YEVSGNNPTUEJ27RYI5K')
 
 
-def retrieve_schema_files():
+def retrieve_schema_files() -> Tuple[str, str]:
     """Retrieve the schema files.
 
     :return: A 2-tuple consisting of the string of the dataset schema and the string of the metadata schema.
