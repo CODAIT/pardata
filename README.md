@@ -16,6 +16,7 @@ To test the functioning of the package, run
     coverage run -m pytest
 
 To understand the coverage of the test above, run
+
     coverage report
 
 To check code style compliance, run
