@@ -7,3 +7,4 @@ flake8-executable
 mccabe
 mypy
 pytest
+yamllint

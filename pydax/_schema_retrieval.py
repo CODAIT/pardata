@@ -26,8 +26,8 @@ import requests
 
 # These three shall be made configurable in the future
 DEFAULT_SCHEMA_DATASETS_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
-                               '4d9d2dfa22c13f1bc4d8d9068638cac9c85afee1/schema-datasets.yaml?'
-                               'token=AABVD5XY77RMMDELIF7TMA27SCRBY')
+                               'f661cf761a15b50b55f30a36e00979b9a56ad3fc/schema-datasets.yaml?'
+                               'token=AABVD5VCPZBEEKTJKS7I4EK7THG4C')
 DEFAULT_SCHEMA_FORMATS_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
                               '4d9d2dfa22c13f1bc4d8d9068638cac9c85afee1/schema-formats.yaml?'
                               'token=AABVD5WTPC3S6DRS2MCPG2K7SCRGM')

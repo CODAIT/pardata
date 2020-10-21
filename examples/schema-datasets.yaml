@@ -10,7 +10,7 @@ datasets:
       license: cdla_sharing
       estimated_size: 10M
       description: "A dataset of multi-sentence texts, together with annotations for parts-of-speech, named entities, lexical categories and other natural language structural phenomena."
-      subdatasets: 
+      subdatasets:
         gmb_subset_full:
           name: GMB Subset Full
           description: A full version of the raw dataset. Used to train MAX model – Named Entity Tagger.
