@@ -35,6 +35,7 @@ setuptools.setup(
     python_requires=">=3.6",
     install_requires=[
         "pandas >= 1.1.0",
+        "PyYAML >= 5.3.1",
         "requests >= 2.24.0"],
     classifiers=[
         "Intended Audience :: Developers",

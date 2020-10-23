@@ -15,11 +15,12 @@
 #
 
 import os
-import pathlib
+from pathlib import Path
 
 import pytest
 
-from pydax import _schema_retrieval
+from pydax._schema_retrieval import retrieve_schema_file
+from pydax.schema_loading import DatasetSchema, FormatSchema, LicenseSchema
 
 
 class TestSchemaRetrieval:
@@ -28,32 +29,31 @@ class TestSchemaRetrieval:
     def test_default_schema(self):
         "Test the basic functioning of retrieving default schema files."
 
-        schemata = _schema_retrieval.retrieve_schema_files()
-
         # We assert they are identical to the examples for now, because we don't host them on any websites. Probably
         # this will change in the future.
-        assert schemata['datasets'] == pathlib.Path('examples/schema-datasets.yaml').read_text()
-        assert schemata['formats'] == pathlib.Path('examples/schema-formats.yaml').read_text()
-        assert schemata['licenses'] == pathlib.Path('examples/schema-licenses.yaml').read_text()
+        assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL) == \
+            Path('examples/schema-datasets.yaml').read_text()
+        assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL) == \
+            Path('examples/schema-formats.yaml').read_text()
+        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL) == \
+            Path('examples/schema-licenses.yaml').read_text()
 
     def test_custom_schema(self):
         "Test retrieving user-specified schema files."
 
-        schemata = _schema_retrieval.retrieve_schema_files(
-            datasets_url_or_path='./examples/schema-datasets.yaml',
-            formats_url_or_path=f'file://{os.getcwd()}/examples/schema-formats.yaml',
-            licenses_url_or_path=_schema_retrieval.DEFAULT_SCHEMA_LICENSES_URL.replace('https://', 'http://', 1))
-
         # We assert they are identical to the examples for now, because we don't host them on any websites. Probably
         # this will change in the future.
-        assert schemata['datasets'] == pathlib.Path('examples/schema-datasets.yaml').read_text()
-        assert schemata['formats'] == pathlib.Path('examples/schema-formats.yaml').read_text()
-        assert schemata['licenses'] == pathlib.Path('examples/schema-licenses.yaml').read_text()
+        assert retrieve_schema_file('./examples/schema-datasets.yaml') == \
+            Path('examples/schema-datasets.yaml').read_text()
+        assert retrieve_schema_file(f'file://{os.getcwd()}/examples/schema-formats.yaml') == \
+            Path('examples/schema-formats.yaml').read_text()
+        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL.replace('https://', 'http://', 1)) == \
+            Path('examples/schema-licenses.yaml').read_text()
 
     def test_invalid_schema(self):
         "Test retrieving user-specified invalid schema files."
 
         with pytest.raises(ValueError) as e:
-            _schema_retrieval.retrieve_schema_files(datasets_url_or_path='ftp://ftp/is/unsupported')
+            retrieve_schema_file(url_or_path='ftp://ftp/is/unsupported')
 
         assert str(e.value) == 'Unknown scheme in "ftp://ftp/is/unsupported": "ftp"'
