@@ -61,9 +61,7 @@ class DatasetSchema(Schema):
     :param url_or_path: URL or path to a schema file
     """
 
-    DEFAULT_SCHEMA_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
-                          'f661cf761a15b50b55f30a36e00979b9a56ad3fc/schema-datasets.yaml?'
-                          'token=AABVD5VCPZBEEKTJKS7I4EK7THG4C')
+    DEFAULT_SCHEMA_URL = 'https://ibm.box.com/shared/static/01oa3ue32lzcsd2znlbojs9ozdeftpb6.yaml'
 
 
 class FormatSchema(Schema):
@@ -72,9 +70,7 @@ class FormatSchema(Schema):
     :param url_or_path: URL or path to a schema file
     """
 
-    DEFAULT_SCHEMA_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
-                          'f661cf761a15b50b55f30a36e00979b9a56ad3fc/schema-formats.yaml?'
-                          'token=AABKAR6RRJPORUU45YFSEPS7TMO4U')
+    DEFAULT_SCHEMA_URL = 'https://ibm.box.com/shared/static/sv9hyf9vjdiareodbgo6kz5o8prxfm51.yaml'
 
 
 class LicenseSchema(Schema):
@@ -83,9 +79,7 @@ class LicenseSchema(Schema):
     :param url_or_path: URL or path to a schema file
     """
 
-    DEFAULT_SCHEMA_URL = ('https://raw.github.ibm.com/gist/hongx/d368b6c26164c74eb6a70fb7680fdb9d/raw/'
-                          'f661cf761a15b50b55f30a36e00979b9a56ad3fc/schema-licenses.yaml?'
-                          'token=AABKAR65PLFA3RL67ESXLRS7TMPC4')
+    DEFAULT_SCHEMA_URL = ('https://ibm.box.com/shared/static/iy5xq7vk53dss5pgs0xvrfol9tfyd7ya.yaml')
 
 
 class SchemaManager():
