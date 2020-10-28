@@ -7,6 +7,7 @@ datasets:
       published: 2019-12-19
       homepage: https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/
       download_url: https://dax-cdn.cdn.appdomain.cloud/dax-groningen-meaning-bank-modified/1.0.2/groningen-meaning-bank-modified.tar.gz
+      sha512sum: 4b0e6c445bf5be0573ae411f8e0ba307b884300ab6b5473ea0d455dd82b8cf4dc06fb77a9a606850f3b283357f22fd516e91850cea7e45de19ce5625fda2c001
       license: cdla_sharing
       estimated_size: 10M
       description: "A dataset of multi-sentence texts, together with annotations for parts-of-speech, named entities, lexical categories and other natural language structural phenomena."
@@ -22,6 +23,7 @@ datasets:
       published: 2020-03-17
       homepage: https://developer.ibm.com/exchanges/data/all/wikitext-103/
       download_url: https://dax-cdn.cdn.appdomain.cloud/dax-wikitext-103/1.0.1/wikitext-103.tar.gz
+      sha512sum: c8186919aa1840af6b734ea41abc580574ea8efe2fafda220f5d01002464d17566d84be5199b875136c9593f0e0678fb5d7c84bb2231de8b4151cb9c83fa2109
       license: cc_by_30
       estimated_size: 181M
       description: "The WikiText-103 dataset is a collection of over 100 million tokens extracted from the set of verified ‘Good’ and ‘Featured’ articles on Wikipedia."

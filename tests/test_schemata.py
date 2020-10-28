@@ -36,7 +36,9 @@ class TestSchemata:
         assert loaded_schemata.schemata['license_schema'] \
             .export_schema()['licenses']['cdla_sharing']['commercial_use'] is True
         assert loaded_schemata.schemata['format_schema'] \
-            .export_schema()['formats']['csv']['name'] == 'Comma-Separated Values'
+            .export_schema('formats', 'csv', 'name') == 'Comma-Separated Values'
+        assert loaded_schemata.schemata['dataset_schema'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
+            loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
 
     def test_schema_without_url(self, loaded_schemata):
         "Test instantiating a Schema without supplying a path or url."

@@ -47,12 +47,16 @@ class Schema(ABC):
         """
         return yaml.safe_load(schema)
 
-    def export_schema(self) -> Dict[str, Any]:
+    def export_schema(self, *keys: str) -> Dict[str, Any]:
         """Returns a copy of a loaded schema. Should be used for debug purposes only.
 
-        :return: Copy of schema
+        :param keys: The sequence of keys that leads to the portion of the schema to be exported.
+        :return: Copy of the schema dictionary
         """
-        return deepcopy(self._schema)
+        schema = self._schema
+        for k in keys:
+            schema = schema[k]
+        return deepcopy(schema)
 
 
 class DatasetSchema(Schema):
