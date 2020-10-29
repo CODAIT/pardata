@@ -18,15 +18,11 @@ import datetime
 
 import pytest
 
-from pydax.schema_loading import DatasetSchema, SchemaManager, load_schemata
+from pydax.schema_loading import DatasetSchema, SchemaManager
 
 
 class TestSchemata:
     "Test schemata class functionality."
-
-    @pytest.fixture
-    def loaded_schemata(self):
-        return load_schemata()
 
     def test_loading_schemata(self, loaded_schemata):
         "Test basic functioning of loading and parsing the schema files."
