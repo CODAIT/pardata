@@ -67,28 +67,28 @@ class Dataset:
         """
 
         self.schema = schema
+        self.data_dir: pathlib.Path = pathlib.Path(data_dir)
 
         if not isinstance(mode, Dataset.InitializationMode):
             raise ValueError(f'{mode} not a valid mode')
 
         if mode & Dataset.InitializationMode.DOWNLOAD_ONLY:
-            self.download(data_dir)
+            self.download()
         if mode & Dataset.InitializationMode.LOAD_ONLY:
             pass
 
-    def download(self, data_dir: Union[os.PathLike, str]) -> None:
+    def download(self) -> None:
         """Downloads, extracts, and removes dataset archive.
 
-        :param data_dir: Directory to/from which the dataset should be downloaded/loaded from
         :raises IOError: The SHA256 checksum of a downloaded dataset doesn't match the expected checksum
         :raises tarfile.ReadError: The tar archive was unable to be read
         """
         download_url = self.schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
-        archive_fp = data_dir / download_file_name
+        archive_fp = self.data_dir / download_file_name
 
-        if not os.path.exists(data_dir):
-            os.makedirs(data_dir)
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir)
 
         response = requests.get(download_url, stream=True)
         archive_fp.write_bytes(response.content)
@@ -106,6 +106,6 @@ class Dataset:
         except tarfile.ReadError as e:
             raise tarfile.ReadError(f'Failed to unarchive "{archive_fp}"\ncaused by:\n{e}')
         with tar:
-            tar.extractall(path=data_dir)
+            tar.extractall(path=self.data_dir)
 
         os.remove(archive_fp)

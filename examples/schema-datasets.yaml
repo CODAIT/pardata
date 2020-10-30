@@ -16,7 +16,7 @@ datasets:
           name: GMB Subset Full
           description: A full version of the raw dataset. Used to train MAX model – Named Entity Tagger.
           format: txt
-          path: gmb_subset_full.txt
+          path: groningen_meaning_bank_modified/gmb_subset_full.txt
   wikitext103:
     "1.0.1":
       name: WikiText-103
@@ -32,14 +32,14 @@ datasets:
           name: Train Tokens
           description: Tokens in the training subset
           format: txt
-          path: wiki.train.tokens
+          path: wikitext-103/wiki.train.tokens
         valid:
           name: Validation Tokens
           description: Tokens in the validation subset
           format: txt
-          path: wiki.valid.tokens
+          path: wikitext-103/wiki.valid.tokens
         test:
           name: Test Tokens
           description: Tokens in the testing subset
           format: txt
-          path: wiki.test.tokens
+          path: wikitext-103/wiki.test.tokens
