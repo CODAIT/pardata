@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+import hashlib
 import tarfile
 
 import pytest
@@ -74,3 +75,65 @@ class TestDataset:
         with pytest.raises(tarfile.ReadError) as e:
             Dataset(fake_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'Failed to unarchive' in str(e.value)
+
+    def test_load(self, downloaded_wikitext103_dataset):
+        "Test basic loading functionality."
+
+        downloaded_wikitext103_dataset.load()
+
+        assert (hashlib.sha512(downloaded_wikitext103_dataset.data['train'].encode()).hexdigest() ==
+                ('df7615f77cb9dd19975881f271e3e3525bee38c08a67fea36a51c96be69a3ecabc9e05c02cbaf'
+                 '6fc63a0082efb44156f61c81061d3b0272bbccd7657c682e791'))
+
+        assert (hashlib.sha512(downloaded_wikitext103_dataset.data['valid'].encode()).hexdigest() ==
+                ('e4834d365d5f8313503895fd8304d29a566ff4a2df77efb32457fdc353304fb61460511f89bb9'
+                 '0f14a47132c1539aaa324d3e71f5f56045a61a7292ad25a3c02'))
+
+        assert (hashlib.sha512(downloaded_wikitext103_dataset.data['test'].encode()).hexdigest() ==
+                ('6fe665d33c0f788eba76da50539f0ca02432c70c94b788a493da491215e86043fc732dbeef9bb'
+                 '49a72341c7283ea55f59d10941ac41f7ac58aea3bdcd72f5cd8'))
+
+    def test_constructor_download_and_load(self, tmp_path, loaded_schemata):
+        "Test the full power of Dataset.__init__() (mode being ``InitializationMode.DOWNLOAD_AND_LOAD``)."
+
+        wikitext103_schema = loaded_schemata.schemata['dataset_schema'].export_schema(
+            'datasets', 'wikitext103', '1.0.1')
+        dataset = Dataset(wikitext103_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+
+        assert (hashlib.sha512(dataset.data['train'].encode()).hexdigest() ==
+                ('df7615f77cb9dd19975881f271e3e3525bee38c08a67fea36a51c96be69a3ecabc9e05c02cbaf'
+                 '6fc63a0082efb44156f61c81061d3b0272bbccd7657c682e791'))
+
+        assert (hashlib.sha512(dataset.data['valid'].encode()).hexdigest() ==
+                ('e4834d365d5f8313503895fd8304d29a566ff4a2df77efb32457fdc353304fb61460511f89bb9'
+                 '0f14a47132c1539aaa324d3e71f5f56045a61a7292ad25a3c02'))
+
+        assert (hashlib.sha512(dataset.data['test'].encode()).hexdigest() ==
+                ('6fe665d33c0f788eba76da50539f0ca02432c70c94b788a493da491215e86043fc732dbeef9bb'
+                 '49a72341c7283ea55f59d10941ac41f7ac58aea3bdcd72f5cd8'))
+
+    def test_loading_undownloaded(self, tmp_path, loaded_schemata):
+        "Test loading before ``Dataset.download()`` has been called."
+
+        gmb_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
+        dataset = Dataset(gmb_schema, tmp_path, mode=Dataset.InitializationMode.LAZY)
+
+        with pytest.raises(FileNotFoundError) as e:
+            dataset.load()
+        assert ('Failed to load subdataset "gmb_subset_full" because some files are not found. '
+                'Did you forget to call Dataset.download()?\nCaused by:\n') in str(e.value)
+
+    def test_unloaded_access_to_data(self, tmp_path, loaded_schemata):
+        "Test access to `Dataset.data` when no data has been loaded."
+
+        gmb_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
+        dataset = Dataset(gmb_schema, tmp_path, mode=Dataset.InitializationMode.LAZY)
+        with pytest.raises(RuntimeError) as e:
+            dataset.data
+        assert 'Data has not been loaded yet. Call Dataset.load() to load data.' == str(e.value)
+
+        # Same after downloading
+        dataset.download()
+        with pytest.raises(RuntimeError) as e:
+            dataset.data
+        assert str(e.value) == 'Data has not been loaded yet. Call Dataset.load() to load data.'

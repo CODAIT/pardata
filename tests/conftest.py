@@ -14,11 +14,26 @@
 # limitations under the License.
 #
 
+from tempfile import TemporaryDirectory
+
 import pytest
 
 from pydax.schema_loading import load_schemata
+from pydax.dataset import Dataset
 
 
 @pytest.fixture
 def loaded_schemata():
     return load_schemata()
+
+
+@pytest.fixture
+def gmb_schema(loaded_schemata):
+    return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
+
+
+@pytest.fixture
+def downloaded_wikitext103_dataset(loaded_schemata):
+    schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
+    with TemporaryDirectory() as tmp_data_dir:
+        yield Dataset(schema, tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)

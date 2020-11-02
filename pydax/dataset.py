@@ -22,11 +22,12 @@ import hashlib
 import os
 import pathlib
 import tarfile
-from typing import Dict, Tuple, Union
+from typing import Any, Dict, Iterable, Optional, Tuple, Union
 
 import requests
 
 from pydax.schema_loading import load_schemata
+from .loaders._format_loader_map import _load_data_files
 
 
 def list_all_datasets() -> Dict[str, Tuple]:
@@ -68,6 +69,7 @@ class Dataset:
 
         self.schema = schema
         self.data_dir: pathlib.Path = pathlib.Path(data_dir)
+        self._data: Optional[Dict[str, Any]] = None
 
         if not isinstance(mode, Dataset.InitializationMode):
             raise ValueError(f'{mode} not a valid mode')
@@ -75,7 +77,7 @@ class Dataset:
         if mode & Dataset.InitializationMode.DOWNLOAD_ONLY:
             self.download()
         if mode & Dataset.InitializationMode.LOAD_ONLY:
-            pass
+            self.load()
 
     def download(self) -> None:
         """Downloads, extracts, and removes dataset archive.
@@ -109,3 +111,31 @@ class Dataset:
             tar.extractall(path=self.data_dir)
 
         os.remove(archive_fp)
+
+    def load(self, subdatasets: Union[Iterable[str], None] = None) -> None:
+        """Load data files to RAM. The loaded data objects can be retrieved via :attr:`data`.
+
+        :param subdatasets: The subdatasets to load. None means all subdatasets.
+        """
+        if subdatasets is None:
+            subdatasets = self.schema['subdatasets'].keys()
+
+        self._data = {}
+        for subdataset in subdatasets:
+            subdataset_schema = self.schema['subdatasets'][subdataset]
+            try:
+                self._data[subdataset] = _load_data_files(fmt=subdataset_schema['format'],
+                                                          path=self.data_dir / subdataset_schema['path'])
+            except FileNotFoundError as e:
+                raise FileNotFoundError(f'Failed to load subdataset "{subdataset}" because some files are not found. '
+                                        f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n'
+                                        f'{e}')
+
+    @property
+    def data(self) -> Dict[str, Any]:
+        """Access loaded data objects."""
+        if self._data is None:
+            raise RuntimeError(f'Data has not been loaded yet. Call {self.__class__.__name__}.load() to load data.')
+        # we don't copy here because it is too expensive and users may actually want to update the datasets and it
+        # doesn't cause security issues as in the Schema class
+        return self._data
