@@ -18,7 +18,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from pydax.schema_loading import load_schemata
+from pydax.schema import load_schemata
 from pydax.dataset import Dataset
 
 

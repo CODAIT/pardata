@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 from pydax._schema_retrieval import retrieve_schema_file
-from pydax.schema_loading import DatasetSchema, FormatSchema, LicenseSchema
+from pydax.schema import DatasetSchema, FormatSchema, LicenseSchema
 
 
 class TestSchemaRetrieval:

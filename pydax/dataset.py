@@ -26,7 +26,7 @@ from typing import Any, Dict, Iterable, Optional, Tuple, Union
 
 import requests
 
-from pydax.schema_loading import load_schemata
+from pydax.schema import load_schemata
 from .loaders._format_loader_map import _load_data_files
 
 
