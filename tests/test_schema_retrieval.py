@@ -29,26 +29,26 @@ class TestSchemaRetrieval:
     def test_default_schema(self):
         "Test the basic functioning of retrieving default schema files."
 
-        # We assert they are identical to the examples for now, because we don't host them on any websites. Probably
-        # this will change in the future.
+        # We assert they are identical to the test schema files for now, because we don't host them on any websites.
+        # Probably this will change in the future.
         assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL) == \
-            Path('examples/schema-datasets.yaml').read_text()
+            Path('tests/schemata/datasets.yaml').read_text()
         assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL) == \
-            Path('examples/schema-formats.yaml').read_text()
+            Path('tests/schemata/formats.yaml').read_text()
         assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL) == \
-            Path('examples/schema-licenses.yaml').read_text()
+            Path('tests/schemata/licenses.yaml').read_text()
 
     def test_custom_schema(self):
         "Test retrieving user-specified schema files."
 
-        # We assert they are identical to the examples for now, because we don't host them on any websites. Probably
-        # this will change in the future.
-        assert retrieve_schema_file('./examples/schema-datasets.yaml') == \
-            Path('examples/schema-datasets.yaml').read_text()
-        assert retrieve_schema_file(f'file://{os.getcwd()}/examples/schema-formats.yaml') == \
-            Path('examples/schema-formats.yaml').read_text()
+        # We assert they are identical to the test schema files for now, because we don't host them on any websites.
+        # Probably this will change in the future.
+        assert retrieve_schema_file('./tests/schemata/datasets.yaml') == \
+            Path('tests/schemata/datasets.yaml').read_text()
+        assert retrieve_schema_file(f'file://{os.getcwd()}/tests/schemata/formats.yaml') == \
+            Path('tests/schemata/formats.yaml').read_text()
         assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL.replace('https://', 'http://', 1)) == \
-            Path('examples/schema-licenses.yaml').read_text()
+            Path('tests/schemata/licenses.yaml').read_text()
 
     def test_invalid_schema(self):
         "Test retrieving user-specified invalid schema files."

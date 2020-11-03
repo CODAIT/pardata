@@ -24,7 +24,9 @@ from pydax.dataset import Dataset
 
 @pytest.fixture
 def loaded_schemata():
-    return load_schemata()
+    return load_schemata(dataset_url='./tests/schemata/datasets.yaml',
+                         format_url='./tests/schemata/formats.yaml',
+                         license_url='./tests/schemata/licenses.yaml')
 
 
 @pytest.fixture
