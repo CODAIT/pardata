@@ -28,6 +28,7 @@ import requests
 
 from pydax.schema import load_schemata
 from .loaders._format_loader_map import _load_data_files
+from . import _typing
 
 
 def list_all_datasets() -> Dict[str, Tuple]:
@@ -62,13 +63,13 @@ class Dataset:
         LOAD_ONLY = 2
         DOWNLOAD_AND_LOAD = 3
 
-    def __init__(self, schema: Dict, data_dir: Union[os.PathLike, str], *,
+    def __init__(self, schema: Dict[str, Any], data_dir: _typing.PathLike, *,
                  mode: InitializationMode = InitializationMode.LAZY) -> None:
         """Constructor method.
         """
 
-        self.schema = schema
-        self.data_dir: pathlib.Path = pathlib.Path(data_dir)
+        self._schema: Dict[str, Any] = schema
+        self._data_dir: pathlib.Path = pathlib.Path(data_dir)
         self._data: Optional[Dict[str, Any]] = None
 
         if not isinstance(mode, Dataset.InitializationMode):
@@ -82,24 +83,24 @@ class Dataset:
     def download(self) -> None:
         """Downloads, extracts, and removes dataset archive.
 
-        :raises IOError: The SHA256 checksum of a downloaded dataset doesn't match the expected checksum
-        :raises tarfile.ReadError: The tar archive was unable to be read
+        :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
+        :raises tarfile.ReadError: The tar archive was unable to be read.
         """
-        download_url = self.schema['download_url']
+        download_url = self._schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
-        archive_fp = self.data_dir / download_file_name
+        archive_fp = self._data_dir / download_file_name
 
-        if not os.path.exists(self.data_dir):
-            os.makedirs(self.data_dir)
+        if not os.path.exists(self._data_dir):
+            os.makedirs(self._data_dir)
 
         response = requests.get(download_url, stream=True)
         archive_fp.write_bytes(response.content)
 
         computed_hash = hashlib.sha512(archive_fp.read_bytes()).hexdigest()
-        actual_hash = self.schema['sha512sum']
+        actual_hash = self._schema['sha512sum']
         if not actual_hash == computed_hash:
-            raise IOError(f'{archive_fp} has a SHA256 checksum of: ({computed_hash}) \
-                            which is different from the expected SHA256 checksum of: ({actual_hash}) \
+            raise OSError(f'{archive_fp} has a SHA512 checksum of: ({computed_hash}) \
+                            which is different from the expected SHA512 checksum of: ({actual_hash}) \
                             the file may by corrupted.')
 
         # Supports tar archives only for now
@@ -108,7 +109,7 @@ class Dataset:
         except tarfile.ReadError as e:
             raise tarfile.ReadError(f'Failed to unarchive "{archive_fp}"\ncaused by:\n{e}')
         with tar:
-            tar.extractall(path=self.data_dir)
+            tar.extractall(path=self._data_dir)
 
         os.remove(archive_fp)
 
@@ -116,16 +117,18 @@ class Dataset:
         """Load data files to RAM. The loaded data objects can be retrieved via :attr:`data`.
 
         :param subdatasets: The subdatasets to load. None means all subdatasets.
+        :raises FileNotFoundError: The dataset files are not found on the disk. Usually this is because
+            :func:`~Dataset.download` has never been called.
         """
         if subdatasets is None:
-            subdatasets = self.schema['subdatasets'].keys()
+            subdatasets = self._schema['subdatasets'].keys()
 
         self._data = {}
         for subdataset in subdatasets:
-            subdataset_schema = self.schema['subdatasets'][subdataset]
+            subdataset_schema = self._schema['subdatasets'][subdataset]
             try:
                 self._data[subdataset] = _load_data_files(fmt=subdataset_schema['format'],
-                                                          path=self.data_dir / subdataset_schema['path'])
+                                                          path=self._data_dir / subdataset_schema['path'])
             except FileNotFoundError as e:
                 raise FileNotFoundError(f'Failed to load subdataset "{subdataset}" because some files are not found. '
                                         f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n'
