@@ -26,20 +26,29 @@ import yaml
 from pydax._schema_retrieval import retrieve_schema_file
 
 
+SchemaDict = Dict[str, Any]
+
+
 class Schema(ABC):
     """Abstract class that provides functionality to load and export schemata.
 
-    :param url_or_path: URL or path to a schema file
+    :param url_or_path: URL or path to a schema file.
+    :raise AttributeError: DEFAULT_SCHEMA_URL is not overridden.
     """
 
     def __init__(self, url_or_path: Union[str, None] = None) -> None:
         """Constructor method.
         """
         if url_or_path is None:
-            url_or_path = self.DEFAULT_SCHEMA_URL  # type: ignore [attr-defined]
-        self._schema = self._load_retrieved_schema(retrieve_schema_file(url_or_path))
+            try:
+                url_or_path = self.__class__.DEFAULT_SCHEMA_URL  # type: ignore [attr-defined]
+            except AttributeError as e:
+                raise AttributeError("DEFAULT_SCHEMA_URL is not defined. "
+                                     'Have you forgotten to define this variable when inheriting "Schema"?\n'
+                                     f"Caused by:\n{e}")
+        self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path))
 
-    def _load_retrieved_schema(self, schema: str) -> Dict[str, Any]:
+    def _load_retrieved_schema(self, schema: str) -> SchemaDict:
         """Safely loads retrieved schema file.
 
         :param schema: Retrieved schema object
@@ -47,13 +56,13 @@ class Schema(ABC):
         """
         return yaml.safe_load(schema)
 
-    def export_schema(self, *keys: str) -> Dict[str, Any]:
+    def export_schema(self, *keys: str) -> SchemaDict:
         """Returns a copy of a loaded schema. Should be used for debug purposes only.
 
         :param keys: The sequence of keys that leads to the portion of the schema to be exported.
         :return: Copy of the schema dictionary
         """
-        schema = self._schema
+        schema: SchemaDict = self._schema
         for k in keys:
             schema = schema[k]
         return deepcopy(schema)

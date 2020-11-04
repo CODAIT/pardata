@@ -18,7 +18,7 @@ import datetime
 
 import pytest
 
-from pydax.schema import DatasetSchema, SchemaManager
+from pydax.schema import DatasetSchema, Schema, SchemaManager
 
 
 class TestSchema:
@@ -40,6 +40,19 @@ class TestSchema:
         "Test instantiating a Schema without supplying a path or url."
 
         assert DatasetSchema().export_schema() == loaded_schemata.schemata['dataset_schema'].export_schema()
+
+    def test_no_DEFAULT_SCHEMA_URL(self):
+        "Test when a child class of Schema doesn't override DEFAULT_SCHEMA_URL."
+
+        class MySchema(Schema):
+            def __init__(self):
+                super().__init__()
+
+        with pytest.raises(AttributeError) as e:
+            MySchema()
+
+        assert ('DEFAULT_SCHEMA_URL is not defined. '
+                'Have you forgotten to define this variable when inheriting "Schema"?\n') in str(e.value)
 
 
 def test_schema_manager_value():

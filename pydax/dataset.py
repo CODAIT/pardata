@@ -22,11 +22,11 @@ import hashlib
 import os
 import pathlib
 import tarfile
-from typing import Any, Dict, Iterable, Optional, Tuple, Union
+from typing import Dict, Iterable, Optional, Tuple, Union
 
 import requests
 
-from pydax.schema import load_schemata
+from .schema import load_schemata, SchemaDict
 from .loaders._format_loader_map import _load_data_files
 from . import _typing
 
@@ -63,14 +63,14 @@ class Dataset:
         LOAD_ONLY = 2
         DOWNLOAD_AND_LOAD = 3
 
-    def __init__(self, schema: Dict[str, Any], data_dir: _typing.PathLike, *,
+    def __init__(self, schema: SchemaDict, data_dir: _typing.PathLike, *,
                  mode: InitializationMode = InitializationMode.LAZY) -> None:
         """Constructor method.
         """
 
-        self._schema: Dict[str, Any] = schema
+        self._schema: SchemaDict = schema
         self._data_dir: pathlib.Path = pathlib.Path(data_dir)
-        self._data: Optional[Dict[str, Any]] = None
+        self._data: Optional[SchemaDict] = None
 
         if not isinstance(mode, Dataset.InitializationMode):
             raise ValueError(f'{mode} not a valid mode')
@@ -135,7 +135,7 @@ class Dataset:
                                         f'{e}')
 
     @property
-    def data(self) -> Dict[str, Any]:
+    def data(self) -> SchemaDict:
         """Access loaded data objects."""
         if self._data is None:
             raise RuntimeError(f'Data has not been loaded yet. Call {self.__class__.__name__}.load() to load data.')
