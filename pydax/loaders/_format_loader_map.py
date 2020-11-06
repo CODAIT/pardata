@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Mapping, Optional, Union
 
 
 from ._base import Loader
@@ -29,7 +29,7 @@ class FormatLoaderMap:
 
     """
 
-    def __init__(self, m: Optional[Dict[str, Loader]] = None) -> None:
+    def __init__(self, m: Optional[Mapping[str, Loader]] = None) -> None:
         "Constructor method."
         self._map: Dict[str, Loader] = {}
         if m is not None:
@@ -41,6 +41,7 @@ class FormatLoaderMap:
 
         :param fmt: The format.
         :param loader: The corresponding loader.
+        :raise TypeError: ``loader`` is not a :class:`Loader` object.
         """
         if not isinstance(loader, Loader):
             raise TypeError(f'loader "{loader}" must be a Loader instance.')

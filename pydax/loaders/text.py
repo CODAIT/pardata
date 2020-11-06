@@ -18,17 +18,19 @@ import os
 import pathlib
 from typing import Dict, Union
 
+from .. import _typing
 from ._base import Loader
 
 
 class PlainTextLoader(Loader):
 
-    def load(self, path: Union[str, Dict[str, str]]) -> str:
+    def load(self, path: Union[_typing.PathLike, Dict[str, str]]) -> str:
         """The type hint says Dict, because this loader will be handling those situations in the future.
 
         :param path: The path to the plain text file.
         """
 
         if not isinstance(path, (str, os.PathLike)):
+            # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
             raise TypeError(f'Unsupported path type "{type(path)}".')
         return pathlib.Path(path).read_text()

@@ -18,10 +18,17 @@ from abc import ABC, abstractmethod
 
 from typing import Any, Dict, Union
 
+from .. import _typing
+
 
 class Loader(ABC):
     "Base class of all loaders."
 
     @abstractmethod
-    def load(self, path: Union[str, Dict[str, str]]) -> Any:
+    def load(self, path: Union[_typing.PathLike, Dict[str, str]]) -> Any:
+        """Loads from a give path or a dict of path configurations. This should must overridden when inherited.
+
+        :param path: The path or path configurations of the files to be loaded.
+        :return: The object representing the loaded file.
+        """
         pass
