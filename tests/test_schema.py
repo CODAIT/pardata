@@ -14,11 +14,38 @@
 # limitations under the License.
 #
 
+import abc
 import datetime
 
 import pytest
 
 from pydax.schema import DatasetSchema, Schema, SchemaManager
+
+
+class TestBaseSchema:
+    "Test Schema ABC."
+
+    def test_abstract(self):
+        "Test Schema is an abstract class."
+
+        assert Schema.__bases__ == (abc.ABC,)
+
+    def test_no_DEFAULT_SCHEMA_URL(self):
+        "Test when a child class of Schema doesn't override DEFAULT_SCHEMA_URL."
+
+        class MySchema(Schema):
+            def __init__(self):
+                super().__init__()
+
+        with pytest.raises(AttributeError) as e:
+            MySchema()
+
+        assert ('DEFAULT_SCHEMA_URL is not defined. '
+                'Have you forgotten to define this variable when inheriting "Schema"?\n') in str(e.value)
+
+        class MySchema(Schema):
+            DEFAULT_SCHEMA_URL = 'https://ibm.box.com/shared/static/01oa3ue32lzcsd2znlbojs9ozdeftpb6.yaml'
+        MySchema()  # This line shouldn't error out as long as MySchema.DEFAULT_SCHEMA_URL is valid schema
 
 
 class TestSchema:
@@ -40,19 +67,6 @@ class TestSchema:
         "Test instantiating a Schema without supplying a path or url."
 
         assert DatasetSchema().export_schema() == loaded_schemata.schemata['dataset_schema'].export_schema()
-
-    def test_no_DEFAULT_SCHEMA_URL(self):
-        "Test when a child class of Schema doesn't override DEFAULT_SCHEMA_URL."
-
-        class MySchema(Schema):
-            def __init__(self):
-                super().__init__()
-
-        with pytest.raises(AttributeError) as e:
-            MySchema()
-
-        assert ('DEFAULT_SCHEMA_URL is not defined. '
-                'Have you forgotten to define this variable when inheriting "Schema"?\n') in str(e.value)
 
 
 def test_schema_manager_value():
