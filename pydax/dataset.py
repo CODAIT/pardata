@@ -26,9 +26,9 @@ from typing import Dict, Iterable, Optional, Tuple, Union
 
 import requests
 
+from . import _typing, get_config
 from .schema import load_schemata, SchemaDict
 from .loaders._format_loader_map import _load_data_files
-from . import _typing
 
 
 def list_all_datasets() -> Dict[str, Tuple]:
@@ -48,7 +48,8 @@ class Dataset:
     """Models a particular dataset version along with download & load functionality.
 
     :param schema: Schema dict of a particular dataset version
-    :param data_dir: Directory to/from which the dataset should be downloaded/loaded from
+    :param data_dir: Directory to/from which the dataset should be downloaded/loaded from.
+        Defaults to ``pydax.get_config().DATADIR``
     :param mode: Mode with which to treat a dataset. Available options are:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
         :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`
@@ -63,13 +64,14 @@ class Dataset:
         LOAD_ONLY = 2
         DOWNLOAD_AND_LOAD = 3
 
-    def __init__(self, schema: SchemaDict, data_dir: _typing.PathLike, *,
+    def __init__(self, schema: SchemaDict, *,
+                 data_dir: Optional[_typing.PathLike] = None,
                  mode: InitializationMode = InitializationMode.LAZY) -> None:
         """Constructor method.
         """
 
         self._schema: SchemaDict = schema
-        self._data_dir: pathlib.Path = pathlib.Path(data_dir)
+        self._data_dir: _typing.PathLike = get_config().DATADIR if data_dir is None else pathlib.Path(data_dir)
         self._data: Optional[SchemaDict] = None
 
         if not isinstance(mode, Dataset.InitializationMode):

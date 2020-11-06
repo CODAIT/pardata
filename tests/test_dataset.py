@@ -37,7 +37,7 @@ class TestDataset:
 
         gmb_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
         with pytest.raises(ValueError) as e:
-            Dataset(gmb_schema, tmp_path, mode='DOWNLOAD_ONLY')
+            Dataset(gmb_schema, data_dir=tmp_path, mode='DOWNLOAD_ONLY')
         assert str(e.value) == 'DOWNLOAD_ONLY not a valid mode'
 
     def test_dataset_download(self, tmp_path, loaded_schemata):
@@ -45,7 +45,7 @@ class TestDataset:
 
         gmb_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
         data_dir = tmp_path / 'gmb'
-        Dataset(gmb_schema, data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert len(list(data_dir.iterdir())) == 1
         unarchived_data_dir = data_dir / 'groningen_meaning_bank_modified'
         unarchived_data_dir_files = ['gmb_subset_full.txt', 'LICENSE.txt', 'README.txt']
@@ -60,7 +60,7 @@ class TestDataset:
         gmb_schema['sha512sum'] = 'invalid hash example'
 
         with pytest.raises(IOError) as e:
-            Dataset(gmb_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'the file may by corrupted' in str(e.value)
 
     def test_invalid_tarball(self, tmp_path, loaded_schemata):
@@ -73,7 +73,7 @@ class TestDataset:
                                    'b0c0579795126068374764689b4526c2b02130bab694006'
 
         with pytest.raises(tarfile.ReadError) as e:
-            Dataset(fake_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(fake_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'Failed to unarchive' in str(e.value)
 
     def test_load(self, downloaded_wikitext103_dataset):
@@ -98,7 +98,7 @@ class TestDataset:
 
         wikitext103_schema = loaded_schemata.schemata['dataset_schema'].export_schema(
             'datasets', 'wikitext103', '1.0.1')
-        dataset = Dataset(wikitext103_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        dataset = Dataset(wikitext103_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
 
         assert (hashlib.sha512(dataset.data['train'].encode()).hexdigest() ==
                 ('df7615f77cb9dd19975881f271e3e3525bee38c08a67fea36a51c96be69a3ecabc9e05c02cbaf'
@@ -116,7 +116,7 @@ class TestDataset:
         "Test loading before ``Dataset.download()`` has been called."
 
         gmb_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
-        dataset = Dataset(gmb_schema, tmp_path, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
 
         with pytest.raises(FileNotFoundError) as e:
             dataset.load()
@@ -127,7 +127,7 @@ class TestDataset:
         "Test access to `Dataset.data` when no data has been loaded."
 
         gmb_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
-        dataset = Dataset(gmb_schema, tmp_path, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
         with pytest.raises(RuntimeError) as e:
             dataset.data
         assert 'Data has not been loaded yet. Call Dataset.load() to load data.' == str(e.value)

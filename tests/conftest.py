@@ -38,4 +38,4 @@ def gmb_schema(loaded_schemata):
 def downloaded_wikitext103_dataset(loaded_schemata):
     schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
     with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(schema, tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        yield Dataset(schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
