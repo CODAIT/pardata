@@ -20,21 +20,19 @@ from pydax import get_config, init
 from pydax.dataset import Dataset
 
 
-def test_default_data_dir(loaded_schemata):
+def test_default_data_dir(wikitext103_schema):
     "Test to make sure Dataset will use default global data dir if nothing passed to pydax.init or Dataset constructor."
 
     pydax_data_home = pathlib.Path.home() / '.pydax' / 'data'
     assert get_config().DATADIR == pydax_data_home
-    schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
-    wikitext = Dataset(schema, mode=Dataset.InitializationMode.LAZY)
+    wikitext = Dataset(wikitext103_schema, mode=Dataset.InitializationMode.LAZY)
     assert wikitext._data_dir == pydax_data_home
 
 
-def test_custom_data_dir(tmp_path, loaded_schemata):
+def test_custom_data_dir(tmp_path, wikitext103_schema):
     "Test to make sure Dataset constructor uses new global data dir if one was supplied earlier to pydax.init."
 
     init(DATADIR=tmp_path)
     assert get_config().DATADIR == tmp_path
-    schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
-    wikitext = Dataset(schema, mode=Dataset.InitializationMode.LAZY)
+    wikitext = Dataset(wikitext103_schema, mode=Dataset.InitializationMode.LAZY)
     assert wikitext._data_dir == tmp_path

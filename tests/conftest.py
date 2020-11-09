@@ -35,7 +35,11 @@ def gmb_schema(loaded_schemata):
 
 
 @pytest.fixture
-def downloaded_wikitext103_dataset(loaded_schemata):
-    schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
+def wikitext103_schema(loaded_schemata):
+    return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
+
+
+@pytest.fixture
+def downloaded_wikitext103_dataset(wikitext103_schema):
     with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        yield Dataset(wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
