@@ -47,7 +47,7 @@ class TestDataset:
         assert len(list(data_dir.iterdir())) == 1
         unarchived_data_dir = data_dir / 'groningen_meaning_bank_modified'
         unarchived_data_dir_files = ['gmb_subset_full.txt', 'LICENSE.txt', 'README.txt']
-        assert unarchived_data_dir.exists()
+        assert unarchived_data_dir.is_dir()
         assert len(list(unarchived_data_dir.iterdir())) == len(unarchived_data_dir_files)
         assert all(f.name in unarchived_data_dir_files for f in unarchived_data_dir.iterdir())
 
@@ -130,3 +130,10 @@ class TestDataset:
         with pytest.raises(RuntimeError) as e:
             dataset.data
         assert str(e.value) == 'Data has not been loaded yet. Call Dataset.load() to load data.'
+
+    def test_data_dir_is_not_a_dir(self, gmb_schema):
+        "Test when ``data_dir`` exists and is not a dir."
+
+        with pytest.raises(FileExistsError) as e:
+            Dataset(gmb_schema, data_dir='./setup.py', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        assert str(e.value) == '"setup.py" exists and is not a directory.'

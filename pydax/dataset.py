@@ -85,6 +85,8 @@ class Dataset:
     def download(self) -> None:
         """Downloads, extracts, and removes dataset archive.
 
+        :raises FileExistsError: :attr:`Dataset._data_dir` (passed in via :meth:`.__init__()`) points to an
+                                 existing file that is not a directory.
         :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
         :raises tarfile.ReadError: The tar archive was unable to be read.
         """
@@ -94,6 +96,8 @@ class Dataset:
 
         if not os.path.exists(self._data_dir):
             os.makedirs(self._data_dir)
+        elif not os.path.isdir(self._data_dir):  # self._data_dir exists and is not a directory
+            raise FileExistsError(f'"{self._data_dir}" exists and is not a directory.')
 
         response = requests.get(download_url, stream=True)
         archive_fp.write_bytes(response.content)
