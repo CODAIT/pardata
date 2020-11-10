@@ -1,32 +1,45 @@
-# DAX API
+# PyDAX (Under Development)
 
-## Development
+A simple Python API for downloading and loading datasets from IBM's [Data Asset Exchange](ibm.biz/data-exchange).
 
-To start developing, after cloning this repo (and preferably create a virtual environment), run the following command to
-install all dependencies:
+## Install the Package & its Dependencies
 
-    pip install -U -e .
+```shell
+pip install -U -e .
+```
 
-Install all required development packages:
+## Simple Examples
 
-    pip install -r requirements-dev.txt
+Import the full package.
+```python
+import pydax
+```
 
-To test the functioning of the package, run
+View available PyDAX datasets and their versions.
+```python
+from pydax.dataset import list_all_datasets
+list_all_datasets()
+# {'gmb': ('1.0.2',), 'wikitext103': ('1.0.1',)}
+```
 
-    coverage run -m pytest
+Load a dataset into memory as a dict composed of subdatasets using `load_dataset()`. By default, `load_dataset()` will download the dataset to your default data directory if it is not already present there. If the `version` parameter is not specified, the dataset's latest version available on PyDAX is assumed. In this example, PyDAX will download the [GMB](https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/) dataset (version `1.0.2`) to `~/.pydax/data/gmb/1.0.2/` and loads its subdatasets into `gmb_data`. 
+```python
+from pydax.dataset import load_dataset
+gmb_data = load_dataset('gmb')
+```
 
-To understand the coverage of the test above, run
+By default, `load_dataset()` downloads to and loads from `~/.pydax/data/<dataset-name>/<dataset-version>/`. To change the default data directory, use `pydax.init`.
+```python
+pydax.init(DATADIR='new/dir/to/dowload/load/from')
+```
 
-    coverage report
+To view your globally set configs for PyDAX, such as your default data directory, use `get_config()`.
+```python
+pydax.get_config()
+# Config(DATADIR=PosixPath('new/dir/to/dowload/load/from'))
+```
 
-To check code style compliance, run
-
-    flake8 .
-
-For static security check, run
-
-    bandit -r .
-
-For type annotation test, run
-
-    mypy pydax
+Load a previously downloaded dataset using `load_dataset`. With the new default data dir set, PyDAX now searches for the [WikiText-103](https://developer.ibm.com/exchanges/data/all/wikitext-103/) dataset (version `1.0.1`) in `new/dir/to/dowload/load/from/wikitext103/1.0.1/`.
+```python
+wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=False)  # assuming wikitext103 was already downloaded
+```
