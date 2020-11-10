@@ -22,8 +22,9 @@ import hashlib
 import os
 import pathlib
 import tarfile
-from typing import Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, Optional, Tuple, Union
 
+from packaging.version import parse as version_parser
 import requests
 
 from . import _typing, get_config
@@ -49,7 +50,6 @@ class Dataset:
 
     :param schema: Schema dict of a particular dataset version
     :param data_dir: Directory to/from which the dataset should be downloaded/loaded from.
-        Defaults to ``pydax.get_config().DATADIR``
     :param mode: Mode with which to treat a dataset. Available options are:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
         :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`
@@ -64,14 +64,14 @@ class Dataset:
         LOAD_ONLY = 2
         DOWNLOAD_AND_LOAD = 3
 
-    def __init__(self, schema: SchemaDict, *,
-                 data_dir: Optional[_typing.PathLike] = None,
+    def __init__(self, schema: SchemaDict,
+                 data_dir: _typing.PathLike,  *,
                  mode: InitializationMode = InitializationMode.LAZY) -> None:
         """Constructor method.
         """
 
         self._schema: SchemaDict = schema
-        self._data_dir: _typing.PathLike = get_config().DATADIR if data_dir is None else pathlib.Path(data_dir)
+        self._data_dir: pathlib.Path = pathlib.Path(data_dir)
         self._data: Optional[SchemaDict] = None
 
         if not isinstance(mode, Dataset.InitializationMode):
@@ -141,10 +141,73 @@ class Dataset:
                                         f'{e}')
 
     @property
-    def data(self) -> SchemaDict:
+    def data(self) -> Dict[str, Any]:
         """Access loaded data objects."""
         if self._data is None:
             raise RuntimeError(f'Data has not been loaded yet. Call {self.__class__.__name__}.load() to load data.')
         # we don't copy here because it is too expensive and users may actually want to update the datasets and it
         # doesn't cause security issues as in the Schema class
         return self._data
+
+    def is_downloaded(self) -> bool:
+        """Check to see if dataset was downloaded.
+
+        :return: Boolean indicating if the dataset's datadir has contents or not.
+        """
+        return self._data_dir.is_dir() and len(os.listdir(self._data_dir)) > 0
+
+
+def load_dataset(name: str, *,
+                 version: Optional[str] = None,
+                 download: bool = True,
+                 subdatasets: Union[Iterable[str], None] = None) -> Dict[str, Any]:
+    """High level function that wraps :class:`Dataset` class's load and download functionality. Downloads to and loads
+    from directory: `DATADIR/name/version` where ``DATADIR`` is in ``pydax.get_config().DATADIR``. ``DATADIR`` can
+    be changed by calling :func:`pydax.init()`.
+
+    :param name: Name of the dataset you want to load from PyDAX's available datasets. You can get a list of these
+        datasets by calling :func:`list_all_datasets`.
+    :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
+        available versions for a dataset by calling :func:`pydax.list_all_datasets`.
+    :param download: Whether or not the dataset should be downloaded before loading.
+    :param subdatasets: An iterable containing the subdatasets to load. ``None`` means all subdatasets.
+    :raises KeyError: ``name`` is not a valid PyDAX dataset name.
+    :raises ValueError: ``version`` is not a valid PyDAX version of ``name``.
+    :raises FileNotFoundError: The dataset files were not previously downloaded or can't be found, and ``download`` is
+        False.
+    :raises TypeError: ``name`` or ``version`` are not strings.
+    :return: Dictionary that holds all subdatasets.
+    """
+
+    if not isinstance(name, str):
+        raise TypeError('The name parameter must be supplied a str.')
+    if version is not None and not isinstance(version, str):
+        raise TypeError('The version parameter must be supplied a str.')
+
+    all_datasets = list_all_datasets()
+    if name not in all_datasets.keys():
+        raise KeyError(f'Failed to load dataset because "{name}" is not a valid PyDAX dataset. '
+                       'You can view all valid datasets and their versions by running the function '
+                       'pydax.list_all_datasets().')
+    if version is None:
+        # Grab latest available version
+        version = str(max(version_parser(v) for v in all_datasets[name]))
+    elif version not in all_datasets[name]:
+        raise ValueError(f'Failed to load dataset because "{version}" is not a valid PyDAX version for the dataset '
+                         f'"{name}". You can view all valid datasets and their versions by running the function '
+                         'pydax.list_all_datasets().')
+
+    schema = load_schemata().schemata['dataset_schema'].export_schema('datasets', name, version)
+
+    data_dir = pathlib.Path(get_config().DATADIR) / name / version  # TODO issue 646
+    dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
+    if download and not dataset.is_downloaded():
+        dataset.download()
+    try:
+        dataset.load(subdatasets=subdatasets)
+    except FileNotFoundError as e:
+        raise FileNotFoundError('Failed to load the dataset because some files are not found. '
+                                'Did you forget to download the dataset (by specifying `download=True`)?'
+                                f'\nCaused by:\n{e}')
+
+    return dataset.data
