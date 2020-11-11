@@ -16,14 +16,12 @@
 
 import setuptools
 
-from pydax.version import __version__
 
 with open('README.md') as f:
     long_description = f.read()
 
 setuptools.setup(
     name="pydax",
-    version=__version__,
     description="Access DAX datasets.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -49,4 +47,6 @@ setuptools.setup(
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Scientific/Engineering",
     ],
+    use_scm_version={'write_to': 'pydax/_version.py'},
+    setup_requires=['setuptools_scm']
 )

@@ -14,12 +14,13 @@
 # limitations under the License.
 #
 
-"PyDAX package"
+import packaging
+
+import pydax
 
 
-from ._config import get_config, init
-from ._version import version as __version__
+def test_version():
+    "Test version handling."
 
-__all__ = ('__version__',
-           'get_config',
-           'init')
+    packaging.version.Version(pydax.__version__)  # this line must not raise packaging.version.InvalidVersion
+    assert pydax.__version__ == pydax._version.version
