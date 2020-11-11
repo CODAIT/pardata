@@ -72,7 +72,7 @@ class Dataset:
 
         self._schema: SchemaDict = schema
         self._data_dir: pathlib.Path = pathlib.Path(data_dir)
-        self._data: Optional[SchemaDict] = None
+        self._data: Optional[Dict[str, Any]] = None
 
         if not isinstance(mode, Dataset.InitializationMode):
             raise ValueError(f'{mode} not a valid mode')
