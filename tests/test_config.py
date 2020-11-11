@@ -15,6 +15,10 @@
 #
 
 import pathlib
+import re
+
+import pytest
+from pydantic import ValidationError
 
 from pydax import get_config, init
 from pydax.dataset import Dataset
@@ -25,6 +29,7 @@ def test_default_data_dir(wikitext103_schema):
 
     pydax_data_home = pathlib.Path.home() / '.pydax' / 'data'
     assert get_config().DATADIR == pydax_data_home
+    assert isinstance(get_config().DATADIR, pathlib.Path)
 
 
 def test_custom_data_dir(tmp_path, wikitext103_schema):
@@ -32,5 +37,17 @@ def test_custom_data_dir(tmp_path, wikitext103_schema):
 
     init(DATADIR=tmp_path)
     assert get_config().DATADIR == tmp_path
+    assert isinstance(get_config().DATADIR, pathlib.Path)
     wikitext = Dataset(wikitext103_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
     assert wikitext._data_dir == tmp_path
+    assert isinstance(wikitext._data_dir, pathlib.Path)
+
+
+def test_non_path_data_dir():
+    "Test exception when a nonpath is passed as DATADIR."
+
+    with pytest.raises(ValidationError) as e:
+        init(DATADIR=10)
+
+    assert re.search(r"1 validation error for Config\s+DATADIR\s+value is not a valid path \(type=type_error.path\)",
+                     str(e.value))

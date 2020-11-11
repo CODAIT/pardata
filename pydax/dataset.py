@@ -199,7 +199,7 @@ def load_dataset(name: str, *,
 
     schema = load_schemata().schemata['dataset_schema'].export_schema('datasets', name, version)
 
-    data_dir = pathlib.Path(get_config().DATADIR) / name / version  # TODO issue 646
+    data_dir = get_config().DATADIR / name / version
     dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
     if download and not dataset.is_downloaded():
         dataset.download()

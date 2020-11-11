@@ -34,6 +34,7 @@ setuptools.setup(
     install_requires=[
         "packaging >= 20.4",
         "pandas >= 1.1.0",
+        "pydantic >= 1.7.2",
         "PyYAML >= 5.3.1",
         "requests >= 2.24.0"],
     classifiers=[

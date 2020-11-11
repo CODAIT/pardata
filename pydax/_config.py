@@ -17,10 +17,9 @@
 "Module for defining and modifying global configs"
 
 
-from dataclasses import dataclass
 import pathlib
 
-from . import _typing
+from pydantic.dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -28,7 +27,7 @@ class Config:
     """Global read-only configurations for PyDAX.
     """
     # DATADIR is the default dir where datasets files are downloaded/loaded to/from.
-    DATADIR: _typing.PathLike = pathlib.Path.home() / '.pydax' / 'data'
+    DATADIR: pathlib.Path = pathlib.Path.home() / '.pydax' / 'data'
 
 
 def get_config() -> Config:
@@ -39,7 +38,7 @@ def get_config() -> Config:
     return global_config  # type: ignore [name-defined]
 
 
-def init(**kwargs: _typing.PathLike) -> None:
+def init(**kwargs: pathlib.Path) -> None:
     """
     (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
 
