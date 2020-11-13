@@ -17,6 +17,7 @@
 "Module for defining and modifying global configs"
 
 
+import os
 import pathlib
 
 from pydantic.dataclasses import dataclass
@@ -28,6 +29,13 @@ class Config:
     """
     # DATADIR is the default dir where datasets files are downloaded/loaded to/from.
     DATADIR: pathlib.Path = pathlib.Path.home() / '.pydax' / 'data'
+
+    def __post_init_post_parse__(self) -> None:
+        "This is called by :meth:`.__init__()` after data type validation."
+        # DATADIR should be absolute.
+        # We use object.__setattr__ because we set frozen=True, same as what dataclasses does:
+        # https://docs.python.org/3/library/dataclasses.html#frozen-instances
+        object.__setattr__(self, 'DATADIR', pathlib.Path(os.path.abspath(self.DATADIR)))
 
 
 def get_config() -> Config:
@@ -42,7 +50,9 @@ def init(**kwargs: pathlib.Path) -> None:
     """
     (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
 
-    :param DATADIR: Default dataset directory to download/load to/from. Defaults to: ~/.pydax/data
+    :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
+        the current working directory, but will be converted to the absolute path immediately in this function.
+        Defaults to: ~/.pydax/data
     """
     global global_config
     global_config = Config(**kwargs)  # type: ignore [name-defined]

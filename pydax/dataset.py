@@ -49,7 +49,9 @@ class Dataset:
     """Models a particular dataset version along with download & load functionality.
 
     :param schema: Schema dict of a particular dataset version
-    :param data_dir: Directory to/from which the dataset should be downloaded/loaded from.
+    :param data_dir: Directory to/from which the dataset should be downloaded/loaded from. The path can be either
+        absolute or relative to the current working directory, but will be converted to the absolute path immediately
+        upon initialization.
     :param mode: Mode with which to treat a dataset. Available options are:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
         :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`
@@ -71,7 +73,7 @@ class Dataset:
         """
 
         self._schema: SchemaDict = schema
-        self._data_dir: pathlib.Path = pathlib.Path(data_dir)
+        self._data_dir: pathlib.Path = pathlib.Path(os.path.abspath(data_dir))
         self._data: Optional[Dict[str, Any]] = None
 
         if not isinstance(mode, Dataset.InitializationMode):

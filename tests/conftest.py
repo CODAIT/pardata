@@ -15,11 +15,37 @@
 #
 
 from tempfile import TemporaryDirectory
+import uuid
 
 import pytest
 
 from pydax.schema import load_schemata
 from pydax.dataset import Dataset
+
+
+@pytest.fixture
+def tmp_sub_dir(tmp_path):
+    "A ``pathlib.Path`` object that points to a temporary dir, created as a subdir of ``tmp_path``."
+
+    with TemporaryDirectory(dir=tmp_path) as d:
+        yield d
+
+
+@pytest.fixture
+def tmp_symlink_dir(tmp_path, tmp_sub_dir):
+    "A ``pathlib.Path`` object that points to a temporary symlink to ``tmp_sub_dir``. It always sits in ``tmp_dir``."
+
+    while True:
+        symlink_dir = tmp_path / str(uuid.uuid4())
+        # A collision is extremely unlikely, but for the sake of completeness, this check never hurts.
+        if not symlink_dir.exists():
+            break
+
+    symlink_dir.symlink_to(tmp_sub_dir, target_is_directory=True)
+
+    yield symlink_dir
+
+    symlink_dir.unlink()
 
 
 @pytest.fixture

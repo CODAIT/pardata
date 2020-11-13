@@ -15,6 +15,8 @@
 #
 
 import hashlib
+import os
+import pathlib
 import tarfile
 
 import pytest
@@ -138,7 +140,20 @@ class TestDataset:
 
         with pytest.raises(FileExistsError) as e:
             Dataset(gmb_schema, data_dir='./setup.py', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
-        assert str(e.value) == '"setup.py" exists and is not a directory.'
+        assert str(e.value) == f'"{pathlib.Path.cwd()/"setup.py"}" exists and is not a directory.'
+
+    def test_relative_data_dir(self, tmp_path, gmb_schema):
+        "Test when ``data_dir`` is relative."
+
+        dataset = Dataset(gmb_schema, data_dir=os.path.relpath(tmp_path), mode=Dataset.InitializationMode.LAZY)
+        assert dataset._data_dir == tmp_path
+        assert dataset._data_dir.is_absolute()
+
+    def test_symlink_data_dir(self, tmp_symlink_dir, gmb_schema):
+        "Test when ``data_dir`` is a symlink. The symlink should not be resolved."
+
+        dataset = Dataset(gmb_schema, data_dir=tmp_symlink_dir, mode=Dataset.InitializationMode.LAZY)
+        assert dataset._data_dir == tmp_symlink_dir
 
     def test_is_downloaded(self, tmp_path, wikitext103_schema):
         "Test is_downloaded method."

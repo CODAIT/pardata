@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+import os
 import pathlib
 import re
 
@@ -41,6 +42,21 @@ def test_custom_data_dir(tmp_path, wikitext103_schema):
     wikitext = Dataset(wikitext103_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
     assert wikitext._data_dir == tmp_path
     assert isinstance(wikitext._data_dir, pathlib.Path)
+
+
+def test_custom_relative_data_dir(tmp_path):
+    "Test using a custom relative data directory."
+
+    init(DATADIR=os.path.relpath(tmp_path))
+    assert get_config().DATADIR == tmp_path
+    assert get_config().DATADIR.is_absolute()
+
+
+def test_custom_symlink_data_dir(tmp_symlink_dir):
+    "Test using a custom symlink data directory. The symlink should not be resolved."
+
+    init(DATADIR=tmp_symlink_dir)
+    assert get_config().DATADIR == tmp_symlink_dir
 
 
 def test_non_path_data_dir():
