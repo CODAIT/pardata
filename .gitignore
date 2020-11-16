@@ -143,6 +143,6 @@ dmypy.json
 tox.ini
 .tox/
 
-pydax/_version.py
+/pydax/_version.py
 
 # End of https://www.toptal.com/developers/gitignore/api/python,vscode
