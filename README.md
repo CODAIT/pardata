@@ -1,6 +1,6 @@
 # PyDAX (Under Development)
 
-A simple Python API for downloading and loading datasets from IBM's [Data Asset Exchange](ibm.biz/data-exchange).
+A simple Python API for downloading and loading datasets from IBM's [Data Asset Exchange](https://ibm.biz/data-exchange).
 
 ## Install the Package & its Dependencies
 
