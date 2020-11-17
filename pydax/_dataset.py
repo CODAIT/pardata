@@ -28,7 +28,7 @@ from packaging.version import parse as version_parser
 import requests
 
 from . import _typing, get_config
-from .schema import load_schemata, SchemaDict
+from ._schema import load_schemata, SchemaDict
 from .loaders._format_loader_map import _load_data_files
 
 
