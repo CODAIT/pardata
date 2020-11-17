@@ -41,7 +41,7 @@ class TestBaseLoader:
         # Error out in instantiating MyLoader because loader is not overridden
         with pytest.raises(TypeError) as e:
             MyLoader()
-        assert str(e.value) == "Can't instantiate abstract class MyLoader with abstract methods load"
+        assert "Can't instantiate abstract class MyLoader with abstract method" in str(e.value)
 
         class MyLoader(Loader):
             def load(self, path):

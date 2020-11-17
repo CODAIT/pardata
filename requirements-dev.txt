@@ -8,4 +8,5 @@ mccabe
 # fix mypy to a previous version for now due to a regression: https://github.com/python/typeshed/issues/4681
 mypy == 0.782
 pytest
+tox
 yamllint

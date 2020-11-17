@@ -15,21 +15,27 @@
 #
 
 language: python
-python:
-  - 3.7
-  - 3.8
-install:
-  - pip install -r requirements-dev.txt
-  - pip install -e .
-script:
-  - yamllint -c .yamllint.yaml .
-  - flake8 .
-  - bandit -r .
-  - mypy pydax
-  - coverage run -m pytest
-  - coverage report
 
-# build master branch only
+matrix:
+  include:
+    - name: "Python 3.6.0 on Linux"
+      python: 3.6
+    - name: "Python 3.7.0 on Linux"
+      python: 3.7
+    - name: "Python 3.8.0 on Linux"
+      python: 3.8
+    - name: "Python 3.9.0 on Linux"
+      python: 3.9
+
+cache: pip
+
+install:
+  - pip install tox-travis
+
+script:
+  - tox
+
+# Build master branch only
 branches:
   only:
     - master
