@@ -19,7 +19,7 @@ import uuid
 
 import pytest
 
-from pydax.schema import load_schemata
+from pydax import load_schemata
 from pydax.dataset import Dataset
 
 
