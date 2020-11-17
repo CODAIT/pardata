@@ -140,7 +140,6 @@ dmypy.json
 .vscode/
 
 ### tox ###
-tox.ini
 .tox/
 
 /pydax/_version.py
