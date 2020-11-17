@@ -14,26 +14,27 @@
 # limitations under the License.
 #
 
+# The prebuilt pypy packages at https://antocuni.github.io/ don't work with the older default dist
+dist: focal
+
 language: python
 
 matrix:
   include:
-    - name: "Python 3.6.0 on Linux"
-      python: 3.6
-    - name: "Python 3.7.0 on Linux"
-      python: 3.7
-    - name: "Python 3.8.0 on Linux"
+    - python: 3.6
+    - python: 3.7
+    - python: 3.8
+    - python: 3.9
+    - python: pypy3
+    - name: "Lint"
       python: 3.8
-    - name: "Python 3.9.0 on Linux"
-      python: 3.9
-
-cache: pip
+      env: TOXENV=lint
 
 install:
   - pip install tox-travis
 
 script:
-  - tox
+  - tox -vv
 
 # Build master branch only
 branches:

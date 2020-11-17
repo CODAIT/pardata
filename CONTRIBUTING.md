@@ -9,7 +9,7 @@ install all dependencies:
 
 Install all required development packages:
 
-    pip install -r requirements-dev.txt
+    pip install -r requirements-test.txt -r requirements-lint.txt
 
 To run all tests on all available Python versions configured to work with PyDAX, run:
 
@@ -19,7 +19,7 @@ By default `tox` uses `virtualenv` for creating each test environment (such as f
 
     pip install tox-conda
 
-## Running Tox Tests Individually
+## Running Tests Individually
 
 To test the functioning of the package, run:
 
