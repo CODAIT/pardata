@@ -19,7 +19,7 @@ By default `tox` uses `virtualenv` for creating each test environment (such as f
 
     pip install tox-conda
 
-## Running Tox Tests Individually
+## Running Tests Individually
 
 To test the functioning of the package, run:
 
