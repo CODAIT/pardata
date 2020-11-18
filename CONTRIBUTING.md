@@ -61,3 +61,10 @@ Generally speaking:
 
 Please keep in mind that the criteria above are not meant to be rigid: They should be applied flexibly in light of
 factors such as where existing symbols are placed and other potentially important considerations (if any).
+
+## Where to Import a Symbol?
+
+When referencing a symbol that is exposed to a user, in general, we prefer importing the symbol from where the package
+publicly exposes it over importing from where the source code of the symbol is defined, e.g., use `from .schema import
+SchemaDict` rather than `from ._schema import SchemaDict`. This way we have more code paths that would go through what
+the user would actually experience and hopefully would give us more chances to discover bugs.
