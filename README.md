@@ -4,7 +4,13 @@ A simple Python API for downloading and loading datasets from IBM's [Data Asset 
 
 ## Install the Package & its Dependencies
 
-Switch to the source directory (same directory as this README file, `cd /path/to/pydax-source`) and run
+To install the latest version of PyDAX, run
+
+```shell
+pip install -U git+https://github.com/ibm/pydax
+```
+
+Alternatively, if you have downloaded the source, switch to the source directory (same directory as this README file, `cd /path/to/pydax-source`) and run
 
 ```shell
 pip install -U .
