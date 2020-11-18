@@ -22,8 +22,8 @@ import tarfile
 import pytest
 from packaging.version import parse as version_parser
 
-from pydax import init
-from pydax.dataset import Dataset, list_all_datasets, load_dataset
+from pydax import init, list_all_datasets, load_dataset
+from pydax.dataset import Dataset
 
 
 def test_list_all_datasets():

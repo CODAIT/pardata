@@ -18,8 +18,19 @@
 
 
 from ._config import get_config, init
+from ._dataset import list_all_datasets, load_dataset
+from ._schema import load_schemata
 from ._version import version as __version__
 
-__all__ = ('__version__',
+__all__ = (
+           # _config
            'get_config',
-           'init')
+           'init',
+           # _dataset
+           'list_all_datasets',
+           'load_dataset',
+           # _schema
+           'load_schemata',
+           # _version
+           '__version__'
+)
