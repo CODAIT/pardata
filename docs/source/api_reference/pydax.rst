@@ -1,37 +1,17 @@
-pydax package
-=============
+pydax
+=====
 
-Subpackages
------------
+.. currentmodule:: pydax
 
-.. toctree::
-   :maxdepth: 4
 
-   pydax.loaders
+Functions
+~~~~~~~~~
 
-Submodules
-----------
+.. autosummary::
+   :toctree: source/api_reference/autosummary
 
-pydax.dataset module
---------------------
-
-.. automodule:: pydax.dataset
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pydax.schema module
--------------------
-
-.. automodule:: pydax.schema
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pydax
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   init
+   get_config
+   list_all_datasets
+   load_dataset
+   load_schemata

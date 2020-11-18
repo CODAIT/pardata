@@ -1,21 +1,37 @@
-pydax.loaders package
-=====================
+pydax.loaders
+-------------
 
-Submodules
-----------
+.. currentmodule:: pydax.loaders
 
-pydax.loaders.text module
--------------------------
 
-.. automodule:: pydax.loaders.text
-   :members:
-   :undoc-members:
-   :show-inheritance:
+FormatLoaderMap Class
+~~~~~~~~~~~~~~~~~~~~~
 
-Module contents
----------------
+.. autosummary::
+   :toctree: source/api_reference/autosummary
 
-.. automodule:: pydax.loaders
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   FormatLoaderMap
+   FormatLoaderMap.register_loader
+
+
+Loader Class
+~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: source/api_reference/autosummary
+
+   Loader
+   Loader.load
+
+
+.. currentmodule:: pydax.loaders.text
+
+
+PlainTextLoader Class
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: source/api_reference/autosummary
+
+   PlainTextLoader
+   PlainTextLoader.load

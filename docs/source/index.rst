@@ -29,15 +29,6 @@ API Reference
 Miscellaneous
 -------------
 
-.. toctree::
-   :maxdepth: 1
-
-   license
-
-
-Indices and tables
-------------------
-
+* :ref:`license`
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
