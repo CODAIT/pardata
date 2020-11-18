@@ -5,7 +5,7 @@ A simple Python API for downloading and loading datasets from IBM's [Data Asset 
 ## Install the Package & its Dependencies
 
 ```shell
-pip install -U -e .
+pip install -U .
 ```
 
 ## Simple Examples
