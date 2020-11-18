@@ -30,6 +30,7 @@ matrix:
       dist: bionic
     - python: "3.8"
       os: osx  # Have one Python test on MacOS
+      osx_image: xcode12.2
     - python: "3.9"
       os: linux
       dist: focal
