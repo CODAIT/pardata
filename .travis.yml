@@ -29,11 +29,13 @@ matrix:
       os: linux
       dist: bionic
     - python: "3.8"
-      os: osx  # Have one Python test on MacOS
-      osx_image: xcode12.2
+      os: linux
+      dist: focal
     - python: "3.9"
       os: linux
       dist: focal
+    - language: generic
+      os: osx  # No Python runtime is available on MacOS on Travis. Use the default installed one.
     - python: "pypy3"
       os: linux
       # The prebuilt pypy packages at https://antocuni.github.io/pypy-wheels/ don't work with the older default dist
