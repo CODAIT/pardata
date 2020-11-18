@@ -75,3 +75,21 @@ We prefer keeping CI configuration files, namely `.travis.yml` and `.appveyor.ym
 only test environment, such as Python version, OS and tox environmental variables, or anything that is specific to the
 CI system, such as failure notification. Complicated test dependencies and other test dealings should go to `tox.ini`
 and their respective test files in `tests/`.
+
+## Docs
+
+Run all document generation commands from the `pydax/docs` dir:
+
+    cd docs
+
+To generate the stub files for the API Reference section (these are used by the `autosummary` toctree option):
+
+    sphinx-autogen -o source/api_reference/autosummary source/api_reference/*.rst
+
+To generate the HTML files for the docs:
+
+    make html
+
+To check reST code style compliance, run:
+
+    rstcheck -r source

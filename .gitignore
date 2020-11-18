@@ -68,9 +68,6 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
-docs/build/
-
 # PyBuilder
 target/
 
@@ -141,6 +138,9 @@ dmypy.json
 ### tox ###
 .tox/
 
-/pydax/_version.py
+### sphinx docs ###
+docs/build/
+docs/source/api_reference/autosummary/
 
-# End of https://www.toptal.com/developers/gitignore/api/python,vscode
+### pydax ###
+/pydax/_version.py
