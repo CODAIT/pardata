@@ -26,20 +26,20 @@ from pydax.schema import DatasetSchema, FormatSchema, LicenseSchema
 class TestSchemaRetrieval:
     "Test schema retrieval."
 
+    # We allow this to fail because the default remote might be down but it's not this library's issue.
+    @pytest.mark.xfail
     def test_default_schema(self):
         "Test the basic functioning of retrieving default schema files."
 
-        # We assert they are identical to the test schema files for now, because we don't host them on any websites.
-        # Probably this will change in the future.
-        assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL) == \
-            Path('tests/schemata/datasets.yaml').read_text()
-        assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL) == \
-            Path('tests/schemata/formats.yaml').read_text()
-        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL) == \
-            Path('tests/schemata/licenses.yaml').read_text()
+        # We only assert that we have retrieved some non-empty files here. This is because we want to decouple the
+        # maintenance of schema files in production with the library development. These files likely would change more
+        # regularly than the library.
+        assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL)
+        assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL)
+        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL)
 
-    def test_custom_schema(self):
-        "Test retrieving user-specified schema files."
+    def test_custom_schema_local(self):
+        "Test retrieving user-specified local schema files."
 
         # We assert they are identical to the test schema files for now, because we don't host them on any websites.
         # Probably this will change in the future.
@@ -47,8 +47,13 @@ class TestSchemaRetrieval:
             Path('tests/schemata/datasets.yaml').read_text()
         assert retrieve_schema_file(f'file://{os.getcwd()}/tests/schemata/formats.yaml') == \
             Path('tests/schemata/formats.yaml').read_text()
-        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL.replace('https://', 'http://', 1)) == \
+
+    def test_custom_schema_remote(self, http_schema_file_url):
+        "Test retrieving user-specified remote schema files."
+
+        assert retrieve_schema_file(http_schema_file_url + 'licenses.yaml') == \
             Path('tests/schemata/licenses.yaml').read_text()
+        # TODO: Add https tests here when we add stronger security measurements
 
     def test_invalid_schema(self):
         "Test retrieving user-specified invalid schema files."
