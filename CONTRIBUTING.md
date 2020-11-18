@@ -9,7 +9,7 @@ install all dependencies:
 
 Install all required development packages:
 
-    pip install -r requirements-test.txt -r requirements-lint.txt
+    pip install -r requirements-dev.txt
 
 To run all tests on all available Python versions configured to work with PyDAX, run:
 
