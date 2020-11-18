@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-# The prebuilt pypy packages at https://antocuni.github.io/pypy-wheels/ don't work with the older default dist
+# Default environment. But we still try to be explicit when specifying the test environment for each runtime test.
+os: linux
 dist: focal
 
 language: python
@@ -22,10 +23,20 @@ language: python
 matrix:
   include:
     - python: "3.6"
+      os: linux
+      dist: xenial
     - python: "3.7"
+      os: linux
+      dist: bionic
     - python: "3.8"
+      os: osx  # Have one Python test on MacOS
     - python: "3.9"
+      os: linux
+      dist: focal
     - python: "pypy3"
+      os: linux
+      # The prebuilt pypy packages at https://antocuni.github.io/pypy-wheels/ don't work with the older default dist
+      dist: focal
     - name: "Lint"
       python: "3.8"
       env: TOXENV=lint
