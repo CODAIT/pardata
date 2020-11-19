@@ -4,6 +4,8 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+from pydax import __version__ as pydax_version
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -18,8 +20,9 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PyDAX'
-copyright = '2020, IBM'
-author = 'Edward Leardi, Hong Xu'
+copyright = '2020, International Business Machines Corp. (IBM)'
+version = pydax_version
+release = version
 
 
 # -- General configuration ---------------------------------------------------

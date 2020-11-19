@@ -29,6 +29,7 @@ API Reference
 Miscellaneous
 -------------
 
-* :ref:`license`
+* :ref:`authors-label`
 * :ref:`genindex`
+* :ref:`license-label`
 * :ref:`search`
