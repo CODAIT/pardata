@@ -31,7 +31,7 @@ environment:
 
 matrix:
   allow_failures:
-    os: win32
+    - os: win32
 
 build: off
 
