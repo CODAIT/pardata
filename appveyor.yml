@@ -28,3 +28,7 @@ install:
 
 test_script:
 - tox -vv
+
+branches:
+  only:
+  - master
