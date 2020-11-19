@@ -1,6 +1,0 @@
-[run]
-source = pydax
-
-[report]
-fail_under = 100
-show_missing = True
