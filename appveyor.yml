@@ -42,10 +42,11 @@ matrix:
 build: off
 
 install:
-- pip3 install tox
+  - source ~/venv3.7 || (exit 0)  # AppVeyor requires us to manually source a virtualenv. This line is allowed to fail on other images.
+  - pip install -U tox
 
 test_script:
-- tox -vv
+  - tox -vv
 
 branches:
   only:
