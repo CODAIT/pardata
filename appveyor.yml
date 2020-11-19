@@ -17,17 +17,17 @@
 environment:
   matrix:
     - TOXENV: py36
-      image: "Visual Studio 2013"
+      APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2013"
     - TOXENV: py37
-      image: "Visual Studio 2015"
+      APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015"
     - TOXENV: py38
-      image: "Visual Studio 2017"
+      APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017"
     - TOXENV: py39
-      image: "Visual Studio 2019"
+      APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2019"
     - TOXENV: py37
       # Because MacOS and Linux are quite similar for our purposes, we only test one Python version here
       # to avoid surprise and conserve resource.
-      image: macOS
+      APPVEYOR_BUILD_WORKER_IMAGE: macOS
 
 matrix:
   allow_failures:
