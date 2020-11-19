@@ -68,3 +68,10 @@ When referencing a symbol that is exposed to a user, in general, we prefer impor
 publicly exposes it over importing from where the source code of the symbol is defined, e.g., use `from .schema import
 SchemaDict` rather than `from ._schema import SchemaDict`. This way we have more code paths that would go through what
 the user would actually experience and hopefully would give us more chances to discover bugs.
+
+## Continuous Integration (CI)
+
+We prefer keeping CI configuration files, namely `.travis.yml` and `.appveyor.yml` simple and unscrambled. Normally,
+only test environment, such as Python version, OS and tox environmental variables, or anything that is specific to the
+CI system, such as failure notification. Complicated test dependencies and other test dealings should go to `tox.ini`
+and their respective test files in `tests/`.
