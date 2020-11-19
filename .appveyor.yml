@@ -55,3 +55,12 @@ test_script:
 branches:
   only:
     - master
+
+
+notifications:
+  - provider: Email
+    to:
+      - '{{commitAuthorEmail}}'
+    on_build_success: false
+    on_build_failure: true
+    on_build_status_changed: true
