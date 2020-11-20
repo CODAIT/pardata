@@ -61,7 +61,7 @@ notifications:
     on_success: always
     on_failure: always
     # Don't notify on PRs
-    #on_pull_requests: false
+    on_pull_requests: true  # true for testing purpose
     if: branch = master
 
   email:  # Email the author about their commit and PR (by default, Travis only emails to the author and committer)
