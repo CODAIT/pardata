@@ -33,9 +33,10 @@ class TestSchemaRetrieval:
         # We only assert that we have retrieved some non-empty files here. This is because we want to decouple the
         # maintenance of schema files in production with the library development. These files likely would change more
         # regularly than the library.
-        assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL)
-        assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL)
-        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL)
+        # We only assert them not being None here just in case the server returns zero-length files.
+        assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL) is not None
+        assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL) is not None
+        assert retrieve_schema_file(LicenseSchema.DEFAULT_SCHEMA_URL) is not None
 
     def test_custom_schema_local(self):
         "Test retrieving user-specified local schema files."
