@@ -78,7 +78,11 @@ and their respective test files in `tests/`.
 
 ## Docs
 
-Run all document generation commands from the `pydax/docs` dir:
+The easiest way to generate the docs is to run the `tox` docs test environment. The index file generates at `.tox/docs_out/index.html`:
+
+    tox -e docs
+
+To run docs tests individually or to generate the docs within the `docs/` directory, cd into the `docs/` directory and run the commands below:
 
     cd docs
 
