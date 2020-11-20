@@ -18,6 +18,9 @@ extends: default
 
 ignore: |
   .tox
+  # Ignore yaml files that are marked as non-UTF-8, on which yamllint errors out.
+  *-utf-16le-bom.yaml
+  *-utf-16be.yaml
 
 rules:
   document-start:

@@ -15,7 +15,6 @@
 #
 
 import os
-from pathlib import Path
 
 import pytest
 
@@ -25,22 +24,34 @@ from pydax._schema_retrieval import retrieve_schema_file
 class TestSchemaRetrieval:
     "Test schema retrieval."
 
-    def test_custom_schema_local(self):
-        "Test retrieving user-specified local schema files."
+    @pytest.mark.parametrize('base_schema_file_url_or_path',
+                             ('schema_file_absolute_dir',
+                              'schema_file_relative_dir',
+                              'schema_file_file_url',
+                              'schema_file_http_url'))
+    def test_custom_schema(self, base_schema_file_url_or_path, schema_file_relative_dir, request):
+        "Test retrieving user-specified schema files."
 
-        # We assert they are identical to the test schema files for now, because we don't host them on any websites.
-        # Probably this will change in the future.
-        assert retrieve_schema_file('./tests/schemata/datasets.yaml') == \
-            Path('tests/schemata/datasets.yaml').read_text()
-        assert retrieve_schema_file(f'file://{os.getcwd()}/tests/schemata/formats.yaml') == \
-            Path('tests/schemata/formats.yaml').read_text()
-
-    def test_custom_schema_remote(self, http_schema_file_url):
-        "Test retrieving user-specified remote schema files."
-
-        assert retrieve_schema_file(http_schema_file_url + 'licenses.yaml') == \
-            Path('tests/schemata/licenses.yaml').read_text()
         # TODO: Add https tests here when we add stronger security measurements
+
+        base = str(request.getfixturevalue(base_schema_file_url_or_path)) + os.path.sep
+
+        assert retrieve_schema_file(base + 'datasets.yaml') == \
+            (schema_file_relative_dir / 'datasets.yaml').read_text(encoding='utf-8')
+        assert retrieve_schema_file(base + 'formats.yaml', encoding='ascii') == \
+            (schema_file_relative_dir / 'formats.yaml').read_text(encoding='ascii')
+        with pytest.raises(UnicodeDecodeError) as e:
+            retrieve_schema_file(base + 'licenses.yaml', encoding='ascii')
+        # We usually don't assert the position info because we don't want to rewrite this test every time the yaml
+        # file changes in length.
+        assert "'ascii' codec can't decode byte 0xe2" in str(e.value)
+        with pytest.raises(UnicodeDecodeError) as e:
+            retrieve_schema_file(base + 'formats-utf-16le-bom.yaml')
+        # Test "position 0" here because it should fail at the beginning of the decoding
+        assert "'utf-8' codec can't decode byte 0xff in position 0" in str(e.value)
+        with pytest.raises(UnicodeDecodeError) as e:
+            retrieve_schema_file(base + 'formats-utf-16be.yaml', encoding='utf-8')
+        assert "'utf-8' codec can't decode byte 0x90" in str(e.value)
 
     def test_invalid_schema(self):
         "Test retrieving user-specified invalid schema files."

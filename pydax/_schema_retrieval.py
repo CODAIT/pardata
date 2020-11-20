@@ -18,27 +18,36 @@
 
 
 from pathlib import Path
+from typing import Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import requests
 
+from . import _typing
 
-def retrieve_schema_file(url_or_path: str) -> str:
+
+# Semantically, _typing.PathLike doesn't cover strings that represent URLs
+def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: str = 'utf-8') -> str:
     """Retrieve a single schema file.
 
-    :param url_or_path: URL or path to the schema file
-    :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path
-    :return: A string of the content
+    :param url_or_path: URL or path to the schema file.
+    :param encoding: The encoding of the text in ``url_or_path``.
+    :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path.
+    :return: A string of the content.
     """
+    url_or_path = str(url_or_path)
     scheme = urlparse(url_or_path).scheme
 
     if scheme in ('http', 'https'):
-        return requests.get(url_or_path, allow_redirects=True).text
+        content = requests.get(url_or_path, allow_redirects=True).content
+        # We don't use requests.Response.encoding and requests.Response.text because it is always silent when there's an
+        # encoding error
+        return content.decode(encoding)
     elif scheme == 'file':
         with urlopen(url_or_path) as f:  # nosec: bandit will always complain but we know the URL points to a local file
-            return f.read().decode('UTF-8')
-    elif scheme == '':
-        return Path(url_or_path).read_text()
+            return f.read().decode(encoding)
+    elif scheme == '':  # local file path
+        return Path(url_or_path).read_text(encoding)
     else:
         raise ValueError(f'Unknown scheme in "{url_or_path}": "{scheme}"')

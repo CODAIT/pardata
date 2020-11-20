@@ -15,6 +15,7 @@
 #
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler
+from pathlib import Path
 from tempfile import TemporaryDirectory
 import threading
 import uuid
@@ -23,6 +24,7 @@ import pytest
 
 from pydax import load_schemata
 from pydax.dataset import Dataset
+from pydax.schema import SchemaManager
 
 
 @pytest.fixture
@@ -51,10 +53,10 @@ def tmp_symlink_dir(tmp_path, tmp_sub_dir):
 
 
 @pytest.fixture
-def loaded_schemata():
-    return load_schemata(dataset_url='./tests/schemata/datasets.yaml',
-                         format_url='./tests/schemata/formats.yaml',
-                         license_url='./tests/schemata/licenses.yaml')
+def loaded_schemata(schema_file_relative_dir) -> SchemaManager:
+    return load_schemata(dataset_url=schema_file_relative_dir / 'datasets.yaml',
+                         format_url=schema_file_relative_dir / 'formats.yaml',
+                         license_url=schema_file_relative_dir / 'licenses.yaml')
 
 
 @pytest.fixture
@@ -78,10 +80,31 @@ def local_http_server():
 
 
 @pytest.fixture
-def http_schema_file_url(local_http_server):
-    "The base of remote http schema file URLs."
+def schema_file_absolute_dir() -> Path:
+    "The base of the absolute path to the dir that contains test schema files."
 
-    return f"http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}/tests/schemata/"
+    return Path.cwd() / 'tests' / 'schemata'
+
+
+@pytest.fixture
+def schema_file_relative_dir() -> Path:
+    "The base of the relative path to the dir that contains test schema files."
+
+    return Path('tests/schemata')
+
+
+@pytest.fixture
+def schema_file_file_url(schema_file_absolute_dir) -> str:
+    "The base of file:// schema file URLs."
+
+    return schema_file_absolute_dir.as_uri()
+
+
+@pytest.fixture
+def schema_file_http_url(local_http_server) -> str:
+    "The base of remote http:// test schema file URLs."
+
+    return f"http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}/tests/schemata"
 
 
 @pytest.fixture
