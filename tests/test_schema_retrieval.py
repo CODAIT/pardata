@@ -26,8 +26,7 @@ from pydax.schema import DatasetSchema, FormatSchema, LicenseSchema
 class TestSchemaRetrieval:
     "Test schema retrieval."
 
-    # We allow this to fail because the default remote might be down but it's not this library's issue.
-    @pytest.mark.xfail
+    @pytest.mark.xfail(reason="default remote might be down but it's not this library's issue", raises=ConnectionError)
     def test_default_schema(self):
         "Test the basic functioning of retrieving default schema files."
 
