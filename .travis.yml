@@ -41,6 +41,9 @@ matrix:
     - name: "Lint"
       python: "3.8"
       env: TOXENV=lint
+    - name: "Docs"
+      python: "3.8"
+      env: TOXENV=docs
 
 install:
   - pip install tox-travis
