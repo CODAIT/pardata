@@ -18,6 +18,7 @@ import os
 from pathlib import Path
 
 import pytest
+import requests.exceptions
 
 from pydax._schema_retrieval import retrieve_schema_file
 from pydax.schema import DatasetSchema, FormatSchema, LicenseSchema
@@ -26,7 +27,8 @@ from pydax.schema import DatasetSchema, FormatSchema, LicenseSchema
 class TestSchemaRetrieval:
     "Test schema retrieval."
 
-    @pytest.mark.xfail(reason="default remote might be down but it's not this library's issue", raises=ConnectionError)
+    @pytest.mark.xfail(reason="default remote might be down but it's not this library's issue",
+                       raises=requests.exceptions.ConnectionError)
     def test_default_schema(self):
         "Test the basic functioning of retrieving default schema files."
 
