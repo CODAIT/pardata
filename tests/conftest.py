@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 from tempfile import TemporaryDirectory
+import threading
 import uuid
 
 import pytest
@@ -63,6 +65,23 @@ def gmb_schema(loaded_schemata):
 @pytest.fixture
 def wikitext103_schema(loaded_schemata):
     return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
+
+
+@pytest.fixture(scope='session')
+def local_http_server():
+    "A local http server that serves the source directory."
+
+    with HTTPServer(("", 8080), SimpleHTTPRequestHandler) as httpd:
+        # Start a new thread, because httpd.serve_forever is blocking
+        threading.Thread(target=httpd.serve_forever, name='Local Http Server', daemon=True).start()
+        yield httpd
+
+
+@pytest.fixture
+def http_schema_file_url(local_http_server):
+    "The base of remote http schema file URLs."
+
+    return f"http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}/tests/schemata/"
 
 
 @pytest.fixture
