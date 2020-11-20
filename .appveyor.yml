@@ -58,9 +58,18 @@ branches:
 
 
 notifications:
+  # For email, only notify the author when the test fails, or succeeds after failing.
   - provider: Email
     to:
       - '{{commitAuthorEmail}}'
     on_build_success: false
     on_build_failure: true
     on_build_status_changed: true
+  # AppVeyor doesn't allow us to silence PR CI runs specifically. See https://github.com/appveyor/ci/issues/272 . As a
+  # compromise, we only send failure notifications.
+  - provider: Slack
+    incoming_webhook:
+      secure: Hd8eEutJcY4vbHe8xMhidWkM/MglTw8Y3FpdbTqxYH4lTI7/MfnrrQa6QJqZyfEsAY4GKqh3jGTcai8vpjqno5QMOqVkFgU2v+PLtLR5Hrw=
+    on_build_success: true # true for testing purposes
+    on_build_failure: true
+    on_build_status_changed: false
