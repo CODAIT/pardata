@@ -16,6 +16,7 @@
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 import requests.exceptions
@@ -32,9 +33,14 @@ class TestSchemaRetrieval:
     def test_default_schema(self):
         "Test the basic functioning of retrieving default schema files."
 
-        # We only assert that we have retrieved some non-empty files here. This is because we want to decouple the
-        # maintenance of schema files in production with the library development. These files likely would change more
-        # regularly than the library.
+        # We only assert that we have retrieved some non-empty files in this test. This is because we want to decouple
+        # the maintenance of schema files in production with the library development. These files likely would change
+        # more regularly than the library. For this reason, we also verify the default schema URLs are also valid https
+        # links.
+        assert urlparse(DatasetSchema.DEFAULT_SCHEMA_URL).scheme == 'https'
+        assert urlparse(FormatSchema.DEFAULT_SCHEMA_URL).scheme == 'https'
+        assert urlparse(LicenseSchema.DEFAULT_SCHEMA_URL).scheme == 'https'
+
         # We only assert them not being None here just in case the server returns zero-length files.
         assert retrieve_schema_file(DatasetSchema.DEFAULT_SCHEMA_URL) is not None
         assert retrieve_schema_file(FormatSchema.DEFAULT_SCHEMA_URL) is not None
