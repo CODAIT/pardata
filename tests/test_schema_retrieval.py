@@ -24,17 +24,17 @@ from pydax._schema_retrieval import retrieve_schema_file
 class TestSchemaRetrieval:
     "Test schema retrieval."
 
-    @pytest.mark.parametrize('base_schema_file_url_or_path',
-                             ('schema_file_absolute_dir',
-                              'schema_file_relative_dir',
-                              'schema_file_file_url',
-                              'schema_file_http_url'))
-    def test_custom_schema(self, base_schema_file_url_or_path, schema_file_relative_dir, request):
+    @pytest.mark.parametrize('location_type',
+                             ('absolute_dir',
+                              'relative_dir',
+                              'file_url',
+                              'http_url'))
+    def test_custom_schema(self, location_type, schema_file_relative_dir, request):
         "Test retrieving user-specified schema files."
 
         # TODO: Add https tests here when we add stronger security measurements
 
-        base = str(request.getfixturevalue(base_schema_file_url_or_path)) + os.path.sep
+        base = str(request.getfixturevalue('schema_file_' + location_type)) + os.path.sep
 
         assert retrieve_schema_file(base + 'datasets.yaml') == \
             (schema_file_relative_dir / 'datasets.yaml').read_text(encoding='utf-8')
