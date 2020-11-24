@@ -8,7 +8,7 @@ FormatLoaderMap Class
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: source/api_reference/autosummary
+   :toctree: autosummary
 
    FormatLoaderMap
    FormatLoaderMap.register_loader
@@ -18,7 +18,7 @@ Loader Class
 ~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: source/api_reference/autosummary
+   :toctree: autosummary
 
    Loader
    Loader.load
@@ -31,7 +31,7 @@ PlainTextLoader Class
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: source/api_reference/autosummary
+   :toctree: autosummary
 
    PlainTextLoader
    PlainTextLoader.load

@@ -8,7 +8,7 @@ Functions
 ~~~~~~~~~
 
 .. autosummary::
-   :toctree: source/api_reference/autosummary
+   :toctree: autosummary
 
    init
    get_config

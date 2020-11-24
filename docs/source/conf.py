@@ -20,6 +20,9 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
+import sys
+
 from pydax import __version__ as pydax_version
 
 # -- Path setup --------------------------------------------------------------
@@ -28,9 +31,8 @@ from pydax import __version__ as pydax_version
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+sys.path.insert(0, os.path.abspath('../..'))  # Source code dir relative to this file
 
 
 # -- Project information -----------------------------------------------------
@@ -50,6 +52,10 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary'
     ]
+
+autosummary_generate = True  # Automate sphinx.ext.autosummary to run when html is generated
+autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
+autodoc_inherit_docstrings = True  # If no class summary, inherit base class summary
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

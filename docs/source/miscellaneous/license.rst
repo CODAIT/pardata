@@ -1,7 +1,5 @@
-.. _license-label:
-
 Copyright Notice
-================
+----------------
 
 Copyright 2020 IBM Corp. All Rights Reserved.
 
@@ -19,7 +17,7 @@ limitations under the License.
 
 
 License
-=======
+-------
 
-.. include:: ../../LICENSE
+.. include:: ../../../LICENSE
    :literal:

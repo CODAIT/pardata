@@ -98,7 +98,7 @@ class LicenseSchema(Schema):
 class SchemaManager():
     """Stores all loaded schemata in :attr:`schemata`.
 
-    :param **kwargs: Schema name and schema instance key-value pairs
+    :param kwargs: Schema name and schema instance key-value pairs
     """
 
     def __init__(self, **kwargs: Schema) -> None:

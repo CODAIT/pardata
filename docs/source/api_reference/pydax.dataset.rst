@@ -8,7 +8,7 @@ Dataset Class
 ~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: source/api_reference/autosummary
+   :toctree: autosummary
 
    Dataset
    Dataset.data
