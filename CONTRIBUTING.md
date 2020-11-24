@@ -78,11 +78,11 @@ and their respective test files in `tests/`.
 
 ## Docs
 
-The easiest way to generate the docs is to run the `tox` docs test environment. The index file generates at `.tox/docs_out/index.html`:
+The easiest way to generate the docs is to run the `tox` docs test environment. The html index file generates at `.tox/docs_out/index.html`:
 
     tox -e docs
 
-To run docs tests individually or to generate the docs within the `docs/` directory, cd into the `docs/` directory and run the commands below:
+To run docs tests individually or to generate the docs, cd into the `docs/` directory and run any of the commands below:
 
     cd docs
 
@@ -90,10 +90,14 @@ To generate the stub files for the API Reference section (these are used by the 
 
     sphinx-autogen -o source/api_reference/autosummary source/api_reference/*.rst
 
-To generate the HTML files for the docs:
+To generate the HTML files for the docs to the `build` directory (note: this will also automatically regenerate the stubfiles used by `autosummary` prior to generating the html files):
 
     make html
 
 To check reST code style compliance, run:
 
-    rstcheck -r source
+    rstcheck -r docs/source/miscellaneous docs/source/user_guide docs/source/api_reference/*.rst
+
+The reST code style compliance is also checked by the `tox` lint test environment if you prefer to use that:
+
+    tox -e lint
