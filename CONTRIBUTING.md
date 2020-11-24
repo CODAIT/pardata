@@ -90,9 +90,9 @@ To generate the stub files for the API Reference section (these are used by the 
 
     sphinx-autogen -o source/api_reference/autosummary source/api_reference/*.rst
 
-To generate the HTML files for the docs to the `build` directory (note: this will also automatically regenerate the stubfiles used by `autosummary` prior to generating the html files):
+To generate the HTML files for the docs to the `build` directory (note: this will automatically regenerate the stubfiles used by `autosummary` prior to generating the html files):
 
-    make html
+    sphinx-build -d build/doctrees source build/html -b html
 
 To check reST code style compliance, run:
 
