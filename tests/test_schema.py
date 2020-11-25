@@ -67,10 +67,13 @@ class TestSchema:
         assert loaded_schemata.schemata['dataset_schema'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
             loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
 
-    def test_schema_without_url(self, loaded_schemata):
+    def test_schema_without_url(self, loaded_schemata, schema_file_http_url):
         "Test instantiating a Schema without supplying a path or url."
 
-        assert DatasetSchema().export_schema() == loaded_schemata.schemata['dataset_schema'].export_schema()
+        class MyDatasetSchema(Schema):
+            DEFAULT_SCHEMA_URL = schema_file_http_url + '/datasets.yaml'
+
+        assert MyDatasetSchema().export_schema() == loaded_schemata.schemata['dataset_schema'].export_schema()
 
     def test_default_schema_url_https(self):
         "Test the default schema URLs are https-schemed."
