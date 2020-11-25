@@ -64,14 +64,12 @@ class TestDataset:
             Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'the file may by corrupted' in str(e.value)
 
-    def test_invalid_tarball(self, tmp_path, gmb_schema):
+    def test_invalid_tarball(self, tmp_path, gmb_schema, schema_file_http_url, schema_file_relative_dir):
         "Test if Dataset class catches an invalid tar file."
 
         fake_schema = gmb_schema
-        fake_schema['download_url'] = 'https://dax-cdn.cdn.appdomain.cloud/dax-groningen-meaning-bank-modified/1.0.2/' \
-                                      'data-preview/index.html'
-        fake_schema['sha512sum'] = 'c51be3c51989bb06ef75c7f705843c790bd5a7dd099caf5b31a93cc56e21652e6952d33882eb88902' \
-                                   'b0c0579795126068374764689b4526c2b02130bab694006'
+        fake_schema['download_url'] = schema_file_http_url + '/datasets.yaml'
+        fake_schema['sha512sum'] = hashlib.sha512((schema_file_relative_dir / 'datasets.yaml').read_bytes()).hexdigest()
 
         with pytest.raises(tarfile.ReadError) as e:
             Dataset(fake_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
@@ -155,15 +153,15 @@ class TestDataset:
         dataset = Dataset(gmb_schema, data_dir=tmp_symlink_dir, mode=Dataset.InitializationMode.LAZY)
         assert dataset._data_dir == tmp_symlink_dir
 
-    def test_is_downloaded(self, tmp_path, wikitext103_schema):
+    def test_is_downloaded(self, tmp_path, gmb_schema):
         "Test is_downloaded method."
 
-        data_dir = tmp_path / 'wikitext103' / '1.0.1'
-        wikitext103 = Dataset(wikitext103_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
-        assert wikitext103.is_downloaded() is False
+        data_dir = tmp_path / 'gmb' / '1.0.2'
+        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
+        assert gmb.is_downloaded() is False
 
-        wikitext103.download()
-        assert wikitext103.is_downloaded() is True
+        gmb.download()
+        assert gmb.is_downloaded() is True
 
 
 class TestLoadDataset:
@@ -226,22 +224,22 @@ class TestLoadDataset:
         wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=True, subdatasets=subdatasets)
         assert list(wikitext103_data.keys()) == subdatasets
 
-    def test_download_false(self, tmp_path, wikitext103_schema):
+    def test_download_false(self, tmp_path, gmb_schema):
         "Test to see the function loads properly when download=False and dataset was previously downloaded."
 
         init(DATADIR=tmp_path)
-        data_dir = tmp_path / 'wikitext103' / '1.0.1'
-        wikitext103 = Dataset(wikitext103_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
-        wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=False)
-        assert wikitext103.data == wikitext103_data
+        data_dir = tmp_path / 'gmb' / '1.0.2'
+        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        gmb_data = load_dataset('gmb', version='1.0.2', download=False)
+        assert gmb.data == gmb_data
 
-    def test_download_true(self, tmp_path, downloaded_wikitext103_dataset):
+    def test_download_true(self, tmp_path, downloaded_gmb_dataset):
         "Test to see the function downloads and loads properly when download=True."
 
         init(DATADIR=tmp_path)
-        downloaded_wikitext103_dataset.load()
-        wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=True)
-        assert downloaded_wikitext103_dataset.data == wikitext103_data
+        downloaded_gmb_dataset.load()
+        gmb_data = load_dataset('gmb', version='1.0.2', download=True)
+        assert downloaded_gmb_dataset.data == gmb_data
 
     def test_loading_undownloaded(self, tmp_path):
         "Test loading before ``Dataset.download()`` has been called."
