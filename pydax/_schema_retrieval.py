@@ -37,9 +37,13 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: st
     :return: A string of the content.
     """
     url_or_path = str(url_or_path)
-    scheme = urlparse(url_or_path).scheme
+    parse_result = urlparse(url_or_path)
+    scheme = parse_result.scheme
 
-    if scheme in ('http', 'https'):
+    if not all(tuple(parse_result.scheme, parse_result.netloc, parse_result.path)):
+        # Not a URL, treated as a local file path
+        return Path(url_or_path).read_text(encoding)
+    elif scheme in ('http', 'https'):
         content = requests.get(url_or_path, allow_redirects=True).content
         # We don't use requests.Response.encoding and requests.Response.text because it is always silent when there's an
         # encoding error
@@ -47,7 +51,5 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: st
     elif scheme == 'file':
         with urlopen(url_or_path) as f:  # nosec: bandit will always complain but we know the URL points to a local file
             return f.read().decode(encoding)
-    elif scheme == '':  # local file path
-        return Path(url_or_path).read_text(encoding)
     else:
         raise ValueError(f'Unknown scheme in "{url_or_path}": "{scheme}"')
