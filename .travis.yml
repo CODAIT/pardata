@@ -28,6 +28,7 @@ matrix:
     - python: "3.7"
       os: linux
       dist: bionic
+      env: LC_ALL=C  # Default locale is not UTF-8
     - python: "3.8"
       os: linux
       dist: focal
