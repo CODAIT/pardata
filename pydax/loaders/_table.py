@@ -17,14 +17,12 @@
 "Tabular data loaders."
 
 import os
-
 from typing import Dict, Optional, Union
 
 import pandas as pd  # type: ignore
 
 from .. import _typing
 from ..schema import SchemaDict
-
 from ._base import Loader
 
 
