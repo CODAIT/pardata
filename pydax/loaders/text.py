@@ -16,18 +16,20 @@
 
 import os
 import pathlib
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 from .. import _typing
+from ..schema import SchemaDict
 from ._base import Loader
 
 
 class PlainTextLoader(Loader):
 
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]]) -> str:
+    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: Optional[SchemaDict]) -> str:
         """The type hint says Dict, because this loader will be handling those situations in the future.
 
         :param path: The path to the plain text file.
+        :param options: Unused.
         """
 
         if not isinstance(path, (str, os.PathLike)):

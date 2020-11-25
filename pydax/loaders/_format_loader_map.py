@@ -16,9 +16,11 @@
 
 from typing import Any, Dict, Mapping, Optional, Union
 
+from .._schema import SchemaDict
 
 from ._base import Loader
 from .text import PlainTextLoader
+from .table import CSVPandasLoader
 
 
 class FormatLoaderMap:
@@ -63,15 +65,20 @@ class FormatLoaderMap:
         return fmt in self._map
 
 
-_default_format_loader_map: FormatLoaderMap = FormatLoaderMap({'txt': PlainTextLoader()})
+_default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
+    'txt': PlainTextLoader(),
+    'csv': CSVPandasLoader()
+})
 
 
-def _load_data_files(fmt: str, path: Union[str, Dict[str, str]], *, format_loader_map: FormatLoaderMap = None) -> Any:
+def _load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str]], *,
+                     format_loader_map: FormatLoaderMap = None) -> Any:
     """Load data files.
 
     :param fmt: The format.
     :param path: Path to the file(s).
     :param format_loader_map: The format loader map to use.
+    :raises TypeError: ``fmt`` is neither a string nor a dict.
     :return: Loaded data file objects.
     """
 
@@ -80,7 +87,17 @@ def _load_data_files(fmt: str, path: Union[str, Dict[str, str]], *, format_loade
     if format_loader_map is None:
         format_loader_map = _default_format_loader_map
 
-    if fmt not in format_loader_map:
-        raise RuntimeError(f'The format loader map does not specify a loader for format "{fmt}".')
+    if isinstance(fmt, str):
+        fmt_id: str = fmt
+        fmt_options: Optional[SchemaDict] = None
+    elif isinstance(fmt, Dict):
+        # In Python 3.8, this can be done with isinstance(fmt, typing.get_args(SchemaDict))
+        fmt_id = fmt['id']
+        fmt_options = fmt.get('options', None)
+    else:
+        raise TypeError(f'Parameter "fmt" must be a string or a dict, but it is of type "{type(fmt)}".')
 
-    return format_loader_map[fmt].load(path)
+    if fmt_id not in format_loader_map:
+        raise RuntimeError(f'The format loader map does not specify a loader for format "{fmt_id}".')
+
+    return format_loader_map[fmt_id].load(path, fmt_options)
