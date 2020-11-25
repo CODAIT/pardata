@@ -56,6 +56,9 @@ branches:
   only:
     - master
 
+cache:
+  - tests/datasets
+
 notifications:
   # For email, only notify the author when the test fails, or succeeds after failing.
   - provider: Email
