@@ -26,11 +26,11 @@ from pydax import init, list_all_datasets, load_dataset
 from pydax.dataset import Dataset
 
 
-def test_list_all_datasets():
+def test_list_all_datasets(spoofed_default_url):
     "Test to make sure test_list_all_datasets function returns available dataset names."
 
     datasets = list_all_datasets()
-    assert frozenset(datasets.keys()) == frozenset(['gmb', 'wikitext103'])
+    assert frozenset(datasets.keys()) == frozenset(['gmb', 'noaa_jfk', 'wikitext103'])
 
 
 class TestDataset:

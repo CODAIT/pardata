@@ -65,6 +65,11 @@ def gmb_schema(loaded_schemata):
 
 
 @pytest.fixture
+def noaa_jfk_schema(loaded_schemata):
+    return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'noaa_jfk', '1.1.4')
+
+
+@pytest.fixture
 def wikitext103_schema(loaded_schemata):
     return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
 
@@ -111,3 +116,13 @@ def schema_file_http_url(local_http_server) -> str:
 def downloaded_wikitext103_dataset(wikitext103_schema):
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+@pytest.fixture
+def spoofed_default_url(schema_file_http_url):
+    # TODO: There should be some way for list_all_datasets() to use a different schema file URL via pydax.init(). We
+    # have this workaround using this fixture for now.
+    old_defaults = load_schemata.__kwdefaults__.copy()
+    load_schemata.__kwdefaults__['dataset_url'] = schema_file_http_url + '/datasets.yaml'
+    yield
+    load_schemata.__kwdefaults__ = old_defaults
