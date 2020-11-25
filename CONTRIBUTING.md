@@ -75,3 +75,29 @@ We prefer keeping CI configuration files, namely `.travis.yml` and `.appveyor.ym
 only test environment, such as Python version, OS and tox environmental variables, or anything that is specific to the
 CI system, such as failure notification. Complicated test dependencies and other test dealings should go to `tox.ini`
 and their respective test files in `tests/`.
+
+## Docs
+
+The easiest way to generate the docs is to run the `tox` docs test environment. The html index file generates at `.tox/docs_out/index.html`:
+
+    tox -e docs
+
+To run docs tests individually or to generate the docs, cd into the `docs/` directory and run any of the commands below:
+
+    cd docs
+
+To generate the stub files for the API Reference section (these are used by the `autosummary` toctree option):
+
+    sphinx-autogen -o source/api_reference/autosummary source/api_reference/*.rst
+
+To generate the HTML files for the docs to the `build` directory (note: this will automatically regenerate the stubfiles used by `autosummary` prior to generating the html files):
+
+    sphinx-build -d build/doctrees source build/html -b html
+
+To check reST code style compliance, run:
+
+    rstcheck -r docs/source/miscellaneous docs/source/user_guide docs/source/api_reference/*.rst
+
+The reST code style compliance is also checked by the `tox` lint test environment if you prefer to use that:
+
+    tox -e lint
