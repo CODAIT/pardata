@@ -27,7 +27,8 @@ from typing import Any, Dict, Iterable, Optional, Tuple, Union
 from packaging.version import parse as version_parser
 import requests
 
-from . import _typing, get_config
+from . import _typing
+from ._config import get_config
 from ._schema import load_schemata
 from .schema import SchemaDict
 from .loaders._format_loader_map import _load_data_files

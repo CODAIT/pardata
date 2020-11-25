@@ -14,28 +14,15 @@
 # limitations under the License.
 #
 
-"PyDAX package"
+def test_import_pydax_namespace():
+    "Test to make sure top level modules & subpackages are available in the globla namespace."
+
+    import pydax as test_pydax
+    assert all(name in dir(test_pydax) for name in ['dataset', 'loaders', 'schema'])
 
 
-from . import dataset, loaders, schema
-from ._config import get_config, init
-from ._dataset import list_all_datasets, load_dataset
-from ._schema import load_schemata
-from ._version import version as __version__
+def test_import_pydax_loaders_namespace():
+    "Test to make sure modules are available in the loaders subpackage namespace."
 
-__all__ = (
-           # modules & subpackages
-           'dataset',
-           'loaders',
-           'schema',
-           # _config
-           'get_config',
-           'init',
-           # _dataset
-           'list_all_datasets',
-           'load_dataset',
-           # _schema
-           'load_schemata',
-           # _version
-           '__version__'
-)
+    import pydax.loaders as test_pydax_loaders
+    assert all(name in dir(test_pydax_loaders) for name in ['table', 'text'])
