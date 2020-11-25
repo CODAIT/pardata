@@ -23,6 +23,8 @@
 import os
 import sys
 
+import sphinx_rtd_theme  # noqa: F401
+
 from pydax import __version__ as pydax_version
 
 # -- Path setup --------------------------------------------------------------
@@ -50,7 +52,8 @@ release = version
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary'
+    'sphinx.ext.autosummary',
+    'sphinx_rtd_theme'
     ]
 
 autosummary_generate = True  # Automate sphinx.ext.autosummary to run when html is generated
@@ -71,7 +74,14 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {
+    # TODO: add analytics_id to track traffic in Google Analytics
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
