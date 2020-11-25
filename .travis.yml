@@ -57,6 +57,10 @@ branches:
   only:
     - master
 
+cache:
+  directories:
+    - /home/travis/tests/datasets
+
 notifications:
 
   slack:
