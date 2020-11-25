@@ -113,9 +113,18 @@ def schema_file_http_url(local_http_server) -> str:
 
 
 @pytest.fixture
-def downloaded_wikitext103_dataset(wikitext103_schema):
+def downloaded_wikitext103_dataset(wikitext103_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+@pytest.fixture
+def downloaded_gmb_dataset(gmb_schema) -> Dataset:
+    with TemporaryDirectory() as tmp_data_dir:
+        yield Dataset(gmb_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+# Temporary hacks -------------------------------------
 
 
 @pytest.fixture
