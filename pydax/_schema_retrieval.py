@@ -40,7 +40,7 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: st
     parse_result = urlparse(url_or_path)
     scheme = parse_result.scheme
 
-    if not all(tuple(parse_result.scheme, parse_result.netloc, parse_result.path)):
+    if not all((parse_result.scheme, parse_result.netloc, parse_result.path)):
         # Not a URL, treated as a local file path
         return Path(url_or_path).read_text(encoding)
     elif scheme in ('http', 'https'):
