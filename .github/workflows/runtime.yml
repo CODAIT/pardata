@@ -25,9 +25,12 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    #continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        cfg:
+        include:
+          - os: macos-10.15
+            python-version: 3.6
           - os: ubuntu-16.04
             python-version: 3.6
           - os: ubuntu-16.04
@@ -36,16 +39,18 @@ jobs:
             python-version: 3.8
           - os: ubuntu-20.04
             python-version: 3.9
-          - os: macos-10.15
-            python-version: 3.6
           - os: windows-2019
             python-version: 3.6
+            experimental: true
           - os: windows-2019
             python-version: 3.7
+            experimental: true
           - os: windows-2019
             python-version: 3.8
+            experimental: true
           - os: windows-2019
             python-version: 3.9
+            experimental: true
 
     name: Python ${{ matrix.python-version }} -- ${{ matrix.os }}
     steps:
