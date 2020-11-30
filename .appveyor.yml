@@ -19,14 +19,6 @@ environment:
     - TOXENV: py36
       APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2013"
     - TOXENV: py37
-      # Because MacOS and Linux are quite similar for our purposes, we only test one Python version on MacOS
-      # to avoid surprise and conserve resource (we have only 1 test running concurrently on AppVeyor).'
-
-      # We put this test right after the first Windows test because we only have 1 test running concurrently, and this
-      # is the test that is the most likely to fail after the first Windows test has passed, because it is very
-      # different from Windows.
-      APPVEYOR_BUILD_WORKER_IMAGE: macOS
-    - TOXENV: py37
       APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015"
     - TOXENV: py38
       APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017"
@@ -45,8 +37,6 @@ matrix:
 build: false
 
 install:
-  # AppVeyor requires us to manually source a virtualenv on macOS. This line is allowed to fail (and will fail) on other images.
-  - source ~/venv3.7/bin/activate || (exit 0)
   - pip install -U tox
 
 test_script:
