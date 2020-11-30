@@ -14,13 +14,14 @@
 # limitations under the License.
 #
 
-include:
-  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
-
 default:
-  image: pypy:3.7
+  image: pypy:3.6
 
 pypy3:
   script:
     - pip install tox
-    - tox -e pypy3
+    - tox -vv -e pypy3
+
+  only:
+    - master
+    - external_pull_requests
