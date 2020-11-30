@@ -25,32 +25,37 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    #continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: ${{ matrix.allow-failure }}
     strategy:
       matrix:
         include:
           - os: macos-10.15
             python-version: 3.6
+            allow-failure: false
           - os: ubuntu-16.04
             python-version: 3.6
+            allow-failure: false
           - os: ubuntu-16.04
             python-version: 3.7
+            allow-failure: false
           - os: ubuntu-18.04
             python-version: 3.8
+            allow-failure: false
           - os: ubuntu-20.04
             python-version: 3.9
+            allow-failure: false
           - os: windows-2019
             python-version: 3.6
-            experimental: true
+            allow-failure: true
           - os: windows-2019
             python-version: 3.7
-            experimental: true
+            allow-failure: true
           - os: windows-2019
             python-version: 3.8
-            experimental: true
+            allow-failure: true
           - os: windows-2019
             python-version: 3.9
-            experimental: true
+            allow-failure: true
 
     name: Python ${{ matrix.python-version }} -- ${{ matrix.os }}
     steps:
