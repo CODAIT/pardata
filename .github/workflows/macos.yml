@@ -30,6 +30,7 @@ jobs:
       matrix:
         python-version: [3.6]
 
+    name: Python ${{ matrix.python-version }} -- ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
