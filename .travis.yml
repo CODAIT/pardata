@@ -59,7 +59,7 @@ branches:
 
 cache:
   directories:
-    - /home/travis/tests/datasets
+    - $HOME/tests/datasets
 
 notifications:
 
