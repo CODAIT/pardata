@@ -57,6 +57,10 @@ branches:
   only:
     - master
 
+cache:
+  directories:
+    - $HOME/tests/datasets
+
 notifications:
 
   slack:

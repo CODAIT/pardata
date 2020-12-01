@@ -14,17 +14,23 @@
 # limitations under the License.
 #
 
+import copy
+import hashlib
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import threading
+from typing import Callable
+from urllib.request import urlretrieve
 import uuid
 
 import pytest
 
 from pydax import load_schemata
 from pydax.dataset import Dataset
-from pydax.schema import SchemaManager
+from pydax.schema import SchemaDict, SchemaManager
+
+# Basic utilities --------------------------------
 
 
 @pytest.fixture
@@ -52,64 +58,170 @@ def tmp_symlink_dir(tmp_path, tmp_sub_dir):
     symlink_dir.unlink()
 
 
-@pytest.fixture
-def loaded_schemata(schema_file_relative_dir) -> SchemaManager:
+@pytest.fixture(scope='session')
+def local_http_server():
+    "A local http server that serves the source directory."
+
+    with HTTPServer(("", 8080), SimpleHTTPRequestHandler) as httpd:
+        # Start a new thread, because httpd.serve_forever is blocking
+        threading.Thread(target=httpd.serve_forever, name='Local Http Server', daemon=True).start()
+        yield httpd
+
+
+@pytest.fixture(scope='session')
+def local_http_server_root_url(local_http_server) -> str:
+    "Root URL of the local http server."
+
+    return f'http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}'
+
+
+# Dataset --------------------------------------
+
+@pytest.fixture(scope='session')
+def dataset_base_url(local_http_server_root_url) -> str:
+    "The base local HTTP server URL that stores datasets for testing purposes."
+
+    return f'{local_http_server_root_url}/tests/datasets'
+
+
+@pytest.fixture(scope='session')
+def dataset_dir() -> Path:
+    "The directory that stores datasets for testing purposes."
+
+    d = Path('tests/datasets')
+    d.mkdir(exist_ok=True)
+
+    return d
+
+
+@pytest.fixture(scope='session')
+def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
+    "Utility function for downloading datasets to ``dataset_dir/{name}-{version}`` for testing purpose."
+    # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
+    # call a function-scoped fixture)
+
+    def _download_dataset_impl(name, version):
+        # we drop the 'tar.gz' extension here -- our package should work regardless of the extension, and we allow the
+        # file to be archived in a different compression format.
+        local_destination = dataset_dir / f'{name}-{version}'
+
+        schema = _loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
+
+        if local_destination.exists() and \
+           hashlib.sha512(local_destination.read_bytes()).hexdigest() == schema['sha512sum']:
+            # The file has been completely downloaded before
+            return
+
+        # We use urllib instead of requests to avoid running the same code path with our downloading implementation
+        urlretrieve(schema['download_url'], filename=local_destination)
+
+    return _download_dataset_impl
+
+# schema fixtures --------------------------------------------------
+
+
+@pytest.fixture(scope='session')
+def _schema(_loaded_schemata, _download_dataset, dataset_base_url) -> Callable[[str, str], SchemaDict]:
+    "Utility function for generating schema fixtures with its downloading URL modified to the local HTTP URL."
+    # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
+    # call a function-scoped fixture)
+
+    def _schema_impl(name, version):
+        _download_dataset(name, version)
+        schema = _loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
+        schema['download_url'] = str(f'{dataset_base_url}/{name}-{version}')
+        return schema
+
+    return _schema_impl
+
+
+@pytest.fixture(scope='session')
+def _loaded_schemata(schema_file_relative_dir) -> SchemaManager:
+    """Loaded schemata, but this should never be modified. One purpose of this fixture is to reduce repeated call in the
+    test to the same function when ``loaded_schemata`` is used. The other purpose is to provide other session-scoped
+    fixtures access to the loaded schemata, because session-scoped fixtures can't load function-scoped fixtures."""
+
     return load_schemata(dataset_url=schema_file_relative_dir / 'datasets.yaml',
                          format_url=schema_file_relative_dir / 'formats.yaml',
                          license_url=schema_file_relative_dir / 'licenses.yaml')
 
 
 @pytest.fixture
-def gmb_schema(loaded_schemata):
-    return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2')
+def loaded_schemata(_loaded_schemata) -> SchemaManager:
+    """A copy of _loaded_schemata. Tests outside this file should always use this one so as to avoid mistakenly
+    modifying the content."""
+
+    return copy.deepcopy(_loaded_schemata)
+
+
+# Every _*_schema fixture also implies that a session wide test dataset file is downloaded. They should only be read
+# because we want them to be session-scoped. All tests should use the fixture without a leading underscore.
+
+# We don't create a function that automatically generates all the following fixtures because explicitly listing them
+# would be easier to understand the error when a test fails.
+
+@pytest.fixture(scope='session')
+def _gmb_schema(_schema):
+    return _schema('gmb', '1.0.2')
 
 
 @pytest.fixture
-def noaa_jfk_schema(loaded_schemata):
-    return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'noaa_jfk', '1.1.4')
-
-
-@pytest.fixture
-def wikitext103_schema(loaded_schemata):
-    return loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'wikitext103', '1.0.1')
+def gmb_schema(_gmb_schema):
+    return copy.deepcopy(_gmb_schema)
 
 
 @pytest.fixture(scope='session')
-def local_http_server():
-    "A local http server that serves the source directory."
-
-    with HTTPServer(("localhost", 8080), SimpleHTTPRequestHandler) as httpd:
-        # Start a new thread, because httpd.serve_forever is blocking
-        threading.Thread(target=httpd.serve_forever, name='Local Http Server', daemon=True).start()
-        yield httpd
+def _noaa_jfk_schema(_schema):
+    return _schema('noaa_jfk', '1.1.4')
 
 
 @pytest.fixture
+def noaa_jfk_schema(_noaa_jfk_schema):
+    return copy.deepcopy(_noaa_jfk_schema)
+
+
+@pytest.fixture(scope='session')
+def _wikitext103_schema(_schema):
+    return _schema('wikitext103', '1.0.1')
+
+
+@pytest.fixture
+def wikitext103_schema(_wikitext103_schema):
+    return copy.deepcopy(_wikitext103_schema)
+
+
+# schema file locations fixture --------------------------------------
+
+
+@pytest.fixture(scope='session')
 def schema_file_absolute_dir() -> Path:
     "The base of the absolute path to the dir that contains test schema files."
 
     return Path.cwd() / 'tests' / 'schemata'
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def schema_file_relative_dir() -> Path:
     "The base of the relative path to the dir that contains test schema files."
 
     return Path('tests/schemata')
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def schema_file_file_url(schema_file_absolute_dir) -> str:
     "The base of file:// schema file URLs."
 
     return schema_file_absolute_dir.as_uri()
 
 
-@pytest.fixture
-def schema_file_http_url(local_http_server) -> str:
+@pytest.fixture(scope='session')
+def schema_file_http_url(local_http_server_root_url) -> str:
     "The base of remote http:// test schema file URLs."
 
-    return f"http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}/tests/schemata"
+    return f"{local_http_server_root_url}/tests/schemata"
+
+
+# Downloaded datasets -------------------------------------
 
 
 @pytest.fixture
