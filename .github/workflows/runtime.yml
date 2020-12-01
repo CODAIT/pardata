@@ -24,44 +24,51 @@ on:
 
 jobs:
   test:
-    env:
-      LC_ALL: en.UTF-8
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.allow-failure }}
+    env:
+      LC_ALL: ${{ matrix.LC_ALL }}
     strategy:
       matrix:
         include:
           - os: macos-10.15
             python-version: 3.6
             allow-failure: false
+            LC_ALL: en.UTF-8
           - os: ubuntu-16.04
-            env:
-              LC_ALL: C
+            LC_ALL: C
             python-version: 3.6
             allow-failure: false
           - os: ubuntu-16.04
             python-version: 3.7
             allow-failure: false
+            LC_ALL: en.UTF-8
           - os: ubuntu-18.04
             python-version: 3.8
             allow-failure: false
+            LC_ALL: C.UTF-8
           - os: ubuntu-20.04
             python-version: 3.9
             allow-failure: false
+            LC_ALL: en.UTF-8
           - os: windows-2019
             python-version: 3.6
             allow-failure: true
+            LC_ALL: C.UTF-8
           - os: windows-2019
             python-version: 3.7
             allow-failure: true
+            LC_ALL: en.UTF-8
           - os: windows-2019
             python-version: 3.8
             allow-failure: true
+            LC_ALL: C
           - os: windows-2019
             python-version: 3.9
             allow-failure: true
+            LC_ALL: en.UTF-8
 
-    name: Python ${{ matrix.python-version }} -- Platform ${{ matrix.os }} -- LC_ALL ${{ matrix.env.LC_ALL }}
+    name: Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -69,9 +76,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     # You can test your matrix by printing the current Python version
-    - name: Display Python version
+    - name: Display Python Version
       run: python -c "import sys; print(sys.version)"
+    - name: Display Environment Variables
+      run: env
     - name: Install Dependencies
       run: pip install tox
-    - name: Test
+    - name: Runtime Test
       run: tox -e py -vv
