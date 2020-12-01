@@ -94,6 +94,26 @@ class TestTextLoaders:
 
         assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 
+    def test_plain_text_loader_bad_encoding(self, tmp_path):
+        "Test PlainTextLoader when the encoding is nonsense."
+
+        text_file = tmp_path / 'some-text.txt'
+        text_file.write_text("I'm a text file :)", encoding='utf-8')
+        with pytest.raises(LookupError) as e:
+            PlainTextLoader().load(text_file, {'encoding': "non-encoding"})
+
+        assert str(e.value) == 'unknown encoding: non-encoding'
+
+    def test_plain_text_loader_incorrect_encoding(self, tmp_path):
+        "Test PlainTextLoader when the encoding does not match."
+
+        text_file = tmp_path / 'some-text.txt'
+        text_file.write_text("I'm a text file :)", encoding='utf-8')
+        with pytest.raises(UnicodeError) as e:
+            PlainTextLoader().load(text_file, {'encoding': "utf-16"})
+
+        assert str(e.value) == 'UTF-16 stream does not start with BOM'
+
 
 class TestTableLoaders:
 

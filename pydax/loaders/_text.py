@@ -29,10 +29,14 @@ class PlainTextLoader(Loader):
         """The type hint says Dict, because this loader will be handling those situations in the future.
 
         :param path: The path to the plain text file.
-        :param options: Unused.
+        :param options:
+               - ``encoding`` key specifies the encoding of the plain text.
+        :raises TypeError: ``path`` is not a path object.
         """
 
         if not isinstance(path, (str, os.PathLike)):
             # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
             raise TypeError(f'Unsupported path type "{type(path)}".')
-        return pathlib.Path(path).read_text()
+
+        encoding = options.get('encoding', 'utf-8')
+        return pathlib.Path(path).read_text(encoding=encoding)
