@@ -43,3 +43,23 @@ jobs:
         run: pip install tox
       - name: Test
         run: tox -e docs -vv
+
+      - name: Notify Slack success
+        if: success()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.PYDAX_CICD_SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: pydax-ci-cd-status
+          status: SUCCESS
+          color: good
+
+      - name: Notify Slack fail
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.PYDAX_CICD_SLACK_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: pydax-ci-cd-status
+          status: FAILED
+          color: danger
