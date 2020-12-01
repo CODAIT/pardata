@@ -140,11 +140,14 @@ class TestDataset:
             Dataset(gmb_schema, data_dir='./setup.py', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert str(e.value) == f'"{pathlib.Path.cwd()/"setup.py"}" exists and is not a directory.'
 
-    def test_relative_data_dir(self, tmp_path, gmb_schema):
+    def test_relative_data_dir(self, gmb_schema):
         "Test when ``data_dir`` is relative."
 
-        dataset = Dataset(gmb_schema, data_dir=os.path.relpath(tmp_path), mode=Dataset.InitializationMode.LAZY)
-        assert dataset._data_dir == tmp_path
+        # We don't use the `tmp_path` fixture here, because if `tmp_path` is on a drive different from the current
+        # working directory on Windows, `os.path.relpath(tmp_path)` would fail.
+        target_path = pathlib.Path.cwd() / 'a' / 'tmp' / 'dir'
+        dataset = Dataset(gmb_schema, data_dir=os.path.relpath(target_path), mode=Dataset.InitializationMode.LAZY)
+        assert dataset._data_dir == target_path
         assert dataset._data_dir.is_absolute()
 
     def test_symlink_data_dir(self, tmp_symlink_dir, gmb_schema):
