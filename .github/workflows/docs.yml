@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-name: Lint
+name: Docs
 
 on:  # yamllint disable-line rule:truthy
   push:
@@ -28,9 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.7]
 
-    name: Lint
+    name: Docs
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -42,4 +42,4 @@ jobs:
       - name: Install Dependencies
         run: pip install tox
       - name: Test
-        run: tox -e lint -vv
+        run: tox -e docs -vv
