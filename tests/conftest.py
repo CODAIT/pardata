@@ -78,7 +78,7 @@ def wikitext103_schema(loaded_schemata):
 def local_http_server():
     "A local http server that serves the source directory."
 
-    with HTTPServer(("", 8080), SimpleHTTPRequestHandler) as httpd:
+    with HTTPServer(("localhost", 8080), SimpleHTTPRequestHandler) as httpd:
         # Start a new thread, because httpd.serve_forever is blocking
         threading.Thread(target=httpd.serve_forever, name='Local Http Server', daemon=True).start()
         yield httpd

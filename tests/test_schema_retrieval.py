@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-import os
-
 import pytest
 
 from pydax._schema_retrieval import retrieve_schema_file
@@ -34,7 +32,9 @@ class TestSchemaRetrieval:
 
         # TODO: Add https tests here when we add stronger security measurements
 
-        base = str(request.getfixturevalue('schema_file_' + location_type)) + os.path.sep
+        # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
+        # both. This is not an issue for the purpose of this test.
+        base = str(request.getfixturevalue('schema_file_' + location_type)) + '/'
 
         assert retrieve_schema_file(base + 'datasets.yaml') == \
             (schema_file_relative_dir / 'datasets.yaml').read_text(encoding='utf-8')
