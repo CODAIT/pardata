@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-name: Python package
+name: Lint
 
 on:  # yamllint disable-line rule:truthy
   push:

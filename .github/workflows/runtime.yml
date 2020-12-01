@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-name: Python package
+name: Runtime Tests
 
 on:  # yamllint disable-line rule:truthy
   push:
