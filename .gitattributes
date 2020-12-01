@@ -1,0 +1,2 @@
+# always check out text files with LF ending. This will maintain consistency for Windows developers and CI.
+* text=auto eol=lf

@@ -18,6 +18,7 @@
 
 
 from pathlib import Path
+import re
 from typing import Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -36,18 +37,26 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: st
     :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path.
     :return: A string of the content.
     """
-    url_or_path = str(url_or_path)
-    scheme = urlparse(url_or_path).scheme
 
-    if scheme in ('http', 'https'):
-        content = requests.get(url_or_path, allow_redirects=True).content
-        # We don't use requests.Response.encoding and requests.Response.text because it is always silent when there's an
-        # encoding error
-        return content.decode(encoding)
-    elif scheme == 'file':
-        with urlopen(url_or_path) as f:  # nosec: bandit will always complain but we know the URL points to a local file
-            return f.read().decode(encoding)
-    elif scheme == '':  # local file path
-        return Path(url_or_path).read_text(encoding)
+    url_or_path = str(url_or_path)
+
+    # We don't detect fully whether the input is a URL or a file path because I couldn't find a reliable way. Almost any
+    # string with no backslash can be a file name on Linux. URL detection often involves either giant dependencies such
+    # as Django, or tediously long regular expression that we can't assure that it would work. Here, we detect the
+    # beginning of the string. If it doesn't look like a URL, treat it as a file path.
+    if re.match(r'[a-zA-Z0-9]+:\/\/', url_or_path):
+        parse_result = urlparse(url_or_path)
+        scheme = parse_result.scheme
+        if scheme in ('http', 'https'):
+            content = requests.get(url_or_path, allow_redirects=True).content
+            # We don't use requests.Response.encoding and requests.Response.text because it is always silent when
+            # there's an encoding error
+            return content.decode(encoding)
+        elif scheme == 'file':
+            with urlopen(url_or_path) as f:  # nosec: bandit will always complain but we know it points to a local file
+                return f.read().decode(encoding)
+        else:
+            raise ValueError(f'Unknown scheme in "{url_or_path}": "{scheme}"')
     else:
-        raise ValueError(f'Unknown scheme in "{url_or_path}": "{scheme}"')
+        # Not a URL, treated as a local file path
+        return Path(url_or_path).read_text(encoding)
