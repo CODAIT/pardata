@@ -14,28 +14,18 @@
 # limitations under the License.
 #
 
-"PyDAX package"
+from pathlib import Path
 
 
-from . import dataset, loaders, schema
-from ._config import get_config, init
-from ._dataset import list_all_datasets, load_dataset
-from ._schema import load_schemata
-from ._version import version as __version__
+def test_import_pydax_namespace():
+    "Test to make sure top level public modules & subpackages are available in the global namespace."
 
-__all__ = (
-           # modules & subpackages
-           'dataset',
-           'loaders',
-           'schema',
-           # _config
-           'get_config',
-           'init',
-           # _dataset
-           'list_all_datasets',
-           'load_dataset',
-           # _schema
-           'load_schemata',
-           # _version
-           '__version__'
-)
+    import pydax as test_pydax
+    assert all(module.stem in dir(test_pydax) for module in Path('pydax').glob('[a-zA-Z]*'))
+
+
+def test_import_pydax_loaders_namespace():
+    "Test to make sure public modules are available in the loaders subpackage namespace."
+
+    import pydax.loaders as test_pydax_loaders
+    assert all(module.stem in dir(test_pydax_loaders) for module in Path('pydax/loaders').glob('[a-zA-Z]*'))
