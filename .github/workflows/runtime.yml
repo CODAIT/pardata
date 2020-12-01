@@ -89,9 +89,11 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
         uses: rtCamp/action-slack-notify@v2
+        color: good
 
       - name: Notify Slack fail
         if: failure()
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
         uses: rtCamp/action-slack-notify@v2
+        color: danger
