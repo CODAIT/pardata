@@ -23,7 +23,7 @@ from typing import Any, Dict, Union
 
 import yaml
 
-from pydax._schema_retrieval import retrieve_schema_file
+from ._schema_retrieval import retrieve_schema_file
 
 
 SchemaDict = Dict[str, Any]
