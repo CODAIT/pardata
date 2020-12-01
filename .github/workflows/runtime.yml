@@ -25,41 +25,31 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.allow-failure }}
     strategy:
       matrix:
         include:
           - os: macos-10.15
             python-version: 3.6
-            allow-failure: false
           - os: ubuntu-16.04
+            python-version: 3.6
+          - os: ubuntu-16.04
+            python-version: 3.7
             env:
               LC_ALL: C
-            python-version: 3.6
-            allow-failure: false
-          - os: ubuntu-16.04
-            python-version: 3.7
-            allow-failure: false
           - os: ubuntu-18.04
             python-version: 3.8
-            allow-failure: false
           - os: ubuntu-20.04
             python-version: 3.9
-            allow-failure: false
           - os: windows-2019
             python-version: 3.6
-            allow-failure: true
           - os: windows-2019
             python-version: 3.7
-            allow-failure: true
           - os: windows-2019
             python-version: 3.8
-            allow-failure: true
           - os: windows-2019
             python-version: 3.9
-            allow-failure: true
 
-    name: Python ${{ matrix.python-version }} -- ${{ matrix.os }}
+    name: Python ${{ matrix.python-version }} -- Platform ${{ matrix.os }} -- LC_ALL ${{ matrix.env.LC_ALL }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
