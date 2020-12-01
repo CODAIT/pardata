@@ -1,0 +1,85 @@
+#
+# Copyright 2020 IBM Corp. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Runtime Tests
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches: 'master'
+  pull_request:
+    branches: '*'
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allow-failure }}
+    env:
+      LC_ALL: ${{ matrix.LC_ALL }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-10.15
+            python-version: 3.6
+            allow-failure: false
+            LC_ALL: en.UTF-8
+          - os: ubuntu-16.04
+            LC_ALL: C
+            python-version: 3.6
+            allow-failure: false
+          - os: ubuntu-16.04
+            python-version: 3.7
+            allow-failure: false
+            LC_ALL: en.UTF-8
+          - os: ubuntu-18.04
+            python-version: 3.8
+            allow-failure: false
+            LC_ALL: C.UTF-8
+          - os: ubuntu-20.04
+            python-version: 3.9
+            allow-failure: false
+            LC_ALL: en.UTF-8
+          - os: windows-2019
+            python-version: 3.6
+            allow-failure: true
+            LC_ALL: C.UTF-8
+          - os: windows-2019
+            python-version: 3.7
+            allow-failure: true
+            LC_ALL: en.UTF-8
+          - os: windows-2019
+            python-version: 3.8
+            allow-failure: true
+            LC_ALL: C
+          - os: windows-2019
+            python-version: 3.9
+            allow-failure: true
+            LC_ALL: en.UTF-8
+
+    name: Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Display Python Version
+        run: python -c "import sys; print(sys.version)"
+      - name: Display Environment Variables
+        run: env
+      - name: Install Dependencies
+        run: pip install tox
+      - name: Runtime Test
+        run: tox -e py -vv
