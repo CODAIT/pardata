@@ -90,7 +90,7 @@ class TestTextLoaders:
 
         integer = 1
         with pytest.raises(TypeError) as e:
-            PlainTextLoader().load(integer, None)
+            PlainTextLoader().load(integer, {})
 
         assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 
@@ -110,7 +110,7 @@ class TestTableLoaders:
 
         integer = 1
         with pytest.raises(TypeError) as e:
-            CSVPandasLoader().load(integer, None)
+            CSVPandasLoader().load(integer, {})
 
         assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 

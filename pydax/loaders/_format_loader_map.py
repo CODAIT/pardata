@@ -89,11 +89,11 @@ def _load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str
 
     if isinstance(fmt, str):
         fmt_id: str = fmt
-        fmt_options: Optional[SchemaDict] = None
+        fmt_options: SchemaDict = {}
     elif isinstance(fmt, Dict):
         # In Python 3.8, this can be done with isinstance(fmt, typing.get_args(SchemaDict))
         fmt_id = fmt['id']
-        fmt_options = fmt.get('options', None)
+        fmt_options = fmt.get('options', {})
     else:
         raise TypeError(f'Parameter "fmt" must be a string or a dict, but it is of type "{type(fmt)}".')
 

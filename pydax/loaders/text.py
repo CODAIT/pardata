@@ -14,25 +14,6 @@
 # limitations under the License.
 #
 
-import os
-import pathlib
-from typing import Dict, Optional, Union
+from ._text import PlainTextLoader
 
-from .. import _typing
-from ..schema import SchemaDict
-from ._base import Loader
-
-
-class PlainTextLoader(Loader):
-
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: Optional[SchemaDict]) -> str:
-        """The type hint says Dict, because this loader will be handling those situations in the future.
-
-        :param path: The path to the plain text file.
-        :param options: Unused.
-        """
-
-        if not isinstance(path, (str, os.PathLike)):
-            # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
-            raise TypeError(f'Unsupported path type "{type(path)}".')
-        return pathlib.Path(path).read_text()
+__all__ = ('PlainTextLoader',)
