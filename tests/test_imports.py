@@ -14,15 +14,18 @@
 # limitations under the License.
 #
 
+from pathlib import Path
+
+
 def test_import_pydax_namespace():
-    "Test to make sure top level modules & subpackages are available in the globla namespace."
+    "Test to make sure top level public modules & subpackages are available in the global namespace."
 
     import pydax as test_pydax
-    assert all(name in dir(test_pydax) for name in ['dataset', 'loaders', 'schema'])
+    assert all(module.stem in dir(test_pydax) for module in Path('pydax').glob('[a-zA-Z]*'))
 
 
 def test_import_pydax_loaders_namespace():
-    "Test to make sure modules are available in the loaders subpackage namespace."
+    "Test to make sure public modules are available in the loaders subpackage namespace."
 
     import pydax.loaders as test_pydax_loaders
-    assert all(name in dir(test_pydax_loaders) for name in ['table', 'text'])
+    assert all(module.stem in dir(test_pydax_loaders) for module in Path('pydax/loaders').glob('[a-zA-Z]*'))
