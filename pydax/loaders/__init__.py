@@ -17,8 +17,15 @@
 "Module on loaders."
 
 
+from . import table, text
 from ._base import Loader
 from ._format_loader_map import FormatLoaderMap
 
-__all__ = ('FormatLoaderMap',
+__all__ = (
+           # modules
+           'table',
+           'text',
+           # _format_loader_map
+           'FormatLoaderMap',
+           # _base
            'Loader')
