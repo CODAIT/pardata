@@ -44,7 +44,7 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: st
     # string with no backslash can be a file name on Linux. URL detection often involves either giant dependencies such
     # as Django, or tediously long regular expression that we can't assure that it would work. Here, we detect the
     # beginning of the string. If it doesn't look like a URL, treat it as a file path.
-    if re.match(r'^[a-zA-Z0-9]+:\/\/', url_or_path):
+    if re.match(r'[a-zA-Z0-9]+:\/\/', url_or_path):
         parse_result = urlparse(url_or_path)
         scheme = parse_result.scheme
         if scheme in ('http', 'https'):
