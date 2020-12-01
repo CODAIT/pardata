@@ -16,7 +16,7 @@
 
 name: Python package
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     branches: 'master'
   pull_request:
@@ -32,14 +32,14 @@ jobs:
 
     name: Lint
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-    - name: Install Dependencies
-      run: pip install tox
-    - name: Test
-      run: tox -e lint -vv
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install Dependencies
+        run: pip install tox
+      - name: Test
+        run: tox -e lint -vv

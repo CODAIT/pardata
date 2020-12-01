@@ -25,3 +25,6 @@ pypy3:
   only:
     - master
     - external_pull_requests
+
+  # Allow this test to be canceled when a new commit is pushed
+  interruptible: true
