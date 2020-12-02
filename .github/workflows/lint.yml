@@ -48,12 +48,12 @@ jobs:
         if: ${{ success() && github.event_name == 'pull_request' }}
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
+          SLACK_COLOR: good
         uses: rtCamp/action-slack-notify@v2
-        color: good
 
       - name: Notify Slack fail
         if: ${{ failure() && github.event_name == 'pull_request' }}
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
+          SLACK_COLOR: danger
         uses: rtCamp/action-slack-notify@v2
-        color: danger
