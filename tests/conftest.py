@@ -17,6 +17,7 @@
 import copy
 import hashlib
 from http.server import HTTPServer, SimpleHTTPRequestHandler
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import threading
@@ -38,7 +39,17 @@ def tmp_sub_dir(tmp_path):
     "A ``pathlib.Path`` object that points to a temporary dir, created as a subdir of ``tmp_path``."
 
     with TemporaryDirectory(dir=tmp_path) as d:
-        yield d
+        yield Path(d).absolute()
+
+
+@pytest.fixture
+def tmp_relative_sub_dir(tmp_path, tmp_sub_dir):
+    """The path of ``tmp_sub_dir`` relative to ``tmp_dir``. This can be useful (in conjunction with ``chdir_tmp_path``)
+    for some tests that focus on an absolute path vis-a-vis its relative path form. In these tests, the use of
+    ``os.path.relpath()`` is discouraged, because it would fail if the input is on a different drive from the working
+    directory on Windows. Instead, use `tmp_sub_dir` and ``tmp_relative_sub_dir``."""
+
+    return tmp_sub_dir.relative_to(tmp_path)
 
 
 @pytest.fixture
@@ -56,6 +67,16 @@ def tmp_symlink_dir(tmp_path, tmp_sub_dir):
     yield symlink_dir
 
     symlink_dir.unlink()
+
+
+@pytest.fixture
+def chdir_tmp_path(tmp_path):
+    "Make the test run in ``tmp_path`` as the current working directory."
+
+    cur_dir = Path.cwd()
+    os.chdir(tmp_path)
+    yield
+    os.chdir(cur_dir)
 
 
 @pytest.fixture(scope='session')
