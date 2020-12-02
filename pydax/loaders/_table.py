@@ -17,7 +17,7 @@
 "Tabular data loaders."
 
 import os
-from typing import Dict, Optional, Union
+from typing import Dict, Union
 
 import pandas as pd  # type: ignore
 
@@ -28,7 +28,7 @@ from ._base import Loader
 
 class CSVPandasLoader(Loader):
 
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: Optional[SchemaDict]) -> str:
+    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> str:
         """The type hint says Dict, because this loader will be handling those situations in the future, perhaps via a
         ``IteratingLoader`` class.
 
@@ -42,9 +42,6 @@ class CSVPandasLoader(Loader):
         if not isinstance(path, (str, os.PathLike)):
             # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
             raise TypeError(f'Unsupported path type "{type(path)}".')
-
-        if options is None:
-            options = {}
 
         parse_dates = []
         for column, type_ in options.get('columns', {}).items():
