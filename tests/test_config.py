@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-import os
 import pathlib
 import re
 
@@ -44,11 +43,11 @@ def test_custom_data_dir(tmp_path, wikitext103_schema):
     assert isinstance(wikitext._data_dir, pathlib.Path)
 
 
-def test_custom_relative_data_dir(tmp_path):
+def test_custom_relative_data_dir(chdir_tmp_path, tmp_sub_dir, tmp_relative_sub_dir):
     "Test using a custom relative data directory."
 
-    init(DATADIR=os.path.relpath(tmp_path))
-    assert get_config().DATADIR == tmp_path
+    init(DATADIR=tmp_relative_sub_dir)
+    assert get_config().DATADIR == tmp_sub_dir
     assert get_config().DATADIR.is_absolute()
 
 
