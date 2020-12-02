@@ -85,9 +85,10 @@ jobs:
         run: tox -e py -vv
 
       # Only notify if a test fails because there are so many runtime tests -- don't spam the channel.
-      - name: Notify Slack fail
+      - name: Notify Slack failure
         if: ${{ failure() && github.event_name == 'push' }}
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
           SLACK_COLOR: danger
+          SLACK_ICON_EMOJI: ":scott-yikes:"
         uses: rtCamp/action-slack-notify@v2
