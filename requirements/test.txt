@@ -1,4 +1,3 @@
 # Dependencies for runtime test
 coverage
 pytest
-tox
