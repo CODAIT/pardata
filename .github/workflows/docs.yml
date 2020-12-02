@@ -45,14 +45,14 @@ jobs:
         run: tox -e docs -vv
 
       - name: Notify Slack success
-        if: ${{ success() && github.event_name == 'pull_request' }}
+        if: ${{ success() && github.event_name == 'push' }}
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
           SLACK_COLOR: good
         uses: rtCamp/action-slack-notify@v2
 
       - name: Notify Slack fail
-        if: ${{ failure() && github.event_name == 'pull_request' }}
+        if: ${{ failure() && github.event_name == 'push' }}
         env:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
           SLACK_COLOR: danger
