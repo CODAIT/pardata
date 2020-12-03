@@ -24,7 +24,7 @@ from pydax import get_config, init
 from pydax.dataset import Dataset
 
 
-def test_default_data_dir(wikitext103_schema):
+def test_default_data_dir():
     "Test default data dir."
 
     pydax_data_home = pathlib.Path.home() / '.pydax' / 'data'
