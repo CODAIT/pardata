@@ -219,17 +219,17 @@ class Dataset:
                 if not path.exists():
                     # At least one file in the file list is missing
                     return False
+                # We don't have pathlib type code that matches tarfile type code. We instead do an incomplete list of
+                # type comparison. We don't do uncommon types such as FIFO, character device, etc. here.
                 if info['type'] == int(tarfile.REGTYPE):  # Regular file
                     if not path.is_file():
                         return False
                     if path.stat().st_size != info['size']:
                         return False
-                elif info['type'] == int(tarfile.DIRTYPE):  # Directory type
-                    if not path.is_dir():
-                        return False
-                elif info['type'] == int(tarfile.SYMTYPE):  # Symbolic link type
-                    if not path.is_symlink():
-                        return False
+                elif info['type'] == int(tarfile.DIRTYPE) and not path.is_dir():  # Directory type
+                    return False
+                elif info['type'] == int(tarfile.SYMTYPE) and not path.is_symlink():  # Symbolic link type
+                    return False
                 else:
                     # We just let go any file types that we don't understand.
                     pass
