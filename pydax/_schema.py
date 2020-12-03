@@ -19,10 +19,11 @@
 
 from abc import ABC
 from copy import deepcopy
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional
 
 import yaml
 
+from ._config import get_config
 from ._schema_retrieval import retrieve_schema_file
 
 
@@ -33,19 +34,11 @@ class Schema(ABC):
     """Abstract class that provides functionality to load and export schemata.
 
     :param url_or_path: URL or path to a schema file.
-    :raise AttributeError: DEFAULT_SCHEMA_URL is not overridden.
     """
 
-    def __init__(self, url_or_path: Union[str, None] = None) -> None:
+    def __init__(self, url_or_path: str) -> None:
         """Constructor method.
         """
-        if url_or_path is None:
-            try:
-                url_or_path = self.__class__.DEFAULT_SCHEMA_URL  # type: ignore [attr-defined]
-            except AttributeError as e:
-                raise AttributeError("DEFAULT_SCHEMA_URL is not defined. "
-                                     'Have you forgotten to define this variable when inheriting "Schema"?\n'
-                                     f"Caused by:\n{e}")
         self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path))
 
     def _load_retrieved_schema(self, schema: str) -> SchemaDict:
@@ -70,29 +63,26 @@ class Schema(ABC):
 
 class DatasetSchema(Schema):
     """Dataset schema class that inherits functionality from :class:`Schema`.
-
-    :param url_or_path: URL or path to a schema file
     """
 
-    DEFAULT_SCHEMA_URL = 'https://ibm.box.com/shared/static/01oa3ue32lzcsd2znlbojs9ozdeftpb6.yaml'
+    # We have this class here because we reserve the potential to put specific dataset schema code here
+    pass
 
 
 class FormatSchema(Schema):
     """Format schema class that inherits functionality from :class:`Schema`.
-
-    :param url_or_path: URL or path to a schema file
     """
 
-    DEFAULT_SCHEMA_URL = 'https://ibm.box.com/shared/static/sv9hyf9vjdiareodbgo6kz5o8prxfm51.yaml'
+    # We have this class here because we reserve the potential to put specific format schema code here
+    pass
 
 
 class LicenseSchema(Schema):
     """License schema class that inherits functionality from :class:`Schema`.
-
-    :param url_or_path: URL or path to a schema file
     """
 
-    DEFAULT_SCHEMA_URL = ('https://ibm.box.com/shared/static/iy5xq7vk53dss5pgs0xvrfol9tfyd7ya.yaml')
+    # We have this class here because we reserve the potential to put specific license schema code here
+    pass
 
 
 class SchemaManager():
@@ -120,9 +110,9 @@ class SchemaManager():
 
 
 def load_schemata(*,
-                  dataset_url: str = DatasetSchema.DEFAULT_SCHEMA_URL,
-                  format_url: str = FormatSchema.DEFAULT_SCHEMA_URL,
-                  license_url: str = LicenseSchema.DEFAULT_SCHEMA_URL) -> SchemaManager:
+                  dataset_url: Optional[str] = None,
+                  format_url: Optional[str] = None,
+                  license_url: Optional[str] = None) -> SchemaManager:
     """Helper function to load and provide all schemata.
 
     :param dataset_url: Dataset schema url, defaults to DatasetSchema.DEFAULT_SCHEMA_DATASETS_URL
@@ -130,6 +120,13 @@ def load_schemata(*,
     :param license_url: License schema url, defaults to LicenseSchema.DEFAULT_SCHEMA_LICENSES_URL
     :return: A :class:`SchemaManager` object which holds the loaded schemata in :attr:`schemata`
     """
+    if dataset_url is None:
+        dataset_url = get_config().DEFAULT_DATASET_SCHEMA_URL
+    if format_url is None:
+        format_url = get_config().DEFAULT_FORMAT_SCHEMA_URL
+    if license_url is None:
+        license_url = get_config().DEFAULT_LICENSE_SCHEMA_URL
+
     return SchemaManager(dataset_schema=DatasetSchema(dataset_url),
                          format_schema=FormatSchema(format_url),
                          license_schema=LicenseSchema(license_url))

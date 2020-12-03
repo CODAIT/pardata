@@ -32,6 +32,7 @@ setuptools.setup(
     data_files=[("", ["LICENSE"])],
     python_requires=">=3.6",
     install_requires=[
+        "dataclasses; python_version < '3.7.0'",  # backported dataclasses
         "packaging >= 20.4",
         "pandas >= 1.1.0",
         "pydantic >= 1.7.2",
