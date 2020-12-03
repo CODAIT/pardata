@@ -2,48 +2,78 @@
 
 ## Quick Setup
 
-To start developing, after cloning this repo (and preferably create a virtual environment), run the following command to
-install all dependencies:
+### Use `tox`
 
-    pip install -U -e .
+To start developing, the recommended way is to use `tox`. This way, your development environment is automatically
+prepared by `tox`, including virtual environment setup, dependency management, installing `pydax` in development mode.
+
+1. Install `tox`:
+
+    $ pip install -U tox  # If you are inside a virtual environment, conda environment
+    $ pip3 install --user -U tox  # If you are outside any virtual environment or conda environment
+
+2. At the root directory of `pydax`, run:
+
+    $ tox -e dev
+
+   To force updating development environment in the future, run `tox --recreate -e dev` when the development environment
+   is not activated.
+
+3. To activate the development environment, run:
+
+    $ . .tox/dev/bin/activate
+
+### Traditional Method
+
+Alternatively, after cloning this repository (and preferably having created and activated a virtual environment), run
+the following command to install all dependencies:
+
+    $ pip install -U -e .
 
 Install all required development packages:
 
-    pip install -r requirements-dev.txt
+    $ pip install -U -r requirements-dev.txt
 
-To run all tests on all available Python versions configured to work with PyDAX, run:
+## Run Tests
 
-    tox
+### Run All Tests
 
-By default `tox` uses `virtualenv` for creating each test environment (such as for each Python version). If you would prefer `tox` to use `conda`, run:
+Before and after one stage of development, you may want to try whether the code would pass all tests.
 
-    pip install tox-conda
+To run all tests on the Python versions that are supported by PyDAX and available on your system, run:
 
-## Running Tests Individually
+    $ tox -s
 
-To test the functioning of the package, run:
+When you are brave, to force running all tests on all Python versions that are supported by PyDAX, run:
 
-    coverage run -m pytest
+    $ tox
 
-To understand the coverage of the test above, run:
+By default `tox` uses `virtualenv` for creating each test environment (such as for each Python version). If you would
+prefer `tox` to use `conda`, run:
 
-    coverage report
+    $ pip install tox-conda
 
-To check Python code style compliance, run:
+### Running Part of the Tests
 
-    flake8 .
+During development, you likely would like to run only part of the tests to save time.
 
-To check YAML code style compliance, run:
+To run all static tests, run:
 
-    yamllint -c .yamllint.yaml .
+    $ tox -e lint
 
-For static security check, run:
+To run all runtime tests on the Python version in the development environment, run:
 
-    bandit -r .
+    $ tox -e py
 
-For type annotation test, run:
+To run only a specific runtime test, run:
 
-    mypy pydax
+    $ pytest -vk [test_name]  # e.g., pytest -vk test_default_data_dir
+
+Read [pytest command line document](https://docs.pytest.org/en/stable/usage.html) for its more advanced usage.
+
+To run document generation tests, run:
+
+    $ tox -e docs
 
 ## Where to Expose a Symbol (Function, Class, etc.)?
 

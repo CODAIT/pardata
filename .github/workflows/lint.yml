@@ -50,6 +50,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
           SLACK_COLOR: good
           SLACK_ICON_EMOJI: ":drake-yes:"
+          SLACK_TITLE: Message (**Lint**)
         uses: rtCamp/action-slack-notify@v2
 
       - name: Notify Slack failure
@@ -58,4 +59,5 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.PYDAX_CICD_SLACK_WEBHOOK }}
           SLACK_COLOR: danger
           SLACK_ICON_EMOJI: ":scott-yikes:"
+          SLACK_TITLE: Message (**Lint**)
         uses: rtCamp/action-slack-notify@v2
