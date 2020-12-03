@@ -14,7 +14,10 @@
 # limitations under the License.
 #
 
+import copy
 import hashlib
+import json
+from json import JSONDecodeError
 import pathlib
 import tarfile
 
@@ -47,7 +50,7 @@ class TestDataset:
 
         data_dir = tmp_path / 'gmb'
         Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
-        assert len(list(data_dir.iterdir())) == 1
+        assert len(list(data_dir.iterdir())) == 2  # 'groningen_meaning_bank_modified' and '.pydax'
         unarchived_data_dir = data_dir / 'groningen_meaning_bank_modified'
         unarchived_data_dir_files = ['gmb_subset_full.txt', 'LICENSE.txt', 'README.txt']
         assert unarchived_data_dir.is_dir()
@@ -161,6 +164,44 @@ class TestDataset:
 
         gmb.download()
         assert gmb.is_downloaded() is True
+
+        # content of the file list
+        with gmb._open_and_lock_file_list_file(mode='r') as f:
+            file_list = json.load(f)
+
+        def test_incorrect_file_list(change: dict):
+            "Test a single case that somewhere in the file list things are wrong."
+
+            wrong_file_list = copy.deepcopy(file_list)
+            wrong_file_list.update(change)
+            with gmb._open_and_lock_file_list_file(mode='w') as f:
+                json.dump(wrong_file_list, f)
+            assert gmb.is_downloaded() is False
+
+        # Can't find a file
+        test_incorrect_file_list({'non-existing-file': {'type': int(tarfile.REGTYPE)}})
+        # File type incorrect
+        test_incorrect_file_list({'groningen_meaning_bank_modified': {'type': int(tarfile.REGTYPE)}})
+        test_incorrect_file_list({'groningen_meaning_bank_modified/LICENSE.txt': {'type': int(tarfile.DIRTYPE)}})
+        test_incorrect_file_list({'groningen_meaning_bank_modified/README.txt': {'type': int(tarfile.SYMTYPE)}})
+        # size incorrect
+        changed = copy.deepcopy(file_list['groningen_meaning_bank_modified/README.txt'])
+        changed['size'] += 100
+        test_incorrect_file_list({'groningen_meaning_bank_modified/README.txt': changed})
+
+        # JSON decoding error
+        gmb._file_list_file.write_text("nonsense\n", encoding='utf-8')
+        with pytest.raises(JSONDecodeError):
+            # We don't check the value of the exception because we clearly only are only interested in ensuring that the
+            # file isn't decodable
+            gmb.is_downloaded()
+
+    def test_cache_dir_is_not_a_dir(self, tmp_path, gmb_schema):
+        "Test when ``cache_dir`` (i.e., ``data_dir/.pydax``) exists and is not a dir."
+        (tmp_path / '.pydax').touch()  # Occupy this path with a regular file
+        with pytest.raises(FileExistsError) as e:
+            Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        assert str(e.value) == f"\"{tmp_path/'.pydax'}\" exists and is not a directory."
 
 
 class TestLoadDataset:
