@@ -21,7 +21,7 @@ import tarfile
 import pytest
 from packaging.version import parse as version_parser
 
-from pydax import init, list_all_datasets, load_dataset
+from pydax import init, get_dataset_metadata, list_all_datasets, load_dataset
 from pydax.dataset import Dataset
 
 
@@ -247,3 +247,25 @@ class TestLoadDataset:
         with pytest.raises(FileNotFoundError) as e:
             load_dataset('wikitext103', version='1.0.1', download=False)
         assert 'Failed to load the dataset because some files are not found.' in str(e.value)
+
+
+class TestGetDatasetMetadata:
+    "Test get_dataset_metadata function."
+
+    def test_human_param(self, capfd, loaded_schemata):
+        name, version = 'gmb', '1.0.2'
+
+        get_dataset_metadata(name, version=version)
+        dataset_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
+        license_schema = loaded_schemata.schemata['license_schema'].export_schema('licenses')
+        out, err = capfd.readouterr()
+        assert out == (f'Dataset name: {dataset_schema["name"]}\n'
+                       f'Description: {dataset_schema["description"]}\n'
+                       f'Size: {dataset_schema["estimated_size"]}\n'
+                       f'Published date: {dataset_schema["published"]}\n'
+                       f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
+                       f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}\n'
+                       )
+
+        gmb_schema = get_dataset_metadata(name, version=version, human=False)
+        assert gmb_schema == loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
