@@ -12,6 +12,7 @@ Functions
 
    init
    get_config
+   get_dataset_metadata
    list_all_datasets
    load_dataset
    load_schemata

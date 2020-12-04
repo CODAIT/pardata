@@ -19,7 +19,7 @@
 
 from . import dataset, loaders, schema
 from ._config import get_config, init
-from ._dataset import list_all_datasets, load_dataset
+from ._dataset import get_dataset_metadata, list_all_datasets, load_dataset
 from ._schema import load_schemata
 from ._version import version as __version__
 
@@ -32,6 +32,7 @@ __all__ = (
            'get_config',
            'init',
            # _dataset
+           'get_dataset_metadata',
            'list_all_datasets',
            'load_dataset',
            # _schema
