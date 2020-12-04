@@ -29,7 +29,7 @@ from pydax.dataset import Dataset
 from pydax._schema_retrieval import retrieve_schema_file
 
 
-def test_default_data_dir(wikitext103_schema):
+def test_default_data_dir():
     "Test default data dir."
 
     pydax_data_home = pathlib.Path.home() / '.pydax' / 'data'
