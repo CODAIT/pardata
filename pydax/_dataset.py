@@ -18,11 +18,12 @@
 
 
 from enum import IntFlag
+import functools
 import hashlib
 import os
 import pathlib
 import tarfile
-from typing import Any, Dict, Iterable, Optional, Tuple, Union, no_type_check
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Union, no_type_check
 
 
 from packaging.version import parse as version_parser
@@ -163,8 +164,14 @@ class Dataset:
 
 
 @no_type_check
-def _handle_name_param(func):
-    """Decorator for handling ``name`` parameter."""
+def _handle_name_param(func: Callable) -> Callable:
+    """Decorator for handling ``name`` parameter.
+
+    :raises TypeError: ``name`` is not a string.
+    :raises KeyError: ``name`` is not a valid PyDAX dataset name.
+    :return: Wrapped function that handles ``name`` parameter properly.
+    """
+    @functools.wraps(func)
     def name_wrapper(name: str, *args, **kwargs):
 
         if not isinstance(name, str):
@@ -178,8 +185,14 @@ def _handle_name_param(func):
 
 
 @no_type_check
-def _handle_version_param(func):
-    """Decorator for handling ``version`` parameter. Must still be supplied a dataset ``name``."""
+def _handle_version_param(func: Callable) -> Callable:
+    """Decorator for handling ``version`` parameter. Must still be supplied a dataset ``name``.
+
+    :raises TypeError: ``version`` is not a string.
+    :raises KeyError: ``version`` is not a valid PyDAX version of ``name``.
+    :return: Wrapped function that handles ``version`` parameter properly.
+    """
+    @functools.wraps(func)
     def version_wrapper(name: str, version: str = 'latest', *args, **kwargs):
 
         if not isinstance(version, str):
@@ -213,7 +226,6 @@ def load_dataset(name: str, *,
     :param subdatasets: An iterable containing the subdatasets to load. ``None`` means all subdatasets.
     :raises FileNotFoundError: The dataset files were not previously downloaded or can't be found, and ``download`` is
         False.
-    :raises TypeError: ``name`` or ``version`` are not strings.
     :return: Dictionary that holds all subdatasets.
     """
 
