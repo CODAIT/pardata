@@ -32,7 +32,6 @@ DatasetSchema Class
 
    DatasetSchema
    DatasetSchema.export_schema
-   DatasetSchema.DEFAULT_SCHEMA_URL
 
 
 
@@ -44,7 +43,6 @@ FormatSchema Class
 
    FormatSchema
    FormatSchema.export_schema
-   FormatSchema.DEFAULT_SCHEMA_URL
 
 
 LicenseSchema Class
@@ -55,4 +53,3 @@ LicenseSchema Class
 
    LicenseSchema
    LicenseSchema.export_schema
-   LicenseSchema.DEFAULT_SCHEMA_URL

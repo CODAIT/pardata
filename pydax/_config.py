@@ -17,8 +17,10 @@
 "Module for defining and modifying global configs"
 
 
+import dataclasses
 import os
 import pathlib
+from typing import Any
 
 from pydantic.dataclasses import dataclass
 
@@ -27,6 +29,12 @@ from pydantic.dataclasses import dataclass
 class Config:
     """Global read-only configurations for PyDAX.
     """
+
+    # Default schema URLs
+    DEFAULT_DATASET_SCHEMA_URL: str = 'https://ibm.box.com/shared/static/01oa3ue32lzcsd2znlbojs9ozdeftpb6.yaml'
+    DEFAULT_FORMAT_SCHEMA_URL: str = 'https://ibm.box.com/shared/static/sv9hyf9vjdiareodbgo6kz5o8prxfm51.yaml'
+    DEFAULT_LICENSE_SCHEMA_URL: str = 'https://ibm.box.com/shared/static/iy5xq7vk53dss5pgs0xvrfol9tfyd7ya.yaml'
+
     # DATADIR is the default dir where datasets files are downloaded/loaded to/from.
     DATADIR: pathlib.Path = pathlib.Path.home() / '.pydax' / 'data'
 
@@ -46,16 +54,29 @@ def get_config() -> Config:
     return global_config  # type: ignore [name-defined]
 
 
-def init(**kwargs: pathlib.Path) -> None:
+def init(update_only: bool = True, **kwargs: Any) -> None:
     """
     (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
 
+    :param update_only: If ``True``, only update in the global configs what config is specified. Otherwise, reset
+        everything to default in global configs except those specified as keyword arguments.
+    :param DEFAULT_DATASET_SCHEMA_URL: The default dataset schema file URL.
+    :param DEFAULT_FORMAT_SCHEMA_URL: The default format schema file URL.
+    :param DEFAULT_LICENSE_SCHEMA_URL: The default license schema file URL.
     :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
         the current working directory, but will be converted to the absolute path immediately in this function.
         Defaults to: ~/.pydax/data
     """
     global global_config
-    global_config = Config(**kwargs)  # type: ignore [name-defined]
+
+    if update_only:
+        # We don't use dataclasses.replace here because it is uncertain whether it would work well with
+        # pydantic.dataclasses.
+        prev = dataclasses.asdict(global_config)  # type: ignore [name-defined]
+        prev.update(kwargs)
+        global_config = Config(**prev)  # type: ignore [name-defined]
+    else:
+        global_config = Config(**kwargs)  # type: ignore [name-defined]
 
 
-init()
+init(update_only=False)
