@@ -22,7 +22,8 @@ import hashlib
 import os
 import pathlib
 import tarfile
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, Optional, Tuple, Union, no_type_check
+
 
 from packaging.version import parse as version_parser
 import requests
@@ -161,38 +162,43 @@ class Dataset:
         return self._data_dir.is_dir() and len(os.listdir(self._data_dir)) > 0
 
 
-def handle_name_version_params(func: Callable) -> Callable:
-    """Decorator for handling ``name`` and ``version`` parameters."""
-    def wrapper_decorator(name: str,
-                          version: Optional[str] = None,
-                          *args: Union[bool, Iterable[str], None],
-                          **kwargs: Union[bool, Iterable[str], None]) -> Union[None, Dict[str, Any], SchemaDict]:
+@no_type_check
+def _handle_name_param(func):
+    """Decorator for handling ``name`` parameter."""
+    def name_wrapper(name: str, *args, **kwargs):
 
         if not isinstance(name, str):
             raise TypeError('The name parameter must be supplied a str.')
-        if version is not None and not isinstance(version, str):
-            raise TypeError('The version parameter must be supplied a str.')
         all_datasets = list_all_datasets()
         if name not in all_datasets.keys():
-            raise KeyError(f'Failed to load dataset because "{name}" is not a valid PyDAX dataset. '
-                           'You can view all valid datasets and their versions by running the function '
-                           'pydax.list_all_datasets().')
-        if version is None:
+            raise KeyError(f'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their versions '
+                           'by running the function pydax.list_all_datasets().')
+        return func(name, *args, **kwargs)
+    return name_wrapper
+
+
+@no_type_check
+def _handle_version_param(func):
+    """Decorator for handling ``version`` parameter. Must still be supplied a dataset ``name``."""
+    def version_wrapper(name: str, version: str = 'latest', *args, **kwargs):
+
+        if not isinstance(version, str):
+            raise TypeError('The version parameter must be supplied a str.')
+        all_datasets = list_all_datasets()
+        if version == 'latest':
             # Grab latest available version
             version = str(max(version_parser(v) for v in all_datasets[name]))
         elif version not in all_datasets[name]:
-            raise ValueError(f'Failed to load dataset because "{version}" is not a valid PyDAX version for the dataset '
-                             f'"{name}". You can view all valid datasets and their versions by running the function '
-                             'pydax.list_all_datasets().')
-
-        value = func(name=name, version=version, *args, **kwargs)
-        return value
-    return wrapper_decorator
+            raise KeyError(f'"{version}" is not a valid PyDAX version for the dataset "{name}". You can view all '
+                           'valid datasets and their versions by running the function pydax.list_all_datasets().')
+        return func(name=name, version=version, *args, **kwargs)
+    return version_wrapper
 
 
-@handle_name_version_params
+@_handle_name_param
+@_handle_version_param
 def load_dataset(name: str, *,
-                 version: Optional[str] = None,
+                 version: str = 'latest',
                  download: bool = True,
                  subdatasets: Union[Iterable[str], None] = None) -> Dict[str, Any]:
     """High level function that wraps :class:`Dataset` class's load and download functionality. Downloads to and loads
@@ -211,10 +217,9 @@ def load_dataset(name: str, *,
     :return: Dictionary that holds all subdatasets.
     """
 
-    schema = load_schemata().schemata['dataset_schema'] \
-                            .export_schema('datasets', name, version)  # type: ignore [arg-type]
+    schema = load_schemata().schemata['dataset_schema'].export_schema('datasets', name, version)
 
-    data_dir = get_config().DATADIR / name / version  # type: ignore [operator]
+    data_dir = get_config().DATADIR / name / version
     dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
     if download and not dataset.is_downloaded():
         dataset.download()
@@ -228,35 +233,31 @@ def load_dataset(name: str, *,
     return dataset.data
 
 
-@handle_name_version_params
+@_handle_name_param
+@_handle_version_param
 def get_dataset_metadata(name: str, *,
-                         version: Optional[str] = None,
-                         human: bool = True) -> Optional[SchemaDict]:
-    """Print in human-readable form a dataset's metadata or return a copy of its schema.
+                         version: str = 'latest',
+                         human: bool = True) -> Union[str, SchemaDict]:
+    """Return a dataset's metadata either in human-readable form or as a copy of its schema.
 
     :param name: Name of the dataset you want get the metadata of. You can get a list of these
         datasets by calling :func:`pydax.list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
         available versions for a dataset by calling :func:`pydax.list_all_datasets`.
-    :param human: Whether to print the metadata in human-readable form or to return a copy of the dataset's schema.
-        Defaults to True.
-    :return: A dictionary copy of the dataset's schema if ``human`` is set to False.
+    :param human: Whether to return the metadata as a string in human-readable form or to return a copy of the
+        dataset's schema. Defaults to True.
+    :return: Return a dataset's metadata either as a string or as a schema dictionary.
     """
 
     schema_manager = load_schemata()
-    dataset_schema = schema_manager.schemata['dataset_schema'] \
-                                   .export_schema('datasets', name, version)  # type: ignore [arg-type]
+    dataset_schema = schema_manager.schemata['dataset_schema'].export_schema('datasets', name, version)
     license_schema = schema_manager.schemata['license_schema'].export_schema('licenses')
-
     if human:
-        print(f'Dataset name: {dataset_schema["name"]}\n'
-              f'Description: {dataset_schema["description"]}\n'
-              f'Size: {dataset_schema["estimated_size"]}\n'
-              f'Published date: {dataset_schema["published"]}\n'
-              f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
-              f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}'
-              )
-        return None
-
+        return (f'Dataset name: {dataset_schema["name"]}\n'
+                f'Description: {dataset_schema["description"]}\n'
+                f'Size: {dataset_schema["estimated_size"]}\n'
+                f'Published date: {dataset_schema["published"]}\n'
+                f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
+                f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
     else:
         return dataset_schema

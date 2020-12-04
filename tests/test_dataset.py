@@ -178,9 +178,8 @@ class TestLoadDataset:
         name = 'fake_dataset'
         with pytest.raises(KeyError) as e:
             load_dataset(name)
-        assert str(e.value) == (f'\'Failed to load dataset because "{name}" is not a valid PyDAX dataset. '
-                                'You can view all valid datasets and their versions by running the function '
-                                'pydax.list_all_datasets().\'')
+        assert str(e.value) == (f'\'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their '
+                                'versions by running the function pydax.list_all_datasets().\'')
 
     def test_version_param(self, tmp_path):
         "Test to see the version parameter is being handled properly."
@@ -192,18 +191,18 @@ class TestLoadDataset:
         assert str(e.value) == 'The version parameter must be supplied a str.'
 
         name, version = 'gmb', ''
-        with pytest.raises(ValueError) as e:
+        with pytest.raises(KeyError) as e:
             load_dataset('gmb', version=version)
-        assert str(e.value) == (f'Failed to load dataset because "{version}" is not a valid PyDAX version for the '
-                                f'dataset "{name}". You can view all valid datasets and their versions by running the '
-                                'function pydax.list_all_datasets().')
+        assert str(e.value) == (f'\'"{version}" is not a valid PyDAX version for the dataset "{name}". '
+                                'You can view all valid datasets and their versions by running the function '
+                                'pydax.list_all_datasets().\'')
 
         name, version = 'gmb', 'fake_version'
-        with pytest.raises(ValueError) as e:
+        with pytest.raises(KeyError) as e:
             load_dataset('gmb', version=version)
-        assert str(e.value) == (f'Failed to load dataset because "{version}" is not a valid PyDAX version for the '
-                                f'dataset "{name}". You can view all valid datasets and their versions by running the '
-                                'function pydax.list_all_datasets().')
+        assert str(e.value) == (f'\'"{version}" is not a valid PyDAX version for the dataset "{name}". '
+                                'You can view all valid datasets and their versions by running the function '
+                                'pydax.list_all_datasets().\'')
 
         # If no version specified, make sure latest version grabbed
         all_datasets = list_all_datasets()
@@ -252,20 +251,18 @@ class TestLoadDataset:
 class TestGetDatasetMetadata:
     "Test get_dataset_metadata function."
 
-    def test_human_param(self, capfd, loaded_schemata):
+    def test_human_param(self, loaded_schemata):
         name, version = 'gmb', '1.0.2'
 
-        get_dataset_metadata(name, version=version)
+        gmb_metadata = get_dataset_metadata(name, version=version)
         dataset_schema = loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
         license_schema = loaded_schemata.schemata['license_schema'].export_schema('licenses')
-        out, err = capfd.readouterr()
-        assert out == (f'Dataset name: {dataset_schema["name"]}\n'
-                       f'Description: {dataset_schema["description"]}\n'
-                       f'Size: {dataset_schema["estimated_size"]}\n'
-                       f'Published date: {dataset_schema["published"]}\n'
-                       f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
-                       f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}\n'
-                       )
+        assert gmb_metadata == (f'Dataset name: {dataset_schema["name"]}\n'
+                                f'Description: {dataset_schema["description"]}\n'
+                                f'Size: {dataset_schema["estimated_size"]}\n'
+                                f'Published date: {dataset_schema["published"]}\n'
+                                f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
+                                f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
 
         gmb_schema = get_dataset_metadata(name, version=version, human=False)
         assert gmb_schema == loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
