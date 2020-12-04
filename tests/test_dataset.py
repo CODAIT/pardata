@@ -25,7 +25,7 @@ from pydax import init, list_all_datasets, load_dataset
 from pydax.dataset import Dataset
 
 
-def test_list_all_datasets(spoofed_default_url):
+def test_list_all_datasets():
     "Test to make sure test_list_all_datasets function returns available dataset names."
 
     datasets = list_all_datasets()

@@ -14,14 +14,19 @@
 # limitations under the License.
 #
 
+import dataclasses
 import pathlib
 import re
+from urllib.parse import urlparse
 
 import pytest
 from pydantic import ValidationError
+import requests.exceptions
 
 from pydax import get_config, init
+from pydax._config import Config
 from pydax.dataset import Dataset
+from pydax._schema_retrieval import retrieve_schema_file
 
 
 def test_default_data_dir(wikitext103_schema):
@@ -66,3 +71,49 @@ def test_non_path_data_dir():
 
     assert re.search(r"1 validation error for Config\s+DATADIR\s+value is not a valid path \(type=type_error.path\)",
                      str(e.value))
+
+
+def test_custom_configs():
+    "Test custom configs."
+
+    init(update_only=False)  # set back everything to default
+    assert dataclasses.asdict(get_config()) == dataclasses.asdict(Config())
+
+    new_urls = {
+        'DEFAULT_DATASET_SCHEMA_URL': 'some/local/file',
+        'DEFAULT_FORMAT_SCHEMA_URL': 'file://c:/some/other/local/file',
+        'DEFAULT_LICENSE_SCHEMA_URL': 'http://some/remote/file'
+    }
+    init(update_only=True, **new_urls)
+
+    for url, val in new_urls.items():
+        assert getattr(get_config(), url) == val
+    assert get_config().DATADIR == Config.DATADIR
+
+
+def test_default_schema_url_https():
+    "Test the default schema URLs are https-schemed."
+
+    assert urlparse(Config.DEFAULT_DATASET_SCHEMA_URL).scheme == 'https'
+    assert urlparse(Config.DEFAULT_FORMAT_SCHEMA_URL).scheme == 'https'
+    assert urlparse(Config.DEFAULT_LICENSE_SCHEMA_URL).scheme == 'https'
+
+
+@pytest.mark.xfail(reason="default remote might be down but it's not this library's issue",
+                   raises=requests.exceptions.ConnectionError)
+def test_default_schema_url_content():
+    """Test the content of the remote URLs a bit. We only assert them not being None here just in case the server
+    returns zero-length files."""
+
+    init(update_only=False)
+
+    # We only assert that we have retrieved some non-empty files in this test. This is because we want to decouple
+    # the maintenance of schema files in production with the library development. These files likely would change
+    # more regularly than the library. For this reason, we also verify the default schema URLs are also valid https
+    # links in ``test_default_schema_url_https``.
+
+    # This test is in `test_config.py` not in `test_schema_retrieval.py` because this test is more about the content
+    # of the default schema URLs than the retrieving functionality.
+    assert len(retrieve_schema_file(Config.DEFAULT_DATASET_SCHEMA_URL)) > 0
+    assert len(retrieve_schema_file(Config.DEFAULT_FORMAT_SCHEMA_URL)) > 0
+    assert len(retrieve_schema_file(Config.DEFAULT_LICENSE_SCHEMA_URL)) > 0

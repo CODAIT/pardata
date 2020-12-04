@@ -27,7 +27,7 @@ import uuid
 
 import pytest
 
-from pydax import load_schemata
+from pydax import init, load_schemata
 from pydax.dataset import Dataset
 from pydax.schema import SchemaDict, SchemaManager
 
@@ -96,7 +96,19 @@ def local_http_server_root_url(local_http_server) -> str:
     return f'http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}'
 
 
+@pytest.fixture(autouse=True)
+def pydax_initialization(schema_file_http_url):
+    """Create the default initialization used for all tests. This is mainly for having a uniform initialization for all
+    tests as well as avoiding using the actual default schema file URLs so as to decouple the two lines of development
+    (default schema files and this library)."""
+
+    init(update_only=False,
+         DEFAULT_DATASET_SCHEMA_URL=f'{schema_file_http_url}/datasets.yaml',
+         DEFAULT_FORMAT_SCHEMA_URL=f'{schema_file_http_url}/formats.yaml',
+         DEFAULT_LICENSE_SCHEMA_URL=f'{schema_file_http_url}/licenses.yaml')
+
 # Dataset --------------------------------------
+
 
 @pytest.fixture(scope='session')
 def dataset_base_url(local_http_server_root_url) -> str:
@@ -255,16 +267,3 @@ def downloaded_wikitext103_dataset(wikitext103_schema) -> Dataset:
 def downloaded_gmb_dataset(gmb_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(gmb_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
-
-
-# Temporary hacks -------------------------------------
-
-
-@pytest.fixture
-def spoofed_default_url(schema_file_http_url):
-    # TODO: There should be some way for list_all_datasets() to use a different schema file URL via pydax.init(). We
-    # have this workaround using this fixture for now.
-    old_defaults = load_schemata.__kwdefaults__.copy()
-    load_schemata.__kwdefaults__['dataset_url'] = schema_file_http_url + '/datasets.yaml'
-    yield
-    load_schemata.__kwdefaults__ = old_defaults
