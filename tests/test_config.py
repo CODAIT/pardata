@@ -112,7 +112,7 @@ def test_default_schema_url_content():
     # more regularly than the library. For this reason, we also verify the default schema URLs are also valid https
     # links in ``test_default_schema_url_https``.
 
-    # This test is in `test_schema.py` not in `test_schema_retrieval.py` because this test is more about the content
+    # This test is in `test_config.py` not in `test_schema_retrieval.py` because this test is more about the content
     # of the default schema URLs than the retrieving functionality.
     assert len(retrieve_schema_file(Config.DEFAULT_DATASET_SCHEMA_URL)) > 0
     assert len(retrieve_schema_file(Config.DEFAULT_FORMAT_SCHEMA_URL)) > 0
