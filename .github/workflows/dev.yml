@@ -26,7 +26,6 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   test:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -37,12 +36,12 @@ jobs:
           - os: macos-10.15
             python-version: 3.8
             LC_ALL: C
-          - os: ubuntu-16.04
+          - os: windows-2016
             python-version: 3.9
             LC_ALL: en.UTF-8
 
 
-    name: Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
+    name: (Dev) Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -55,9 +54,16 @@ jobs:
         run: pip install tox
       - name: Build Dev Environment
         run: tox -e dev -vv
-      - name: Activate dev environment and run a command
+      - name: Activate dev environment and run a couple of commands (Linux and MacOS)
+        if: ${{ runner.os != 'Windows' }}
         run: |
-          . .tox/dev/bin/activate
+          . ./.tox/dev/bin/activate
+          pytest -vk test_default_data_dir
+          flake8 setup.py
+      - name: Activate dev environment and run a couple of commands (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          . .\\.tox\\dev\\Scripts\\activate.ps1
           pytest -vk test_default_data_dir
           flake8 setup.py
 

@@ -45,20 +45,20 @@ jobs:
           - os: ubuntu-20.04
             python-version: 3.9
             LC_ALL: en.UTF-8
-          - os: windows-2019
+          - os: windows-2016
             python-version: 3.6
             LC_ALL: C.UTF-8
           - os: windows-2019
             python-version: 3.7
             LC_ALL: en.UTF-8
-          - os: windows-2019
+          - os: windows-2016
             python-version: 3.8
             LC_ALL: C
           - os: windows-2019
             python-version: 3.9
             LC_ALL: en.UTF-8
 
-    name: Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
+    name: (Runtime) Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
