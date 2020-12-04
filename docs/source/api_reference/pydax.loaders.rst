@@ -35,3 +35,16 @@ PlainTextLoader Class
 
    PlainTextLoader
    PlainTextLoader.load
+
+
+.. currentmodule:: pydax.loaders.table
+
+
+CSVPandasLoader Class
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: autosummary
+
+   CSVPandasLoader
+   CSVPandasLoader.load
