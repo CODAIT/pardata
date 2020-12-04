@@ -31,9 +31,9 @@ class Config:
     """
 
     # Default schema URLs
-    DEFAULT_DATASET_SCHEMA_URL: str = 'https://ibm.box.com/shared/static/01oa3ue32lzcsd2znlbojs9ozdeftpb6.yaml'
-    DEFAULT_FORMAT_SCHEMA_URL: str = 'https://ibm.box.com/shared/static/sv9hyf9vjdiareodbgo6kz5o8prxfm51.yaml'
-    DEFAULT_LICENSE_SCHEMA_URL: str = 'https://ibm.box.com/shared/static/iy5xq7vk53dss5pgs0xvrfol9tfyd7ya.yaml'
+    DEFAULT_DATASET_SCHEMA_URL: str = 'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/datasets.yaml'
+    DEFAULT_FORMAT_SCHEMA_URL: str = 'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/formats.yaml'
+    DEFAULT_LICENSE_SCHEMA_URL: str = 'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/licenses.yaml'
 
     # DATADIR is the default dir where datasets files are downloaded/loaded to/from.
     DATADIR: pathlib.Path = pathlib.Path.home() / '.pydax' / 'data'
