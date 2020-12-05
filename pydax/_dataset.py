@@ -91,7 +91,7 @@ class Dataset:
 
     @property
     def _data_dir(self) -> pathlib.Path:
-        "Directory that stores datasets. Create it if not existing."
+        "Directory that stores datasets. Create it if it does not exist."
         if not self._data_dir_.exists():
             self._data_dir_.mkdir(parents=True)
         elif not self._data_dir_.is_dir():  # self._data_dir_ exists and is not a directory
