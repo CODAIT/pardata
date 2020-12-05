@@ -99,19 +99,19 @@ class Dataset:
         return self._data_dir_
 
     @property
-    def _cache_dir(self) -> pathlib.Path:
-        "Cache and metainfo directory used by this class. Create it if it does not exist."
-        cache_dir = self._data_dir / '.pydax'
-        if not cache_dir.exists():
-            cache_dir.mkdir(parents=True)
-        elif not cache_dir.is_dir():  # cache_dir exists and is not a directory
-            raise FileExistsError(f'"{cache_dir}" exists and is not a directory.')
-        return cache_dir
+    def _pydax_dir(self) -> pathlib.Path:
+        "Cache, metainfo, etc. directory used by this class. Create it if it does not exist."
+        pydax_dir = self._data_dir / '.pydax.dataset'
+        if not pydax_dir.exists():
+            pydax_dir.mkdir(parents=True)
+        elif not pydax_dir.is_dir():  # pydax_dir exists and is not a directory
+            raise FileExistsError(f'"{pydax_dir}" exists and is not a directory.')
+        return pydax_dir
 
     @property
     def _file_list_file(self) -> pathlib.Path:
         "Path to the file that stores the list of files in the downloaded dataset."
-        return self._cache_dir / 'files.list'
+        return self._pydax_dir / 'files.list'
 
     @contextmanager
     def _open_and_lock_file_list_file(self, **kwargs: Any) -> Iterator[IO]:
@@ -134,7 +134,7 @@ class Dataset:
         """
         download_url = self._schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
-        archive_fp = self._cache_dir / download_file_name
+        archive_fp = self._pydax_dir / download_file_name
 
         response = requests.get(download_url, stream=True)
         archive_fp.write_bytes(response.content)

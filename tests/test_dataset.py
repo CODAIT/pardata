@@ -50,7 +50,7 @@ class TestDataset:
 
         data_dir = tmp_path / 'gmb'
         Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
-        assert len(list(data_dir.iterdir())) == 2  # 'groningen_meaning_bank_modified' and '.pydax'
+        assert len(list(data_dir.iterdir())) == 2  # 'groningen_meaning_bank_modified' and '.pydax.dataset'
         unarchived_data_dir = data_dir / 'groningen_meaning_bank_modified'
         unarchived_data_dir_files = ['gmb_subset_full.txt', 'LICENSE.txt', 'README.txt']
         assert unarchived_data_dir.is_dir()
@@ -197,11 +197,11 @@ class TestDataset:
             gmb.is_downloaded()
 
     def test_cache_dir_is_not_a_dir(self, tmp_path, gmb_schema):
-        "Test when ``cache_dir`` (i.e., ``data_dir/.pydax``) exists and is not a dir."
-        (tmp_path / '.pydax').touch()  # Occupy this path with a regular file
+        "Test when ``pydax_dir`` (i.e., ``data_dir/.pydax.dataset``) exists and is not a dir."
+        (tmp_path / '.pydax.dataset').touch()  # Occupy this path with a regular file
         with pytest.raises(FileExistsError) as e:
             Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
-        assert str(e.value) == f"\"{tmp_path/'.pydax'}\" exists and is not a directory."
+        assert str(e.value) == f"\"{tmp_path/'.pydax.dataset'}\" exists and is not a directory."
 
 
 class TestLoadDataset:
