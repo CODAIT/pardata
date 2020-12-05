@@ -27,9 +27,9 @@ import uuid
 
 import pytest
 
-from pydax import init, load_schemata
+from pydax import init
 from pydax.dataset import Dataset
-from pydax.schema import SchemaDict, SchemaManager
+from pydax.schema import Schema, SchemaDict, SchemaManager
 
 # Basic utilities --------------------------------
 
@@ -103,9 +103,9 @@ def pydax_initialization(schema_file_http_url):
     (default schema files and this library)."""
 
     init(update_only=False,
-         DEFAULT_DATASET_SCHEMA_URL=f'{schema_file_http_url}/datasets.yaml',
-         DEFAULT_FORMAT_SCHEMA_URL=f'{schema_file_http_url}/formats.yaml',
-         DEFAULT_LICENSE_SCHEMA_URL=f'{schema_file_http_url}/licenses.yaml')
+         DATASET_SCHEMA_URL=f'{schema_file_http_url}/datasets.yaml',
+         FORMAT_SCHEMA_URL=f'{schema_file_http_url}/formats.yaml',
+         LICENSE_SCHEMA_URL=f'{schema_file_http_url}/licenses.yaml')
 
 # Dataset --------------------------------------
 
@@ -138,7 +138,7 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
         # file to be archived in a different compression format.
         local_destination = dataset_dir / f'{name}-{version}'
 
-        schema = _loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
+        schema = _loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
 
         if local_destination.exists() and \
            hashlib.sha512(local_destination.read_bytes()).hexdigest() == schema['sha512sum']:
@@ -161,7 +161,7 @@ def _schema(_loaded_schemata, _download_dataset, dataset_base_url) -> Callable[[
 
     def _schema_impl(name, version):
         _download_dataset(name, version)
-        schema = _loaded_schemata.schemata['dataset_schema'].export_schema('datasets', name, version)
+        schema = _loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
         schema['download_url'] = str(f'{dataset_base_url}/{name}-{version}')
         return schema
 
@@ -174,9 +174,9 @@ def _loaded_schemata(schema_file_relative_dir) -> SchemaManager:
     test to the same function when ``loaded_schemata`` is used. The other purpose is to provide other session-scoped
     fixtures access to the loaded schemata, because session-scoped fixtures can't load function-scoped fixtures."""
 
-    return load_schemata(dataset_url=schema_file_relative_dir / 'datasets.yaml',
-                         format_url=schema_file_relative_dir / 'formats.yaml',
-                         license_url=schema_file_relative_dir / 'licenses.yaml')
+    return SchemaManager(datasets=Schema(schema_file_relative_dir / 'datasets.yaml'),
+                         formats=Schema(schema_file_relative_dir / 'formats.yaml'),
+                         licenses=Schema(schema_file_relative_dir / 'licenses.yaml'))
 
 
 @pytest.fixture

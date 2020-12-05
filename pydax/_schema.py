@@ -19,11 +19,12 @@
 
 from abc import ABC
 from copy import deepcopy
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import yaml
 
 from ._config import get_config
+from . import _typing
 from ._schema_retrieval import retrieve_schema_file
 
 
@@ -36,10 +37,13 @@ class Schema(ABC):
     :param url_or_path: URL or path to a schema file.
     """
 
-    def __init__(self, url_or_path: str) -> None:
+    def __init__(self, url_or_path: Union[_typing.PathLike, str]) -> None:
         """Constructor method.
         """
         self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path))
+
+        # The URL or path from which the schema was retrieved
+        self._retrieved_url_or_path: Union[_typing.PathLike, str] = url_or_path
 
     def _load_retrieved_schema(self, schema: str) -> SchemaDict:
         """Safely loads retrieved schema file.
@@ -59,6 +63,11 @@ class Schema(ABC):
         for k in keys:
             schema = schema[k]
         return deepcopy(schema)
+
+    @property
+    def retrieved_url_or_path(self) -> Union[_typing.PathLike, str]:
+        "The URL or path from which the schema was retrieved."
+        return self._retrieved_url_or_path
 
 
 class DatasetSchema(Schema):
@@ -99,7 +108,8 @@ class SchemaManager():
             self.add_schema(name, val)
 
     def add_schema(self, name: str, val: Schema) -> None:
-        """Store schema instance in a dictionary.
+        """Store schema instance in a dictionary. If a schema with the same name as ``name`` is already stored, it is
+        overridden.
 
         :param name: Schema name
         :param val: Schema instance
@@ -109,24 +119,47 @@ class SchemaManager():
         self.schemata[name] = val
 
 
-def load_schemata(*,
-                  dataset_url: Optional[str] = None,
-                  format_url: Optional[str] = None,
-                  license_url: Optional[str] = None) -> SchemaManager:
-    """Helper function to load and provide all schemata.
+# The SchemaManager object that is managed by high-level functions
+_schemata: Optional[SchemaManager] = None
 
-    :param dataset_url: Dataset schema url, defaults to DatasetSchema.DEFAULT_SCHEMA_DATASETS_URL
-    :param format_url: Format schema url, defaults to FormatSchema.DEFAULT_SCHEMA_FORMATS_URL
-    :param license_url: License schema url, defaults to LicenseSchema.DEFAULT_SCHEMA_LICENSES_URL
-    :return: A :class:`SchemaManager` object which holds the loaded schemata in :attr:`schemata`
+
+def load_schemata(*, force_reload: bool = False) -> None:
+    """Loads a :class:`SchemaManager` object that stores all schemata. To export the loaded :class:`SchemaManager`
+    object, please use :func:`.export_schemata`.
+
+    :param force_reload: If ``True``, force reloading even if the provided URLs by :func:`pydax.init` are the same as
+         provided last time. Otherwise, only those that are different from previous given ones are reloaded.
     """
-    if dataset_url is None:
-        dataset_url = get_config().DEFAULT_DATASET_SCHEMA_URL
-    if format_url is None:
-        format_url = get_config().DEFAULT_FORMAT_SCHEMA_URL
-    if license_url is None:
-        license_url = get_config().DEFAULT_LICENSE_SCHEMA_URL
+    urls = {
+        'datasets': get_config().DATASET_SCHEMA_URL,
+        'formats': get_config().FORMAT_SCHEMA_URL,
+        'licenses': get_config().LICENSE_SCHEMA_URL
+    }
 
-    return SchemaManager(dataset_schema=DatasetSchema(dataset_url),
-                         format_schema=FormatSchema(format_url),
-                         license_schema=LicenseSchema(license_url))
+    global _schemata
+    if force_reload or _schemata is None:  # Force reload or clean slate, create a new SchemaManager object
+        _schemata = SchemaManager(**{name: Schema(url) for name, url in urls.items()})
+    else:
+        for name, schema in _schemata.schemata.items():
+            if schema.retrieved_url_or_path != urls[name]:
+                _schemata.add_schema(name, Schema(urls[name]))
+
+
+def get_schemata() -> SchemaManager:
+    """Return the :class:`SchemaManager` object managed by high-level functions. If it is not created, create it. This
+    function is used by high-level APIs but it should not be a high-level function itself. It should only be used
+    internally because users should not have this easy access to modify the managed :class`SchemaManager` object."""
+
+    global _schemata
+
+    if _schemata is None:
+        load_schemata()
+
+    # The return value is guranteed to be SchemaManager instead of Optional[SchemaManager] after load_schemata
+    return _schemata  # type: ignore [return-value]
+
+
+def export_schemata() -> SchemaManager:
+    "Return a copy of the ``SchemaManager`` object managed by high-level functions."
+
+    return deepcopy(get_schemata())

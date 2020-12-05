@@ -32,7 +32,7 @@ import requests
 
 from . import _typing
 from ._config import get_config
-from ._schema import load_schemata
+from ._schema import get_schemata
 from .schema import SchemaDict
 from .loaders._format_loader_map import _load_data_files
 
@@ -43,7 +43,7 @@ def list_all_datasets() -> Dict[str, Tuple]:
     :return: Mapping of available datasets and their versions
     """
 
-    dataset_schema = load_schemata().schemata['dataset_schema'].export_schema('datasets')
+    dataset_schema = get_schemata().schemata['datasets'].export_schema('datasets')
     return {
         outer_k: tuple(inner_k for inner_k, inner_v in outer_v.items())
         for outer_k, outer_v in dataset_schema.items()
@@ -302,7 +302,7 @@ def load_dataset(name: str, *,
     :return: Dictionary that holds all subdatasets.
     """
 
-    schema = load_schemata().schemata['dataset_schema'].export_schema('datasets', name, version)
+    schema = get_schemata().schemata['datasets'].export_schema('datasets', name, version)
 
     data_dir = get_config().DATADIR / name / version
     dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
@@ -334,9 +334,9 @@ def get_dataset_metadata(name: str, *,
     :return: Return a dataset's metadata either as a string or as a schema dictionary.
     """
 
-    schema_manager = load_schemata()
-    dataset_schema = schema_manager.schemata['dataset_schema'].export_schema('datasets', name, version)
-    license_schema = schema_manager.schemata['license_schema'].export_schema('licenses')
+    schema_manager = get_schemata()
+    dataset_schema = schema_manager.schemata['datasets'].export_schema('datasets', name, version)
+    license_schema = schema_manager.schemata['licenses'].export_schema('licenses')
     if human:
         return (f'Dataset name: {dataset_schema["name"]}\n'
                 f'Description: {dataset_schema["description"]}\n'
