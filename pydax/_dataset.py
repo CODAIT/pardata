@@ -100,7 +100,7 @@ class Dataset:
 
     @property
     def _cache_dir(self) -> pathlib.Path:
-        "Cache and metainfo directory used by this class. Create it if not existing."
+        "Cache and metainfo directory used by this class. Create it if it does not exist."
         cache_dir = self._data_dir / '.pydax'
         if not cache_dir.exists():
             cache_dir.mkdir(parents=True)
