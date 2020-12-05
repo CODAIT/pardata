@@ -17,14 +17,15 @@
 "Download and load a dataset"
 
 
+from contextlib import contextmanager
 from enum import IntFlag
 import functools
 import hashlib
+import json
 import os
 import pathlib
 import tarfile
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Union, no_type_check
-
+from typing import Any, Callable, Dict, IO, Iterable, Iterator, Optional, Tuple, Union, no_type_check
 
 from packaging.version import parse as version_parser
 import requests
@@ -77,7 +78,7 @@ class Dataset:
         """
 
         self._schema: SchemaDict = schema
-        self._data_dir: pathlib.Path = pathlib.Path(os.path.abspath(data_dir))
+        self._data_dir_: pathlib.Path = pathlib.Path(os.path.abspath(data_dir))
         self._data: Optional[Dict[str, Any]] = None
 
         if not isinstance(mode, Dataset.InitializationMode):
@@ -87,6 +88,41 @@ class Dataset:
             self.download()
         if mode & Dataset.InitializationMode.LOAD_ONLY:
             self.load()
+
+    @property
+    def _data_dir(self) -> pathlib.Path:
+        "Directory that stores datasets. Create it if it does not exist."
+        if not self._data_dir_.exists():
+            self._data_dir_.mkdir(parents=True)
+        elif not self._data_dir_.is_dir():  # self._data_dir_ exists and is not a directory
+            raise FileExistsError(f'"{self._data_dir_}" exists and is not a directory.')
+        return self._data_dir_
+
+    @property
+    def _pydax_dir(self) -> pathlib.Path:
+        "Cache, metainfo, etc. directory used by this class. Create it if it does not exist."
+        pydax_dir = self._data_dir / '.pydax.dataset'
+        if not pydax_dir.exists():
+            pydax_dir.mkdir(parents=True)
+        elif not pydax_dir.is_dir():  # pydax_dir exists and is not a directory
+            raise FileExistsError(f'"{pydax_dir}" exists and is not a directory.')
+        return pydax_dir
+
+    @property
+    def _file_list_file(self) -> pathlib.Path:
+        "Path to the file that stores the list of files in the downloaded dataset."
+        return self._pydax_dir / 'files.list'
+
+    @contextmanager
+    def _open_and_lock_file_list_file(self, **kwargs: Any) -> Iterator[IO]:
+        """Open and lock the file that stores the list of files in the downloaded dataset.
+        :param mode: Same as in :func:`open`.
+        :return: A file object that points to the file that stores the list of files in the downloaded dataset.
+        """
+        # TODO: The lock part is to prevent the file being messed if someone runs multiple processes that use pydax
+        # (e.g., some data scientist opens two notebooks.) This is to be implemented.
+        with open(self._file_list_file, **kwargs) as f:
+            yield f
 
     def download(self) -> None:
         """Downloads, extracts, and removes dataset archive.
@@ -98,12 +134,7 @@ class Dataset:
         """
         download_url = self._schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
-        archive_fp = self._data_dir / download_file_name
-
-        if not os.path.exists(self._data_dir):
-            os.makedirs(self._data_dir)
-        elif not os.path.isdir(self._data_dir):  # self._data_dir exists and is not a directory
-            raise FileExistsError(f'"{self._data_dir}" exists and is not a directory.')
+        archive_fp = self._pydax_dir / download_file_name
 
         response = requests.get(download_url, stream=True)
         archive_fp.write_bytes(response.content)
@@ -121,6 +152,15 @@ class Dataset:
         except tarfile.ReadError as e:
             raise tarfile.ReadError(f'Failed to unarchive "{archive_fp}"\ncaused by:\n{e}')
         with tar:
+            members = {}
+            for member in tar.getmembers():
+                members[member.name] = {'type': int(member.type)}
+                if member.isreg():  # For regular files, we also save its size
+                    members[member.name]['size'] = member.size
+            with self._open_and_lock_file_list_file(mode='w') as f:
+                # We do not specify 'utf-8' here to match the default encoding used by the OS, which also likely uses
+                # this encoding for accessing the filesystem.
+                json.dump(members, f, indent=2)
             tar.extractall(path=self._data_dir)
 
         os.remove(archive_fp)
@@ -156,11 +196,44 @@ class Dataset:
         return self._data
 
     def is_downloaded(self) -> bool:
-        """Check to see if dataset was downloaded.
+        """Check to see if dataset was downloaded. We determine this by comparing the extracted file tree with the file
+        list :meth:`._file_list_file` (their existence, types, and sizes). In this way, if the extraction of the archive
+        failed, this should return False and the user would not be misled. For performance reasons, we do not examine
+        the content of the extracted files.
 
-        :return: Boolean indicating if the dataset's datadir has contents or not.
+        :return: ``True`` if the dataset has been downloaded and ``False`` otherwise.
         """
-        return self._data_dir.is_dir() and len(os.listdir(self._data_dir)) > 0
+
+        # The method to detect whether the dataset has been downloaded can certainly be improved by balancing how much
+        # to examine and how much time it takes to do so, considering some heuristics such as the dataset size, the
+        # number of files, etc. The method used here should be able to strike a good balance for most cases and should
+        # be good enough for the first release.
+
+        if not self._file_list_file.exists():
+            # File not found, may not have finished downloading at all and we treat it as so. We can't control users'
+            # own tweaking with the directory.
+            return False
+        with self._open_and_lock_file_list_file(mode='r') as file_list:
+            for name, info in json.load(file_list).items():
+                path = self._data_dir / name
+                if not path.exists():
+                    # At least one file in the file list is missing
+                    return False
+                # We don't have pathlib type code that matches tarfile type code. We instead do an incomplete list of
+                # type comparison. We don't do uncommon types such as FIFO, character device, etc. here.
+                if info['type'] == int(tarfile.REGTYPE):  # Regular file
+                    if not path.is_file():
+                        return False
+                    if path.stat().st_size != info['size']:
+                        return False
+                elif info['type'] == int(tarfile.DIRTYPE) and not path.is_dir():  # Directory type
+                    return False
+                elif info['type'] == int(tarfile.SYMTYPE) and not path.is_symlink():  # Symbolic link type
+                    return False
+                else:
+                    # We just let go any file types that we don't understand.
+                    pass
+        return True
 
 
 @no_type_check
