@@ -9,7 +9,7 @@ prepared by `tox`, including virtual environment setup, dependency management, i
 
 1. Install `tox`:
 
-    $ pip install -U tox  # If you are inside a virtual environment, conda environment
+    $ pip install -U -r requirements/tox.txt  # If you are inside a virtual environment, conda environment
     $ pip3 install --user -U tox  # If you are outside any virtual environment or conda environment
 
 2. At the root directory of `pydax`, run:
@@ -131,3 +131,18 @@ To check reST code style compliance, run:
 The reST code style compliance is also checked by the `tox` lint test environment if you prefer to use that:
 
     tox -e lint
+
+## Dependency Version Pinning Policy
+
+We should pin the versions of all Python packages that we are using solely for testing and doc
+generating for a stable test and doc env (e.g., future incompatibility, regression, etc.). We want
+to pin these because, in this project, We use these packages soly for deployment of our development
+environment (i.e., running tests and generating docs) and we want stable packages that are used by
+us for these purposes. We should let some dependency bot to verify that bumping the versions won't
+break anything before we actually upgrade any of these dependencies.
+
+We should not pin the actual dependencies of PyDAX (as specified in `setup.py`), because PyDAX is an
+intermediate software layer -- those should be pinned only by the actual deployed application that
+depends on PyDAX. We should only code the info of supported versions of these dependencies. If there
+is some regression or incompatibilities in the latest versions of our dependencies, we should either
+work around them, or update `setup.py` to avoid depending on those versions.

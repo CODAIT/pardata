@@ -14,17 +14,14 @@
 # limitations under the License.
 #
 
-default:
-  image: pypy:3.6
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
 
-pypy3:
-  script:
-    - pip install -U -r requirements/tox.txt
-    - tox -vv -e pypy3
-
-  only:
-    - master
-    - external_pull_requests
-
-  # Allow this test to be canceled when a new commit is pushed
-  interruptible: true
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
