@@ -136,7 +136,7 @@ The reST code style compliance is also checked by the `tox` lint test environmen
 
 We should pin the versions of all Python packages that we are using solely for testing and doc
 generating for a stable test and doc env (e.g., future incompatibility, regression, etc.). We want
-to pin these because, in this project, We use these packages soly for deployment of our development
+to pin these because, in this project, we use these packages solely for deployment of our development
 environment (i.e., running tests and generating docs) and we want stable packages that are used by
 us for these purposes. We should let some dependency bot to verify that bumping the versions won't
 break anything before we actually upgrade any of these dependencies.
