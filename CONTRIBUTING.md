@@ -9,19 +9,19 @@ prepared by `tox`, including virtual environment setup, dependency management, i
 
 1. Install `tox`:
 
-    $ pip install -U -r requirements/tox.txt  # If you are inside a virtual environment, conda environment
-    $ pip3 install --user -U -r requirements/tox.txt  # If you are outside any virtual environment or conda environment and don't have tox installed
+       $ pip install -U -r requirements/tox.txt  # If you are inside a virtual environment, conda environment
+       $ pip3 install --user -U -r requirements/tox.txt  # If you are outside any virtual environment or conda environment and don't have tox installed
 
 2. At the root directory of `pydax`, run:
 
-    $ tox -e dev
+       $ tox -e dev
 
    To force updating development environment in the future, run `tox --recreate -e dev` when the development environment
    is not activated.
 
 3. To activate the development environment, run:
 
-    $ . .tox/dev/bin/activate
+       $ . .tox/dev/bin/activate
 
 ### Traditional Method
 
@@ -110,27 +110,27 @@ and their respective test files in `tests/`.
 
 The easiest way to generate the docs is to run the `tox` docs test environment. The html index file generates at `.tox/docs_out/index.html`:
 
-    tox -e docs
+    $ tox -e docs
 
 To run docs tests individually or to generate the docs, cd into the `docs/` directory and run any of the commands below:
 
-    cd docs
+    $ cd docs
 
 To generate the stub files for the API Reference section (these are used by the `autosummary` toctree option):
 
-    sphinx-autogen -o source/api_reference/autosummary source/api_reference/*.rst
+    $ sphinx-autogen -o source/api_reference/autosummary source/api_reference/*.rst
 
 To generate the HTML files for the docs to the `build` directory (note: this will automatically regenerate the stubfiles used by `autosummary` prior to generating the html files):
 
-    sphinx-build -d build/doctrees source build/html -b html
+    $ sphinx-build -d build/doctrees source build/html -b html
 
 To check reST code style compliance, run:
 
-    rstcheck -r docs/source/miscellaneous docs/source/user_guide docs/source/api_reference/*.rst
+    $ rstcheck -r docs/source/miscellaneous docs/source/user_guide docs/source/api_reference/*.rst
 
 The reST code style compliance is also checked by the `tox` lint test environment if you prefer to use that:
 
-    tox -e lint
+    $ tox -e lint
 
 ## Dependency Version Pinning Policy
 
