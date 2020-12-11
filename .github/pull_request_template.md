@@ -2,6 +2,8 @@
 
 ## Checklist:
 
+<details open>
+
 - Does this pull request close an issue? We encourage you to open an issue first if this pull request (PR) is not a
   minor change.
   - [ ] No
@@ -37,3 +39,4 @@ For the following questions, only check the boxes that are applicable.
           - DON'T put this pull request under any epic on ZenHub.
           - DON'T put an estimate on ZenHub.
     - [ ] When the pull request is ready, request review.
+</details>
