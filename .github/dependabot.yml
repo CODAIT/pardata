@@ -20,8 +20,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependabot"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependabot"
