@@ -78,5 +78,5 @@ datasets:
             options:
               encoding: 'UTF-8'
               columns:
-                DATE: 'date'
+                DATE: 'datetime'
           path: noaa-weather-data-jfk-airport/jfk_weather_cleaned.csv

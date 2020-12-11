@@ -46,7 +46,7 @@ class CSVPandasLoader(Loader):
         parse_dates = []
         for column, type_ in options.get('columns', {}).items():
             # TODO: This is very simple right now. Need consider more situations
-            if type_ == 'date':
+            if type_ == 'datetime':
                 # pandas has this unusual handling of date datatype. Instead of specifying as a data type of a column,
                 # we have to pass in `parse_dates`.
                 parse_dates.append(column)
