@@ -5,4 +5,4 @@ How to install ``pydax``:
 
 .. code-block:: console
 
-   pip install git+https://github.com/IBM/pydax
+   pip install git+https://github.com/codait/pydax
