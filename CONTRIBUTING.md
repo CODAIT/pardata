@@ -10,7 +10,7 @@ prepared by `tox`, including virtual environment setup, dependency management, i
 1. Install `tox`:
 
     $ pip install -U -r requirements/tox.txt  # If you are inside a virtual environment, conda environment
-    $ pip3 install --user -U tox  # If you are outside any virtual environment or conda environment and don't have tox installed
+    $ pip3 install --user -U -r requirements/tox.txt  # If you are outside any virtual environment or conda environment and don't have tox installed
 
 2. At the root directory of `pydax`, run:
 
