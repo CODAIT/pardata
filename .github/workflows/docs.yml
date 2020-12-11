@@ -40,7 +40,7 @@ jobs:
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
       - name: Install Dependencies
-        run: pip install tox
+        run: pip install -U -r requirements/tox.txt
       - name: Test
         run: tox -e docs -vv
 
