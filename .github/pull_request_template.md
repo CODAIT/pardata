@@ -5,6 +5,7 @@
 - Does this pull request close an issue? We encourage you to open an issue first if this pull request (PR) is not a
   minor change.
   - [ ] No
+    - [ ] The change in this pull request is minor.
   - [ ] Yes
     - Close #{issue_number}
 
@@ -16,6 +17,7 @@ For the following questions, only check the boxes that are applicable.
 
 - Do you have triage permission of this repository?
   - [ ] No
+    - You are good.
   - [ ] Yes
     - Does this pull request close an issue?
       - [ ] No, this pull request also acts as an issue by itself.
