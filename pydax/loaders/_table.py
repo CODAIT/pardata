@@ -34,7 +34,8 @@ class CSVPandasLoader(Loader):
 
         :param path: The path to the CSV file.
         :param options:
-               - ``columns`` key specifies the datatype of each column. If unspecified, then it is default.
+               - ``columns`` key specifies the data type of each column. Each data type corresponds to a Pandas'
+                 supported dtype. If unspecified, then it is default.
                - ``encoding`` key specifies the encoding of the CSV file. Defaults to UTF-8.
         :raises TypeError: ``path`` is not a path object.
         """
@@ -44,11 +45,13 @@ class CSVPandasLoader(Loader):
             raise TypeError(f'Unsupported path type "{type(path)}".')
 
         parse_dates = []
+        dtypes = {}
         for column, type_ in options.get('columns', {}).items():
-            # TODO: This is very simple right now. Need consider more situations
             if type_ == 'datetime':
                 # pandas has this unusual handling of date datatype. Instead of specifying as a data type of a column,
                 # we have to pass in `parse_dates`.
                 parse_dates.append(column)
+            else:
+                dtypes[column] = type_
 
-        return pd.read_csv(path, parse_dates=parse_dates, encoding=options.get('encoding', 'utf-8'))
+        return pd.read_csv(path, parse_dates=parse_dates, dtype=dtypes, encoding=options.get('encoding', 'utf-8'))
