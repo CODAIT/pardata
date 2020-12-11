@@ -11,7 +11,7 @@
 
 For the following questions, only check the boxes that are applicable.
 
-- [ ] Add descriptive pull request text.
+- [ ] Ensure that the pull request text above the horizontal line is descriptive.
 - [ ] Add/update relevant tests.
 - [ ] Add/update relevant documents.
 
