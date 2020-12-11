@@ -70,7 +70,7 @@ jobs:
       - name: Display Environment Variables
         run: env
       - name: Install Dependencies
-        run: pip install tox
+        run: pip install -U -r requirements/tox.txt
       - name: Runtime Test
         run: tox -e py -vv
 

@@ -1,11 +1,11 @@
 # Dependencies for linting
-bandit
-flake8
-flake8-bugbear
-flake8-comprehensions
-flake8-executable
-mccabe
+bandit == 1.6.2
+flake8 == 3.8.4
+flake8-bugbear == 20.11.1
+flake8-comprehensions == 3.3.0
+flake8-executable == 2.1.0
+mccabe == 0.6.1
 # Fix mypy to a previous version for now due to a regression: https://github.com/python/typeshed/issues/4681
 mypy == 0.782
-rstcheck
-yamllint
+rstcheck == 3.3.1
+yamllint == 1.25.0
