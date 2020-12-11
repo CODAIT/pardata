@@ -2,8 +2,8 @@
 
 - Does this pull request close an issue? We encourage you to open an issue first if this pull request (PR) is not a
   minor change.
-  - [ ] no
-  - [ ] yes
+  - [ ] No
+  - [ ] Yes
     - Close #{issue_number}
 
 For the following questions, only check the boxes that are applicable.
@@ -13,8 +13,8 @@ For the following questions, only check the boxes that are applicable.
 - [ ] Add/update relevant documents.
 
 - Do you have triage permission of this repository?
-  - [ ] no
-  - [ ] yes
+  - [ ] No
+  - [ ] Yes
     - Does this pull request close an issue?
       - [ ] No, this pull request also acts as an issue by itself.
         - [ ] Assign yourself.
