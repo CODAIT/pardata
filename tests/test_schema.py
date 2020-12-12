@@ -22,7 +22,7 @@ import pytest
 
 from pydax import export_schemata, init, load_schemata
 from pydax.schema import Schema, SchemaManager
-from pydax._schema import get_schemata
+from pydax._high_level import get_schemata
 
 
 class TestBaseSchema:

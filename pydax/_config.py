@@ -17,10 +17,9 @@
 "Module for defining and modifying global configs"
 
 
-import dataclasses
 import os
 import pathlib
-from typing import Any, Union
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -49,43 +48,3 @@ class Config:
         # We use object.__setattr__ because we set frozen=True, same as what dataclasses does:
         # https://docs.python.org/3/library/dataclasses.html#frozen-instances
         object.__setattr__(self, 'DATADIR', pathlib.Path(os.path.abspath(self.DATADIR)))
-
-
-def get_config() -> Config:
-    """Function used to return global PyDAX configs.
-
-    :return: Read-only global configs represented as a data class
-    """
-    return global_config  # type: ignore [name-defined]
-
-
-def init(update_only: bool = True, **kwargs: Any) -> None:
-    """
-    (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
-
-    :param update_only: If ``True``, only update in the global configs what config is specified; reuse schemata loaded
-        by high-level functions if URLs do not change. Otherwise, reset everything to default in global configs except
-        those specified as keyword arguments; clear all schemata loaded by high-level functions.
-    :param DATASET_SCHEMA_URL: The default dataset schema file URL.
-    :param FORMAT_SCHEMA_URL: The default format schema file URL.
-    :param LICENSE_SCHEMA_URL: The default license schema file URL.
-    :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
-        the current working directory, but will be converted to the absolute path immediately in this function.
-        Defaults to: ~/.pydax/data
-    """
-    global global_config
-
-    if update_only:
-        # We don't use dataclasses.replace here because it is uncertain whether it would work well with
-        # pydantic.dataclasses.
-        prev = dataclasses.asdict(global_config)  # type: ignore [name-defined]
-        prev.update(kwargs)
-        global_config = Config(**prev)  # type: ignore [name-defined]
-    else:
-        global_config = Config(**kwargs)  # type: ignore [name-defined]
-        # TODO: Should update _schemata to None here. This can't be done right now because there's a circular imports.
-        # We should address this by moving all high-level APIs to one module and they should not be used by our
-        # low-level functions.
-
-
-init(update_only=False)

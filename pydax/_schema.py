@@ -19,11 +19,10 @@
 
 from abc import ABC
 from copy import deepcopy
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Union
 
 import yaml
 
-from ._config import get_config
 from . import _typing
 from ._schema_retrieval import retrieve_schema_file
 
@@ -117,50 +116,3 @@ class SchemaManager():
         if not isinstance(val, Schema):
             raise TypeError('val must be a Schema instance.')
         self.schemata[name] = val
-
-
-# The SchemaManager object that is managed by high-level functions
-_schemata: Optional[SchemaManager] = None
-
-
-def load_schemata(*, force_reload: bool = False) -> None:
-    """Loads a :class:`SchemaManager` object that stores all schemata. To export the loaded :class:`SchemaManager`
-    object, please use :func:`.export_schemata`.
-
-    :param force_reload: If ``True``, force reloading even if the provided URLs by :func:`pydax.init` are the same as
-         provided last time. Otherwise, only those that are different from previous given ones are reloaded.
-    """
-    urls = {
-        'datasets': get_config().DATASET_SCHEMA_URL,
-        'formats': get_config().FORMAT_SCHEMA_URL,
-        'licenses': get_config().LICENSE_SCHEMA_URL
-    }
-
-    global _schemata
-    if force_reload or _schemata is None:  # Force reload or clean slate, create a new SchemaManager object
-        _schemata = SchemaManager(**{name: Schema(url) for name, url in urls.items()})
-    else:
-        for name, schema in _schemata.schemata.items():
-            if schema.retrieved_url_or_path != urls[name]:
-                _schemata.add_schema(name, Schema(urls[name]))
-
-
-def get_schemata() -> SchemaManager:
-    """Return the :class:`SchemaManager` object managed by high-level functions. If it is not created, create it. This
-    function is used by high-level APIs but it should not be a high-level function itself. It should only be used
-    internally when the need to modify the managed :class`SchemaManager` object arises. It should not be exposed for the
-    same reason: users should not have this easy access to modify the managed :class`SchemaManager` object."""
-
-    global _schemata
-
-    if _schemata is None:
-        load_schemata()
-
-    # The return value is guranteed to be SchemaManager instead of Optional[SchemaManager] after load_schemata
-    return _schemata  # type: ignore [return-value]
-
-
-def export_schemata() -> SchemaManager:
-    "Return a copy of the ``SchemaManager`` object managed by high-level functions."
-
-    return deepcopy(get_schemata())
