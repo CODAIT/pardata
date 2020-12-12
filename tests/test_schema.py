@@ -16,10 +16,13 @@
 
 import abc
 import datetime
+import json
 
 import pytest
 
+from pydax import export_schemata, init, load_schemata
 from pydax.schema import Schema, SchemaManager
+from pydax._schema import get_schemata
 
 
 class TestBaseSchema:
@@ -30,6 +33,12 @@ class TestBaseSchema:
 
         assert Schema.__bases__ == (abc.ABC,)
 
+    def test_retrieved_url_or_path(self, schema_file_relative_dir):
+        "Test whether retrieved_url_or_path gives the correct value."
+
+        url_or_path = schema_file_relative_dir / 'datasets.yaml'
+        assert Schema(url_or_path).retrieved_url_or_path == url_or_path
+
 
 class TestSchema:
     "Test the functionality of the schema classes."
@@ -37,14 +46,44 @@ class TestSchema:
     def test_loading_schemata(self, loaded_schemata):
         "Test basic functioning of loading and parsing the schema files."
 
-        assert loaded_schemata.schemata['dataset_schema'] \
+        assert loaded_schemata.schemata['datasets'] \
             .export_schema()['datasets']['gmb']['1.0.2']['published'] == datetime.date(2019, 12, 19)
-        assert loaded_schemata.schemata['license_schema'] \
+        assert loaded_schemata.schemata['licenses'] \
             .export_schema()['licenses']['cdla_sharing']['commercial_use'] is True
-        assert loaded_schemata.schemata['format_schema'] \
+        assert loaded_schemata.schemata['formats'] \
             .export_schema('formats', 'csv', 'name') == 'Comma-Separated Values'
-        assert loaded_schemata.schemata['dataset_schema'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
-            loaded_schemata.schemata['dataset_schema'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
+        assert loaded_schemata.schemata['datasets'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
+            loaded_schemata.schemata['datasets'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
+
+    def test_load_schemata(self, loaded_schemata, schema_file_absolute_dir):
+        "Test load_schemata."
+
+        init(update_only=False,
+             DATASET_SCHEMA_URL=loaded_schemata.schemata['datasets'].retrieved_url_or_path,
+             FORMAT_SCHEMA_URL=loaded_schemata.schemata['formats'].retrieved_url_or_path,
+             LICENSE_SCHEMA_URL=loaded_schemata.schemata['licenses'].retrieved_url_or_path)
+        load_schemata(force_reload=True)
+        for name in ('datasets', 'formats', 'licenses'):
+            assert (get_schemata().schemata[name].retrieved_url_or_path ==
+                    loaded_schemata.schemata[name].retrieved_url_or_path)
+
+        init(update_only=True,
+             # different from the previous relative path used in loaded_schemata
+             DATASET_SCHEMA_URL=schema_file_absolute_dir / 'datasets.yaml')
+        load_schemata(force_reload=False)
+        for name in ('formats', 'licenses'):
+            assert (get_schemata().schemata[name].retrieved_url_or_path ==
+                    loaded_schemata.schemata[name].retrieved_url_or_path)
+        assert get_schemata().schemata['datasets'].retrieved_url_or_path == schema_file_absolute_dir / 'datasets.yaml'
+
+    def test_exporting_schemata(self):
+        "Test basic functionality of exporting schemata."
+
+        assert export_schemata() is not get_schemata()
+        # The two returned schemata should equal
+        assert (json.dumps(export_schemata().schemata['datasets'].export_schema(),
+                           sort_keys=True, indent=2, default=str) ==
+                json.dumps(get_schemata().schemata['datasets'].export_schema(), sort_keys=True, indent=2, default=str))
 
 
 def test_schema_manager_value():
