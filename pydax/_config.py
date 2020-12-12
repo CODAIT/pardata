@@ -20,7 +20,7 @@
 import dataclasses
 import os
 import pathlib
-from typing import Any
+from typing import Any, Union
 
 from pydantic.dataclasses import dataclass
 
@@ -31,9 +31,14 @@ class Config:
     """
 
     # Default schema URLs
-    DEFAULT_DATASET_SCHEMA_URL: str = 'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/datasets.yaml'
-    DEFAULT_FORMAT_SCHEMA_URL: str = 'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/formats.yaml'
-    DEFAULT_LICENSE_SCHEMA_URL: str = 'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/licenses.yaml'
+    # TODO: The types below should be _typing.PathLike. However, pydantic does not play well with os.PathLike for
+    # validation. Will have to fix it in another occasion.
+    DATASET_SCHEMA_URL: Union[str, pathlib.Path] = \
+        'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/datasets.yaml'
+    FORMAT_SCHEMA_URL: Union[str, pathlib.Path] = \
+        'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/formats.yaml'
+    LICENSE_SCHEMA_URL: Union[str, pathlib.Path] = \
+        'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/licenses.yaml'
 
     # DATADIR is the default dir where datasets files are downloaded/loaded to/from.
     DATADIR: pathlib.Path = pathlib.Path.home() / '.pydax' / 'data'
@@ -58,11 +63,12 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
     """
     (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
 
-    :param update_only: If ``True``, only update in the global configs what config is specified. Otherwise, reset
-        everything to default in global configs except those specified as keyword arguments.
-    :param DEFAULT_DATASET_SCHEMA_URL: The default dataset schema file URL.
-    :param DEFAULT_FORMAT_SCHEMA_URL: The default format schema file URL.
-    :param DEFAULT_LICENSE_SCHEMA_URL: The default license schema file URL.
+    :param update_only: If ``True``, only update in the global configs what config is specified; reuse schemata loaded
+        by high-level functions if URLs do not change. Otherwise, reset everything to default in global configs except
+        those specified as keyword arguments; clear all schemata loaded by high-level functions.
+    :param DATASET_SCHEMA_URL: The default dataset schema file URL.
+    :param FORMAT_SCHEMA_URL: The default format schema file URL.
+    :param LICENSE_SCHEMA_URL: The default license schema file URL.
     :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
         the current working directory, but will be converted to the absolute path immediately in this function.
         Defaults to: ~/.pydax/data
@@ -77,6 +83,9 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
         global_config = Config(**prev)  # type: ignore [name-defined]
     else:
         global_config = Config(**kwargs)  # type: ignore [name-defined]
+        # TODO: Should update _schemata to None here. This can't be done right now because there's a circular imports.
+        # We should address this by moving all high-level APIs to one module and they should not be used by our
+        # low-level functions.
 
 
 init(update_only=False)
