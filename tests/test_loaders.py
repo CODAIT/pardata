@@ -141,7 +141,7 @@ class TestTableLoaders:
                                  # Two columns specified
                                  [Column('DATE', 'datetime', is_datetime64_any_dtype),
                                   Column('HOURLYPressureTendencyCons', 'float', is_float_dtype)],
-                                 # No column specified
+                                 # No column specified (let Pandas autodetect dtype)
                                  [Column('DATE', None, is_string_dtype),
                                   Column('HOURLYPressureTendencyCons', None, is_integer_dtype),
                                   Column('HOURLYVISIBILITY', None, is_float_dtype)],
@@ -151,7 +151,7 @@ class TestTableLoaders:
 
         assert len(columns) > 0  # Sanity check, make sure columns are there
 
-        # clear columns
+        # Clear columns
         column_dict = noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['columns'] = {}
 
         # Update column dictionary as specified
@@ -181,7 +181,7 @@ class TestTableLoaders:
                                                       err_column, other_columns):
         "Test column data types when they are unsupported."
 
-        # clear columns
+        # Clear columns
         column_dict = noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['columns'] = {}
 
         # Update column dictionary as specified
