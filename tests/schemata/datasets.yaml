@@ -79,4 +79,6 @@ datasets:
               encoding: 'UTF-8'
               columns:
                 DATE: 'datetime'
+                # Would have been int in pandas if unspecified. Put this here to have some dtype processing code ran more frequently in test code
+                HOURLYPressureTendencyCons: 'float'
           path: noaa-weather-data-jfk-airport/jfk_weather_cleaned.csv

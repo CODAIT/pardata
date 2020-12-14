@@ -14,8 +14,12 @@
 # limitations under the License.
 #
 
+from collections import namedtuple
+import re
+
 import pytest
 import pandas as pd
+from pandas.api.types import is_datetime64_any_dtype, is_float_dtype, is_integer_dtype, is_string_dtype
 
 from pydax.dataset import Dataset
 from pydax.loaders import Loader
@@ -123,7 +127,78 @@ class TestTableLoaders:
         dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         data = dataset.data['jfk_weather_cleaned']
         assert isinstance(data, pd.DataFrame)
-        assert len(data) == 75119
+        assert data.shape == (75119, 16)
+
+    Column = namedtuple('Column', ('name', 'dtype', 'check'))
+
+    @pytest.mark.parametrize('columns',  # a list of Column (column name, specified data type, check function)
+                             [
+                                 # Only one column specified
+                                 [Column('DATE', 'datetime', is_datetime64_any_dtype)],
+                                 [Column('DATE', 'str', is_string_dtype)],
+                                 [Column('DATE', 'string', is_string_dtype)],
+                                 [Column('HOURLYPressureTendencyCons', 'float', is_float_dtype)],
+                                 # Two columns specified
+                                 [Column('DATE', 'datetime', is_datetime64_any_dtype),
+                                  Column('HOURLYPressureTendencyCons', 'float', is_float_dtype)],
+                                 # No column specified (let Pandas autodetect dtype)
+                                 [Column('DATE', None, is_string_dtype),
+                                  Column('HOURLYPressureTendencyCons', None, is_integer_dtype),
+                                  Column('HOURLYVISIBILITY', None, is_float_dtype)],
+                             ])
+    def test_csv_pandas_column_data_types(self, tmp_path, noaa_jfk_schema, columns):
+        "Test the column data types."
+
+        assert len(columns) > 0  # Sanity check, make sure columns are there
+
+        # Clear columns
+        column_dict = noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['columns'] = {}
+
+        # Update column dictionary as specified
+        for col in columns:
+            if col.dtype is not None:
+                column_dict[col.name] = col.dtype
+
+        dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        data = dataset.data['jfk_weather_cleaned']
+        for col in columns:
+            assert col.check(data.dtypes[col.name])
+
+    @pytest.mark.parametrize(('err_column',  # (column name, specified data type, default dtype checked for conversion)
+                              'other_columns'),  # (column name, specified data type, None)
+                             [
+                                 # Only one unsupported specified
+                                 (Column('DATE', 'float', 'str'), []),
+                                 (Column('HOURLYVISIBILITY', 'int', 'float'), []),
+                                 # Some supported specified
+                                 (Column('DATE', 'float', 'str'), [Column('HOURLYPressureTendencyCons', 'int', None)]),
+                                 (Column('HOURLYVISIBILITY', 'int', 'float'), [Column('DATE', 'datetime', None)]),
+                                 # More than one unsupported specified. The error that raises the exception should be
+                                 # put as err_column.
+                                 (Column('DATE', 'float', 'str'), [Column('HOURLYVISIBILITY', 'int', 'float')]),
+                             ])
+    def test_csv_pandas_column_unsupported_data_types(self, tmp_path, noaa_jfk_schema,
+                                                      err_column, other_columns):
+        "Test column data types when they are unsupported."
+
+        # Clear columns
+        column_dict = noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['columns'] = {}
+
+        # Update column dictionary as specified
+        for col in other_columns:
+            if col.dtype is not None:
+                column_dict[col.name] = col.dtype
+        column_dict[err_column.name] = err_column.dtype
+
+        with pytest.raises(ValueError) as e:
+            Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        # Pandas is a 3rd-party library. We don't check for the exact wording but only some keywords
+        # Examples:
+        #   ValueError: cannot safely convert passed user dtype of int64 for float64 dtyped data in column 1
+        #   ValueError: could not convert string to float: '2010-01-01 01:00:00'
+        assert 'convert' in str(e.value)
+        for t in (err_column.dtype, err_column.check):
+            assert re.search(rf"{t}(\d*|ing)\b", str(e.value))  # "ing" is for "str'ing'"
 
     def test_csv_pandas_loader_no_path(self):
         "Test CSVPandasLoader when fed in with non-path."
