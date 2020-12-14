@@ -200,6 +200,26 @@ class TestTableLoaders:
         for t in (err_column.dtype, err_column.check):
             assert re.search(rf"{t}(\d*|ing)\b", str(e.value))  # "ing" is for "str'ing'"
 
+    def test_csv_pandas_no_delimiter(self, tmp_path, noaa_jfk_schema):
+        "Test when no delimiter is given."
+        # Remove the delimiter option
+        del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['delimiter']
+        data = Dataset(noaa_jfk_schema, tmp_path,
+                       mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD).data['jfk_weather_cleaned']
+        assert len(data.columns) == 16  # Number of columns remain the same
+
+    @pytest.mark.parametrize('delimiter', ('\t', ' ', '|', ';'))
+    def test_csv_pandas_delimiter(self, tmp_path, noaa_jfk_schema, delimiter):
+        "Test common delimiter settings. Note that the case of comma has been tested in ``test_csv_pandas_loader``."
+
+        del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['columns']
+        # Change delimiter to tab, |, ;, space
+        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['delimiter'] = delimiter
+        data = Dataset(noaa_jfk_schema, tmp_path,
+                       mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD).data['jfk_weather_cleaned']
+        # None of these delimiters exist in the file, number of columns should be 1
+        assert len(data.columns) == 1
+
     def test_csv_pandas_loader_no_path(self):
         "Test CSVPandasLoader when fed in with non-path."
 
