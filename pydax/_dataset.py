@@ -23,6 +23,7 @@ import hashlib
 import json
 import os
 import pathlib
+import shutil
 import tarfile
 from typing import Any, Dict, IO, Iterable, Iterator, Optional, Union
 
@@ -168,6 +169,11 @@ class Dataset:
                 raise FileNotFoundError(f'Failed to load subdataset "{subdataset}" because some files are not found. '
                                         f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n'
                                         f'{e}')
+
+    def delete(self) -> None:
+        "Clear the data directory."
+        if self._data_dir_.exists():
+            shutil.rmtree(self._data_dir_)
 
     @property
     def data(self) -> Dict[str, Any]:
