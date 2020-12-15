@@ -22,11 +22,14 @@ import os
 import pathlib
 import tarfile
 
+import pandas as pd
 import pytest
 from packaging.version import parse as version_parser
 
 from pydax import init, get_dataset_metadata, list_all_datasets, load_dataset
 from pydax.dataset import Dataset
+from pydax.loaders import FormatLoaderMap
+from pydax.loaders.text import PlainTextLoader
 
 
 def test_list_all_datasets():
@@ -94,6 +97,21 @@ class TestDataset:
         assert (hashlib.sha512(downloaded_wikitext103_dataset.data['test'].encode()).hexdigest() ==
                 ('6fe665d33c0f788eba76da50539f0ca02432c70c94b788a493da491215e86043fc732dbeef9bb'
                  '49a72341c7283ea55f59d10941ac41f7ac58aea3bdcd72f5cd8'))
+
+    def test_load_format_loader_map_param(self, downloaded_noaa_jfk_dataset):
+        "Test ``format_loader_map`` param in ``Dataset.load``."
+
+        # Default
+        downloaded_noaa_jfk_dataset.load(format_loader_map=None)
+        data = downloaded_noaa_jfk_dataset.data['jfk_weather_cleaned']
+        assert isinstance(data, pd.DataFrame)
+
+        # Load CSV using the plain text loader
+        downloaded_noaa_jfk_dataset.load(format_loader_map=FormatLoaderMap({
+            'csv': PlainTextLoader()
+        }))
+        data = downloaded_noaa_jfk_dataset.data['jfk_weather_cleaned']
+        assert isinstance(data, str)
 
     def test_constructor_download_and_load(self, tmp_path, wikitext103_schema):
         "Test the full power of Dataset.__init__() (mode being ``InitializationMode.DOWNLOAD_AND_LOAD``)."
