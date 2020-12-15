@@ -38,6 +38,7 @@ class CSVPandasLoader(Loader):
                  supported dtype. If unspecified, then it is default.
                - ``delimiter`` key specifies the delimiter of the input CSV file.
                - ``header`` key specifies if the first row of the CSV file contains the headers. Defaults to True
+                 If the value set to anything other than False, it will be treated as True.
                - ``encoding`` key specifies the encoding of the CSV file. Defaults to UTF-8.
         :raises TypeError: ``path`` is not a path object.
         """
@@ -57,7 +58,10 @@ class CSVPandasLoader(Loader):
                 dtypes[column] = type_
 
         names = None
-        if options.get('header', True) is False:
+        header = None
+        if options.get('header', True):
+            header = 'infer'
+        else:
             # If no header use the columns provided in schema
             names = [*options.get('columns', {})]
 
@@ -65,6 +69,6 @@ class CSVPandasLoader(Loader):
                            # The following line after "if" is for circumventing
                            # https://github.com/pandas-dev/pandas/issues/38489
                            parse_dates=parse_dates if len(parse_dates) > 0 else False,
-                           names=names,
+                           header=header, names=names,
                            encoding=options.get('encoding', 'utf-8'),
                            delimiter=options.get('delimiter', ','))
