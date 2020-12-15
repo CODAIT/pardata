@@ -37,7 +37,7 @@ class CSVPandasLoader(Loader):
                - ``columns`` key specifies the data type of each column. Each data type corresponds to a Pandas'
                  supported dtype. If unspecified, then it is default.
                - ``delimiter`` key specifies the delimiter of the input CSV file.
-               - ``header`` key specifies if the first row of the CSV file contains the headers. Defaults to True
+               - ``header`` key specifies if the first row of the CSV file contains the headers. Defaults to True.
                  If the value set to anything other than False, it will be treated as True.
                - ``encoding`` key specifies the encoding of the CSV file. Defaults to UTF-8.
         :raises TypeError: ``path`` is not a path object.
