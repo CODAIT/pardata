@@ -206,7 +206,7 @@ class TestTableLoaders:
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['delimiter']
         data = Dataset(noaa_jfk_schema, tmp_path,
                        mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD).data['jfk_weather_cleaned']
-        assert len(data.columns) == 16  # Number of columns remain the same
+        assert len(data.columns) == 16  # number of columns remain the same
 
     @pytest.mark.parametrize('delimiter', ('\t', ' ', '|', ';'))
     def test_csv_pandas_delimiter(self, tmp_path, noaa_jfk_schema, delimiter):
