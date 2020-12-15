@@ -18,6 +18,7 @@ import copy
 import hashlib
 import json
 from json import JSONDecodeError
+import os
 import pathlib
 import tarfile
 
@@ -122,7 +123,7 @@ class TestDataset:
                 'Did you forget to call Dataset.download()?\nCaused by:\n') in str(e.value)
 
     def test_unloaded_access_to_data(self, tmp_path, gmb_schema):
-        "Test access to `Dataset.data` when no data has been loaded."
+        "Test access to ``Dataset.data`` when no data has been loaded."
 
         dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
         with pytest.raises(RuntimeError) as e:
@@ -134,6 +135,25 @@ class TestDataset:
         with pytest.raises(RuntimeError) as e:
             dataset.data
         assert str(e.value) == 'Data has not been loaded yet. Call Dataset.load() to load data.'
+
+    def test_deleting_data_dir(self, tmp_path, gmb_schema):
+        "Test ``Dataset.delete()``."
+
+        # Note we don't use tmp_sub_dir fixture because we want data_dir to be non-existing at the beginning of the
+        # test.
+        data_dir = tmp_path / 'data-dir'
+        dataset = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
+        assert not data_dir.exists()  # sanity check: data_dir doesn't exist
+        dataset.delete()  # no exception should be raised here
+        assert not data_dir.exists()  # sanity check: data_dir doesn't exist
+
+        dataset.download()
+        # Sanity check: Files are in place
+        assert dataset.is_downloaded()
+        assert len(os.listdir(data_dir)) > 0
+        # Delete the dir
+        dataset.delete()
+        assert not data_dir.exists()
 
     def test_data_dir_is_not_a_dir(self, gmb_schema):
         "Test when ``data_dir`` exists and is not a dir."
