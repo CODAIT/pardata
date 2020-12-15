@@ -55,6 +55,9 @@ class CSVPandasLoader(Loader):
             else:
                 dtypes[column] = type_
 
-        return pd.read_csv(path, parse_dates=parse_dates, dtype=dtypes,
+        return pd.read_csv(path, dtype=dtypes,
+                           # The following line after "if" is for circumventing
+                           # https://github.com/pandas-dev/pandas/issues/38489
+                           parse_dates=parse_dates if len(parse_dates) > 0 else False,
                            encoding=options.get('encoding', 'utf-8'),
                            delimiter=options.get('delimiter', ','))

@@ -217,7 +217,7 @@ class TestTableLoaders:
         noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['delimiter'] = delimiter
         data = Dataset(noaa_jfk_schema, tmp_path,
                        mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD).data['jfk_weather_cleaned']
-        # None of these delimiters exist in the file, number of columns should be 1
+        # None of these delimiters exist in the file, number of columns should be 1.
         assert len(data.columns) == 1
 
     def test_csv_pandas_loader_no_path(self):
