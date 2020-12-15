@@ -247,10 +247,19 @@ class TestTableLoaders:
     def test_csv_pandas_header(self, tmp_path, noaa_jfk_schema):
         "Test CSVPandasLoader header options"
 
-        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['header'] = True
-        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
-
-        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['header'] = False
+        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = True
         with pytest.raises(ValueError) as exinfo:  # Pandas should error from trying to read string as another dtype
             Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         assert('could not convert string to float' in str(exinfo.value))
+
+        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = False
+        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+
+        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = ''
+        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+
+        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = None
+        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+
+        del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header']
+        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)

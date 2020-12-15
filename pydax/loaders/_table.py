@@ -37,8 +37,8 @@ class CSVPandasLoader(Loader):
                - ``columns`` key specifies the data type of each column. Each data type corresponds to a Pandas'
                  supported dtype. If unspecified, then it is default.
                - ``delimiter`` key specifies the delimiter of the input CSV file.
-               - ``header`` key specifies if the first row of the CSV file contains the headers. Defaults to True.
-                 If the value set to anything other than False, it will be treated as True.
+               - ``no_header`` key specifies if the first row of the CSV file contains the headers. Defaults to False.
+                 If the value is set to anything "truthy" in Python, the first row of the CSV will be read as data.
                - ``encoding`` key specifies the encoding of the CSV file. Defaults to UTF-8.
         :raises TypeError: ``path`` is not a path object.
         """
@@ -59,11 +59,11 @@ class CSVPandasLoader(Loader):
 
         names = None
         header = None
-        if options.get('header', True):
-            header = 'infer'
-        else:
+        if options.get('no_header'):
             # If no header use the columns provided in schema
             names = [*options.get('columns', {})]
+        else:
+            header = 'infer'
 
         return pd.read_csv(path, dtype=dtypes,
                            # The following line after "if" is for circumventing
