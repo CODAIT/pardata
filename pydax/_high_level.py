@@ -197,7 +197,7 @@ def get_dataset_metadata(name: str, *,
 def export_schemata() -> SchemaManager:
     "Return a copy of the ``SchemaManager`` object managed by high-level functions."
 
-    return deepcopy(get_schemata())
+    return deepcopy(_get_schemata())
 
 
 # The SchemaManager object that is managed by high-level functions
@@ -226,7 +226,7 @@ def load_schemata(*, force_reload: bool = False) -> None:
                 _schemata.add_schema(name, Schema(urls[name]))
 
 
-def get_schemata() -> SchemaManager:
+def _get_schemata() -> SchemaManager:
     """Return the :class:`SchemaManager` object managed by high-level functions. If it is not created, create it. This
     function is used by high-level APIs but it should not be a high-level function itself. It should only be used
     internally when the need to modify the managed :class`SchemaManager` object arises. It should not be exposed for the

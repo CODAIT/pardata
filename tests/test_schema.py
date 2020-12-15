@@ -22,7 +22,7 @@ import pytest
 
 from pydax import export_schemata, init, load_schemata
 from pydax.schema import Schema, SchemaManager
-from pydax._high_level import get_schemata
+from pydax._high_level import _get_schemata
 
 
 class TestBaseSchema:
@@ -64,7 +64,7 @@ class TestSchema:
              LICENSE_SCHEMA_URL=loaded_schemata.schemata['licenses'].retrieved_url_or_path)
         load_schemata(force_reload=True)
         for name in ('datasets', 'formats', 'licenses'):
-            assert (get_schemata().schemata[name].retrieved_url_or_path ==
+            assert (_get_schemata().schemata[name].retrieved_url_or_path ==
                     loaded_schemata.schemata[name].retrieved_url_or_path)
 
         init(update_only=True,
@@ -72,18 +72,18 @@ class TestSchema:
              DATASET_SCHEMA_URL=schema_file_absolute_dir / 'datasets.yaml')
         load_schemata(force_reload=False)
         for name in ('formats', 'licenses'):
-            assert (get_schemata().schemata[name].retrieved_url_or_path ==
+            assert (_get_schemata().schemata[name].retrieved_url_or_path ==
                     loaded_schemata.schemata[name].retrieved_url_or_path)
-        assert get_schemata().schemata['datasets'].retrieved_url_or_path == schema_file_absolute_dir / 'datasets.yaml'
+        assert _get_schemata().schemata['datasets'].retrieved_url_or_path == schema_file_absolute_dir / 'datasets.yaml'
 
     def test_exporting_schemata(self):
         "Test basic functionality of exporting schemata."
 
-        assert export_schemata() is not get_schemata()
+        assert export_schemata() is not _get_schemata()
         # The two returned schemata should equal
         assert (json.dumps(export_schemata().schemata['datasets'].export_schema(),
                            sort_keys=True, indent=2, default=str) ==
-                json.dumps(get_schemata().schemata['datasets'].export_schema(), sort_keys=True, indent=2, default=str))
+                json.dumps(_get_schemata().schemata['datasets'].export_schema(), sort_keys=True, indent=2, default=str))
 
 
 def test_schema_manager_value():
