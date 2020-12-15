@@ -36,6 +36,7 @@ class CSVPandasLoader(Loader):
         :param options:
                - ``columns`` key specifies the data type of each column. Each data type corresponds to a Pandas'
                  supported dtype. If unspecified, then it is default.
+               - ``delimiter`` key specifies the delimiter of the input CSV file.
                - ``encoding`` key specifies the encoding of the CSV file. Defaults to UTF-8.
         :raises TypeError: ``path`` is not a path object.
         """
@@ -54,4 +55,9 @@ class CSVPandasLoader(Loader):
             else:
                 dtypes[column] = type_
 
-        return pd.read_csv(path, parse_dates=parse_dates, dtype=dtypes, encoding=options.get('encoding', 'utf-8'))
+        return pd.read_csv(path, dtype=dtypes,
+                           # The following line after "if" is for circumventing
+                           # https://github.com/pandas-dev/pandas/issues/38489
+                           parse_dates=parse_dates if len(parse_dates) > 0 else False,
+                           encoding=options.get('encoding', 'utf-8'),
+                           delimiter=options.get('delimiter', ','))
