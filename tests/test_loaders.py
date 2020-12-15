@@ -243,3 +243,13 @@ class TestTableLoaders:
 
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['encoding']
         self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+
+    def test_csv_pandas_header(self, tmp_path, noaa_jfk_schema):
+        "Test CSVPandasLoader header options"
+
+        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['header'] = True
+        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+
+        with pytest.raises(ValueError):  # Pandas should error from trying to read string as another dtype
+            noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['header'] = False
+            dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
