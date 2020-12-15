@@ -18,9 +18,13 @@
 
 
 from . import dataset, loaders, schema
-from ._config import get_config, init
-from ._dataset import get_dataset_metadata, list_all_datasets, load_dataset
-from ._schema import export_schemata, load_schemata
+from ._high_level import (export_schemata,
+                          get_config,
+                          get_dataset_metadata,
+                          init,
+                          list_all_datasets,
+                          load_dataset,
+                          load_schemata)
 from ._version import version as __version__
 
 __all__ = (
@@ -28,15 +32,13 @@ __all__ = (
            'dataset',
            'loaders',
            'schema',
-           # _config
+           # high-level functions
+           'export_schemata',
            'get_config',
-           'init',
-           # _dataset
            'get_dataset_metadata',
+           'init',
            'list_all_datasets',
            'load_dataset',
-           # _schema
-           'export_schemata',
            'load_schemata',
            # _version
            '__version__'
