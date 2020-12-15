@@ -62,7 +62,6 @@ class CSVPandasLoader(Loader):
             header = None
             # If no header use the columns provided in schema
             names = [*options.get('columns', {})]
-            print(names)
 
         return pd.read_csv(path, dtype=dtypes,
                            # The following line after "if" is for circumventing
