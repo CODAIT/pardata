@@ -252,4 +252,4 @@ class TestTableLoaders:
 
         with pytest.raises(ValueError):  # Pandas should error from trying to read string as another dtype
             noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['header'] = False
-            dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+            Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)

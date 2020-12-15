@@ -56,10 +56,8 @@ class CSVPandasLoader(Loader):
             else:
                 dtypes[column] = type_
 
-        header = 'infer'
         names = None
         if options.get('header', True) is False:
-            header = None
             # If no header use the columns provided in schema
             names = [*options.get('columns', {})]
 
@@ -67,6 +65,6 @@ class CSVPandasLoader(Loader):
                            # The following line after "if" is for circumventing
                            # https://github.com/pandas-dev/pandas/issues/38489
                            parse_dates=parse_dates if len(parse_dates) > 0 else False,
-                           header=header, names=names,
+                           names=names,
                            encoding=options.get('encoding', 'utf-8'),
                            delimiter=options.get('delimiter', ','))
