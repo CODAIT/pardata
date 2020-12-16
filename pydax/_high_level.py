@@ -28,6 +28,8 @@ from ._config import Config
 from ._dataset import Dataset
 from ._schema import Schema, SchemaDict, SchemaManager
 
+# Global configurations --------------------------------------------------
+
 
 def get_config() -> Config:
     """Returns global PyDAX configs.
@@ -69,6 +71,8 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
 
 
 init(update_only=False)
+
+# Dataset --------------------------------------------------
 
 
 def list_all_datasets() -> Dict[str, Tuple]:
@@ -194,6 +198,8 @@ def get_dataset_metadata(name: str, *,
                 f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
     else:
         return dataset_schema
+
+# Schemata --------------------------------------------------
 
 
 def export_schemata() -> SchemaManager:
