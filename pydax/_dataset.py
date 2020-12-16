@@ -25,12 +25,13 @@ import os
 import pathlib
 import shutil
 import tarfile
-from typing import Any, Dict, IO, Iterable, Iterator, Optional, Union
+from typing import Any, Dict, IO, Iterable, Iterator, Optional
 
 import requests
 
 from . import _typing
 from .schema import SchemaDict
+from .loaders import FormatLoaderMap
 from .loaders._format_loader_map import load_data_files
 
 
@@ -149,10 +150,13 @@ class Dataset:
 
         os.remove(archive_fp)
 
-    def load(self, subdatasets: Union[Iterable[str], None] = None) -> None:
+    def load(self,
+             subdatasets: Optional[Iterable[str]] = None,
+             format_loader_map: Optional[FormatLoaderMap] = None) -> None:
         """Load data files to RAM. The loaded data objects can be retrieved via :attr:`data`.
 
         :param subdatasets: The subdatasets to load. None means all subdatasets.
+        :param format_loader_map: The :class:`FormatLoaderMap` object that determines which loader to use.
         :raises FileNotFoundError: The dataset files are not found on the disk. Usually this is because
             :func:`~Dataset.download` has never been called.
         """
@@ -164,7 +168,8 @@ class Dataset:
             subdataset_schema = self._schema['subdatasets'][subdataset]
             try:
                 self._data[subdataset] = load_data_files(fmt=subdataset_schema['format'],
-                                                         path=self._data_dir / subdataset_schema['path'])
+                                                         path=self._data_dir / subdataset_schema['path'],
+                                                         format_loader_map=format_loader_map)
             except FileNotFoundError as e:
                 raise FileNotFoundError(f'Failed to load subdataset "{subdataset}" because some files are not found. '
                                         f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n'

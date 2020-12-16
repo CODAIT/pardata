@@ -298,3 +298,9 @@ def downloaded_wikitext103_dataset(wikitext103_schema) -> Dataset:
 def downloaded_gmb_dataset(gmb_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(gmb_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+@pytest.fixture
+def downloaded_noaa_jfk_dataset(noaa_jfk_schema) -> Dataset:
+    with TemporaryDirectory() as tmp_data_dir:
+        yield Dataset(noaa_jfk_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
