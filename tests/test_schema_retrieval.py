@@ -26,11 +26,10 @@ class TestSchemaRetrieval:
                              ('absolute_dir',
                               'relative_dir',
                               'file_url',
-                              'http_url'))
+                              'http_url',
+                              'https_url'))
     def test_custom_schema(self, location_type, schema_file_relative_dir, request):
         "Test retrieving user-specified schema files."
-
-        # TODO: Add https tests here when we add stronger security measurements
 
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
