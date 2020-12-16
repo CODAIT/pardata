@@ -37,6 +37,10 @@ def get_config() -> Config:
     return _global_config  # type: ignore [name-defined]
 
 
+# The SchemaManager object that is managed by high-level functions
+_schemata: Optional[SchemaManager] = None
+
+
 def init(update_only: bool = True, **kwargs: Any) -> None:
     """
     (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
@@ -51,7 +55,7 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
         the current working directory, but will be converted to the absolute path immediately in this function.
         Defaults to: ~/.pydax/data
     """
-    global _global_config
+    global _global_config, _schemata
 
     if update_only:
         # We don't use dataclasses.replace here because it is uncertain whether it would work well with
@@ -61,9 +65,7 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
         _global_config = Config(**prev)  # type: ignore [name-defined]
     else:
         _global_config = Config(**kwargs)  # type: ignore [name-defined]
-        # TODO: Should update _schemata to None here. This can't be done right now because there's a circular imports.
-        # We should address this by moving all high-level APIs to one module and they should not be used by our
-        # low-level functions.
+        _schemata = None
 
 
 init(update_only=False)
@@ -200,10 +202,6 @@ def export_schemata() -> SchemaManager:
     return deepcopy(_get_schemata())
 
 
-# The SchemaManager object that is managed by high-level functions
-_schemata: Optional[SchemaManager] = None
-
-
 def load_schemata(*, force_reload: bool = False) -> None:
     """Loads a :class:`SchemaManager` object that stores all schemata. To export the loaded :class:`SchemaManager`
     object, please use :func:`.export_schemata`.
@@ -234,8 +232,7 @@ def _get_schemata() -> SchemaManager:
 
     global _schemata
 
-    if _schemata is None:
-        load_schemata()
+    load_schemata()
 
     # The return value is guranteed to be SchemaManager instead of Optional[SchemaManager] after load_schemata
     return _schemata  # type: ignore [return-value]
