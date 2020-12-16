@@ -71,8 +71,8 @@ _default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
 })
 
 
-def _load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str]], *,
-                     format_loader_map: FormatLoaderMap = None) -> Any:
+def load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str]], *,
+                    format_loader_map: FormatLoaderMap = None) -> Any:
     """Load data files.
 
     :param fmt: The format.
