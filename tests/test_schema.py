@@ -68,7 +68,7 @@ class TestSchema:
                     loaded_schemata.schemata[name].retrieved_url_or_path)
 
         init(update_only=True,
-             # different from the previous relative path used in loaded_schemata
+             # Different from the previous relative path used in loaded_schemata
              DATASET_SCHEMA_URL=schema_file_absolute_dir / 'datasets.yaml')
         load_schemata(force_reload=False)
         for name in ('formats', 'licenses'):
@@ -76,7 +76,7 @@ class TestSchema:
                     loaded_schemata.schemata[name].retrieved_url_or_path)
         assert _get_schemata().schemata['datasets'].retrieved_url_or_path == schema_file_absolute_dir / 'datasets.yaml'
 
-    def test_exporting_schemata(self):
+    def test_exporting_schemata(self, schema_file_absolute_dir, schema_file_http_url):
         "Test basic functionality of exporting schemata."
 
         assert export_schemata() is not _get_schemata()
@@ -84,6 +84,16 @@ class TestSchema:
         assert (json.dumps(export_schemata().schemata['datasets'].export_schema(),
                            sort_keys=True, indent=2, default=str) ==
                 json.dumps(_get_schemata().schemata['datasets'].export_schema(), sort_keys=True, indent=2, default=str))
+
+        # Different from http url used by pydax_initialization autouse fixture
+        new_urls = {
+            'DATASET_SCHEMA_URL': schema_file_absolute_dir / 'datasets.yaml',
+            'LICENSE_SCHEMA_URL': schema_file_absolute_dir / 'licenses.yaml'
+        }
+        init(update_only=True, **new_urls)
+        assert export_schemata().schemata['formats'].retrieved_url_or_path == f'{schema_file_http_url}/formats.yaml'
+        assert export_schemata().schemata['datasets'].retrieved_url_or_path == new_urls['DATASET_SCHEMA_URL']
+        assert export_schemata().schemata['licenses'].retrieved_url_or_path == new_urls['LICENSE_SCHEMA_URL']
 
 
 def test_schema_manager_value():
