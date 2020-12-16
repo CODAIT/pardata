@@ -252,14 +252,10 @@ class TestTableLoaders:
             Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         assert('could not convert string to float' in str(exinfo.value))
 
-        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = False
-        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
-
-        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = ''
-        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
-
-        noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = None
-        self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+        false_test_cases = [False, '', None]  # These should all be treated as False
+        for case in false_test_cases:
+            noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = case
+            self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
 
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header']
         self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
