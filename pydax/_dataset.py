@@ -31,7 +31,7 @@ import requests
 
 from . import _typing
 from .schema import SchemaDict
-from .loaders._format_loader_map import _load_data_files
+from .loaders._format_loader_map import load_data_files
 
 
 class Dataset:
@@ -163,8 +163,8 @@ class Dataset:
         for subdataset in subdatasets:
             subdataset_schema = self._schema['subdatasets'][subdataset]
             try:
-                self._data[subdataset] = _load_data_files(fmt=subdataset_schema['format'],
-                                                          path=self._data_dir / subdataset_schema['path'])
+                self._data[subdataset] = load_data_files(fmt=subdataset_schema['format'],
+                                                         path=self._data_dir / subdataset_schema['path'])
             except FileNotFoundError as e:
                 raise FileNotFoundError(f'Failed to load subdataset "{subdataset}" because some files are not found. '
                                         f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n'
