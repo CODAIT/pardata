@@ -24,19 +24,10 @@ import tarfile
 
 import pandas as pd
 import pytest
-from packaging.version import parse as version_parser
 
-from pydax import init, get_dataset_metadata, list_all_datasets, load_dataset
 from pydax.dataset import Dataset
 from pydax.loaders import FormatLoaderMap
 from pydax.loaders.text import PlainTextLoader
-
-
-def test_list_all_datasets():
-    "Test to make sure test_list_all_datasets function returns available dataset names."
-
-    datasets = list_all_datasets()
-    assert frozenset(datasets.keys()) == frozenset(['gmb', 'noaa_jfk', 'wikitext103'])
 
 
 class TestDataset:
@@ -240,108 +231,3 @@ class TestDataset:
         with pytest.raises(FileExistsError) as e:
             Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert str(e.value) == f"\"{tmp_path/'.pydax.dataset'}\" exists and is not a directory."
-
-
-class TestLoadDataset:
-    "Test load_dataset function."
-
-    def test_name_param(self, tmp_path):
-        "Test to see the name parameter is being handled properly."
-
-        init(DATADIR=tmp_path)
-
-        with pytest.raises(TypeError) as e:
-            load_dataset(123)
-        assert str(e.value) == 'The name parameter must be supplied a str.'
-
-        name = 'fake_dataset'
-        with pytest.raises(KeyError) as e:
-            load_dataset(name)
-        assert str(e.value) == (f'\'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their '
-                                'versions by running the function pydax.list_all_datasets().\'')
-
-    def test_version_param(self, tmp_path):
-        "Test to see the version parameter is being handled properly."
-
-        init(DATADIR=tmp_path)
-
-        with pytest.raises(TypeError) as e:
-            load_dataset('gmb', version=1.0)
-        assert str(e.value) == 'The version parameter must be supplied a str.'
-
-        name, version = 'gmb', ''
-        with pytest.raises(KeyError) as e:
-            load_dataset('gmb', version=version)
-        assert str(e.value) == (f'\'"{version}" is not a valid PyDAX version for the dataset "{name}". '
-                                'You can view all valid datasets and their versions by running the function '
-                                'pydax.list_all_datasets().\'')
-
-        name, version = 'gmb', 'fake_version'
-        with pytest.raises(KeyError) as e:
-            load_dataset('gmb', version=version)
-        assert str(e.value) == (f'\'"{version}" is not a valid PyDAX version for the dataset "{name}". '
-                                'You can view all valid datasets and their versions by running the function '
-                                'pydax.list_all_datasets().\'')
-
-        # If no version specified, make sure latest version grabbed
-        all_datasets = list_all_datasets()
-        latest_version = str(sorted(version_parser(v) for v in all_datasets[name])[-1])
-        assert load_dataset('gmb') == load_dataset('gmb', version=latest_version)
-
-    def test_subdatasets_param(self, tmp_path):
-        "Test to see subdatasets parameter is being handled properly."
-
-        init(DATADIR=tmp_path)
-
-        with pytest.raises(TypeError) as e:
-            load_dataset('wikitext103', version='1.0.1', download=True, subdatasets=123)
-        assert str(e.value) == '\'int\' object is not iterable'
-
-        subdatasets = ['train']
-        wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=True, subdatasets=subdatasets)
-        assert list(wikitext103_data.keys()) == subdatasets
-
-    def test_download_false(self, tmp_path, gmb_schema):
-        "Test to see the function loads properly when download=False and dataset was previously downloaded."
-
-        init(DATADIR=tmp_path)
-        data_dir = tmp_path / 'gmb' / '1.0.2'
-        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
-        gmb_data = load_dataset('gmb', version='1.0.2', download=False)
-        assert gmb.data == gmb_data
-
-    def test_download_true(self, tmp_path, downloaded_gmb_dataset):
-        "Test to see the function downloads and loads properly when download=True."
-
-        init(DATADIR=tmp_path)
-        downloaded_gmb_dataset.load()
-        gmb_data = load_dataset('gmb', version='1.0.2', download=True)
-        assert downloaded_gmb_dataset.data == gmb_data
-
-    def test_loading_undownloaded(self, tmp_path):
-        "Test loading before ``Dataset.download()`` has been called."
-
-        init(DATADIR=tmp_path)
-        with pytest.raises(FileNotFoundError) as e:
-            load_dataset('wikitext103', version='1.0.1', download=False)
-        assert 'Failed to load the dataset because some files are not found.' in str(e.value)
-
-
-class TestGetDatasetMetadata:
-    "Test get_dataset_metadata function."
-
-    def test_human_param(self, loaded_schemata):
-        name, version = 'gmb', '1.0.2'
-
-        gmb_metadata = get_dataset_metadata(name, version=version)
-        dataset_schema = loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
-        license_schema = loaded_schemata.schemata['licenses'].export_schema('licenses')
-        assert gmb_metadata == (f'Dataset name: {dataset_schema["name"]}\n'
-                                f'Description: {dataset_schema["description"]}\n'
-                                f'Size: {dataset_schema["estimated_size"]}\n'
-                                f'Published date: {dataset_schema["published"]}\n'
-                                f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
-                                f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
-
-        gmb_schema = get_dataset_metadata(name, version=version, human=False)
-        assert gmb_schema == loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
