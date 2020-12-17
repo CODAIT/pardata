@@ -71,6 +71,16 @@ jobs:
         run: env
       - name: Install Dependencies
         run: pip install -U -r requirements/tox.txt
+      - name: Load Dataset Cache
+        uses: actions/cache@v2
+        with:
+          path: tests/datasets
+          key: datasets-${{ hashFiles('tests/schemata/*.yaml') }}
+      - name: Load Tox Directory Cache
+        uses: actions/cache@v2
+        with:
+          path: .tox
+          key: ${{ matrix.os }}-Python-${{ matrix.python-version }}-${{ hashFiles('setup.py', 'requirements/test.txt') }}
       - name: Runtime Test
         run: tox -e py -vv
 
