@@ -19,6 +19,7 @@ import hashlib
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import os
 from pathlib import Path
+from ssl import PROTOCOL_TLS_SERVER, SSLContext
 from tempfile import TemporaryDirectory
 import threading
 from typing import Callable
@@ -80,7 +81,7 @@ def chdir_tmp_path(tmp_path):
 
 
 @pytest.fixture(scope='session')
-def local_http_server():
+def local_http_server() -> HTTPServer:
     "A local http server that serves the source directory."
 
     with HTTPServer(("localhost", 8080), SimpleHTTPRequestHandler) as httpd:
@@ -94,6 +95,29 @@ def local_http_server_root_url(local_http_server) -> str:
     "Root URL of the local http server."
 
     return f'http://{local_http_server.server_address[0]}:{local_http_server.server_address[1]}'
+
+
+@pytest.fixture(scope='session')
+def local_https_server() -> HTTPServer:
+    "A local https server that serves the source directory."
+
+    # Force requests to accept our test TLS certificate
+    os.environ['REQUESTS_CA_BUNDLE'] = 'tests/tls/server.pem'
+
+    with HTTPServer(("localhost", 8081), SimpleHTTPRequestHandler) as httpd:
+        context = SSLContext(PROTOCOL_TLS_SERVER)
+        context.load_cert_chain('tests/tls/server.pem', keyfile='tests/tls/server.key')
+        httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
+        # Start a new thread, because httpd.serve_forever is blocking
+        threading.Thread(target=httpd.serve_forever, name='Local Https Server', daemon=True).start()
+        yield httpd
+
+
+@pytest.fixture(scope='session')
+def local_https_server_root_url(local_https_server) -> str:
+    "Root URL of the local https server."
+
+    return f'https://{local_https_server.server_address[0]}:{local_https_server.server_address[1]}'
 
 
 @pytest.fixture(autouse=True)
@@ -252,6 +276,13 @@ def schema_file_http_url(local_http_server_root_url) -> str:
     "The base of remote http:// test schema file URLs."
 
     return f"{local_http_server_root_url}/tests/schemata"
+
+
+@pytest.fixture(scope='session')
+def schema_file_https_url(local_https_server_root_url) -> str:
+    "The base of remote https:// test schema file URLs."
+
+    return f"{local_https_server_root_url}/tests/schemata"
 
 
 # Downloaded datasets -------------------------------------
