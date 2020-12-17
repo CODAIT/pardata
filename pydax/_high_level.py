@@ -34,7 +34,7 @@ def get_config() -> Config:
 
     :return: Read-only global configs represented as a data class
 
-    Example get_config:
+    Example:
 
     >>> config = get_config()
     >>> config.DATASET_SCHEMA_URL
@@ -87,7 +87,7 @@ def list_all_datasets() -> Dict[str, Tuple]:
 
     :return: Mapping of available datasets and their versions
 
-    Example list_all_datasets()
+    Example:
 
     >>> import pprint
     >>> datasets = list_all_datasets()
@@ -171,10 +171,14 @@ def load_dataset(name: str, *,
         False.
     :return: Dictionary that holds all subdatasets.
 
-    Example load:
+    Example:
 
     >>> data = load_dataset('noaa_jfk')
-    >>> assert('jfk_weather_cleaned' in data)
+    >>> data['jfk_weather_cleaned'][['DATE', 'HOURLYVISIBILITY', 'HOURLYDRYBULBTEMPF']].head(3)
+                     DATE  HOURLYVISIBILITY  HOURLYDRYBULBTEMPF
+    0 2010-01-01 01:00:00               6.0                33.0
+    1 2010-01-01 02:00:00               6.0                33.0
+    2 2010-01-01 03:00:00               5.0                33.0
     """
 
     schema = export_schemata().schemata['datasets'].export_schema('datasets', name, version)
@@ -208,7 +212,7 @@ def get_dataset_metadata(name: str, *,
         dataset's schema. Defaults to True.
     :return: Return a dataset's metadata either as a string or as a schema dictionary.
 
-    Example get_dataset_metadata as string:
+    Example get metadata as string:
 
     >>> metadata = get_dataset_metadata('gmb')
     >>> print(metadata)  # doctest:+ELLIPSIS
@@ -219,7 +223,7 @@ def get_dataset_metadata(name: str, *,
     License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
     Available subdatasets: gmb_subset_full
 
-    Example get_dataset_metadata as dict
+    Example get metadata as dict
 
     >>> import pprint
     >>> metadata = get_dataset_metadata('gmb', human=False)
