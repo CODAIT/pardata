@@ -174,7 +174,7 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
 
     return _download_dataset_impl
 
-# schema fixtures --------------------------------------------------
+# Schema fixtures --------------------------------------------------
 
 
 @pytest.fixture(scope='session')
@@ -247,7 +247,7 @@ def wikitext103_schema(_wikitext103_schema):
     return copy.deepcopy(_wikitext103_schema)
 
 
-# schema file locations fixture --------------------------------------
+# Schema file locations fixture --------------------------------------
 
 
 @pytest.fixture(scope='session')

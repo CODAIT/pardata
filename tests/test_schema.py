@@ -16,13 +16,10 @@
 
 import abc
 import datetime
-import json
 
 import pytest
 
-from pydax import export_schemata, init, load_schemata
 from pydax.schema import Schema, SchemaManager
-from pydax._high_level import _get_schemata
 
 
 class TestBaseSchema:
@@ -55,53 +52,15 @@ class TestSchema:
         assert loaded_schemata.schemata['datasets'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
             loaded_schemata.schemata['datasets'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
 
-    def test_load_schemata(self, loaded_schemata, schema_file_absolute_dir):
-        "Test load_schemata."
 
-        init(update_only=False,
-             DATASET_SCHEMA_URL=loaded_schemata.schemata['datasets'].retrieved_url_or_path,
-             FORMAT_SCHEMA_URL=loaded_schemata.schemata['formats'].retrieved_url_or_path,
-             LICENSE_SCHEMA_URL=loaded_schemata.schemata['licenses'].retrieved_url_or_path)
-        load_schemata(force_reload=True)
-        for name in ('datasets', 'formats', 'licenses'):
-            assert (_get_schemata().schemata[name].retrieved_url_or_path ==
-                    loaded_schemata.schemata[name].retrieved_url_or_path)
+class TestSchemaManager:
+    "Test the functionality of the SchemaManager class."
 
-        init(update_only=True,
-             # Different from the previous relative path used in loaded_schemata
-             DATASET_SCHEMA_URL=schema_file_absolute_dir / 'datasets.yaml')
-        load_schemata(force_reload=False)
-        for name in ('formats', 'licenses'):
-            assert (_get_schemata().schemata[name].retrieved_url_or_path ==
-                    loaded_schemata.schemata[name].retrieved_url_or_path)
-        assert _get_schemata().schemata['datasets'].retrieved_url_or_path == schema_file_absolute_dir / 'datasets.yaml'
+    def test_schema_manager_value(self):
+        "Test SchemaManager to make sure it raises an exception when it recieves a non-Schema object"
 
-    def test_exporting_schemata(self, schema_file_absolute_dir, schema_file_http_url):
-        "Test basic functionality of exporting schemata."
-
-        assert export_schemata() is not _get_schemata()
-        # The two returned schemata should equal
-        assert (json.dumps(export_schemata().schemata['datasets'].export_schema(),
-                           sort_keys=True, indent=2, default=str) ==
-                json.dumps(_get_schemata().schemata['datasets'].export_schema(), sort_keys=True, indent=2, default=str))
-
-        # Different from http url used by pydax_initialization autouse fixture
-        new_urls = {
-            'DATASET_SCHEMA_URL': schema_file_absolute_dir / 'datasets.yaml',
-            'LICENSE_SCHEMA_URL': schema_file_absolute_dir / 'licenses.yaml'
-        }
-        init(update_only=True, **new_urls)
-        assert export_schemata().schemata['formats'].retrieved_url_or_path == f'{schema_file_http_url}/formats.yaml'
-        assert export_schemata().schemata['datasets'].retrieved_url_or_path == new_urls['DATASET_SCHEMA_URL']
-        assert export_schemata().schemata['licenses'].retrieved_url_or_path == new_urls['LICENSE_SCHEMA_URL']
-
-
-def test_schema_manager_value():
-    "Test SchemaManager to make sure it raises an exception when it recieves a non-Schema object"
-
-    with pytest.raises(TypeError) as e:
-        SchemaManager(dataset_schema='ibm',
-                      format_schema='1',
-                      license_schema='3.3')
-
-    assert str(e.value) == 'val must be a Schema instance.'
+        with pytest.raises(TypeError) as e:
+            SchemaManager(dataset_schema='ibm',
+                          format_schema='1',
+                          license_schema='3.3')
+        assert str(e.value) == 'val must be a Schema instance.'
