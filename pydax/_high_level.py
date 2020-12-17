@@ -50,7 +50,7 @@ _schemata: Optional[SchemaManager] = None
 
 def init(update_only: bool = True, **kwargs: Any) -> None:
     """
-    (Re-)initialize the PyDAX library. This includes updating PyDAX global configs.
+    (Re-)initialize high-level functions and their configurations.
 
     :param update_only: If ``True``, only update in the global configs what config is specified; reuse schemata loaded
         by high-level functions if URLs do not change. Otherwise, reset everything to default in global configs except

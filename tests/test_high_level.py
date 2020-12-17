@@ -196,12 +196,14 @@ class TestLoadDataset:
 class TestGetDatasetMetadata:
     "Test high-level get_dataset_metadata function."
 
-    def test_human_param(self, loaded_schemata):
+    def test_human_param(self):
+        "Test the ``human`` parameter of ``get_dataset_metadata``."
+
         name, version = 'gmb', '1.0.2'
 
         gmb_metadata = get_dataset_metadata(name, version=version)
-        dataset_schema = loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
-        license_schema = loaded_schemata.schemata['licenses'].export_schema('licenses')
+        dataset_schema = export_schemata().schemata['datasets'].export_schema('datasets', name, version)
+        license_schema = export_schemata().schemata['licenses'].export_schema('licenses')
         assert gmb_metadata == (f'Dataset name: {dataset_schema["name"]}\n'
                                 f'Description: {dataset_schema["description"]}\n'
                                 f'Size: {dataset_schema["estimated_size"]}\n'
@@ -210,7 +212,7 @@ class TestGetDatasetMetadata:
                                 f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
 
         gmb_schema = get_dataset_metadata(name, version=version, human=False)
-        assert gmb_schema == loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
+        assert gmb_schema == export_schemata().schemata['datasets'].export_schema('datasets', name, version)
 
 # Schemata --------------------------------------------------
 
