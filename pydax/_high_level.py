@@ -91,11 +91,8 @@ def list_all_datasets() -> Dict[str, Tuple]:
 
     >>> import pprint
     >>> datasets = list_all_datasets()
-    >>> pprint.pprint(datasets)
-    {'claim_sentences_search': ('1.0.2',),
-     'expert-in-the-loop-ai-polymer-discovery': ('1.0.0',),
-     'gmb': ('1.0.2',),
-     'noaa_jfk': ('1.1.4',),
+    >>> pprint.pprint(datasets)  # doctest:+ELLIPSIS
+    {'claim_sentences_search': ('1.0.2',),...
      'wikitext103': ('1.0.1',)}
     """
 
