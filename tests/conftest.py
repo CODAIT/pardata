@@ -26,6 +26,7 @@ from typing import Callable
 from urllib.request import urlretrieve
 import uuid
 
+import certifi
 import pytest
 
 from pydax import init
@@ -101,8 +102,14 @@ def local_http_server_root_url(local_http_server) -> str:
 def local_https_server() -> HTTPServer:
     "A local https server that serves the source directory."
 
-    # Force requests to accept our test TLS certificate
-    os.environ['REQUESTS_CA_BUNDLE'] = 'tests/tls/server.pem'
+    # Merge certifi's CA bundle (used as default by requests) with ours. This is done by a simple concatenation of the
+    # two pem files. Although pem files are text files, we treat them as binaries to avoid unexpected EOL conversions.
+    ca_bundle = Path('tests/tls/test_ca_bundle.pem')
+    ca_bundle.write_bytes(
+        Path(certifi.where()).read_bytes() + Path('tests/tls/server.pem').read_bytes())
+    os.environ['REQUESTS_CA_BUNDLE'] = str(ca_bundle)
+    # Ensure CURL_CA_BUNDLE isn't involved
+    os.environ.pop('CURL_CA_BUNDLE', None)
 
     with HTTPServer(("localhost", 8081), SimpleHTTPRequestHandler) as httpd:
         context = SSLContext(PROTOCOL_TLS_SERVER)
@@ -120,25 +127,35 @@ def local_https_server_root_url(local_https_server) -> str:
     return f'https://{local_https_server.server_address[0]}:{local_https_server.server_address[1]}'
 
 
+@pytest.fixture
+def untrust_self_signed_cert(local_https_server):
+    # local_https_server is here to ensure that environment variables have been initialized
+    """Untrust our self signed TLS certificate of our test local HTTPS server, and let requests uses the default trusted
+    CA bundle."""
+    self_signed = os.environ.pop('REQUESTS_CA_BUNDLE')
+    yield
+    os.environ['REQUESTS_CA_BUNDLE'] = self_signed
+
+
 @pytest.fixture(autouse=True)
-def pydax_initialization(schema_file_http_url):
+def pydax_initialization(schema_file_https_url):
     """Create the default initialization used for all tests. This is mainly for having a uniform initialization for all
     tests as well as avoiding using the actual default schema file URLs so as to decouple the two lines of development
     (default schema files and this library)."""
 
     init(update_only=False,
-         DATASET_SCHEMA_URL=f'{schema_file_http_url}/datasets.yaml',
-         FORMAT_SCHEMA_URL=f'{schema_file_http_url}/formats.yaml',
-         LICENSE_SCHEMA_URL=f'{schema_file_http_url}/licenses.yaml')
+         DATASET_SCHEMA_URL=f'{schema_file_https_url}/datasets.yaml',
+         FORMAT_SCHEMA_URL=f'{schema_file_https_url}/formats.yaml',
+         LICENSE_SCHEMA_URL=f'{schema_file_https_url}/licenses.yaml')
 
 # Dataset --------------------------------------
 
 
 @pytest.fixture(scope='session')
-def dataset_base_url(local_http_server_root_url) -> str:
-    "The base local HTTP server URL that stores datasets for testing purposes."
+def dataset_base_url(local_https_server_root_url) -> str:
+    "The base local HTTPS server URL that stores datasets for testing purposes."
 
-    return f'{local_http_server_root_url}/tests/datasets'
+    return f'{local_https_server_root_url}/tests/datasets'
 
 
 @pytest.fixture(scope='session')

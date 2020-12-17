@@ -61,11 +61,11 @@ class TestDataset:
             Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'the file may by corrupted' in str(e.value)
 
-    def test_invalid_tarball(self, tmp_path, gmb_schema, schema_file_http_url, schema_file_relative_dir):
+    def test_invalid_tarball(self, tmp_path, gmb_schema, schema_file_https_url, schema_file_relative_dir):
         "Test if Dataset class catches an invalid tar file."
 
         fake_schema = gmb_schema
-        fake_schema['download_url'] = schema_file_http_url + '/datasets.yaml'
+        fake_schema['download_url'] = schema_file_https_url + '/datasets.yaml'
         fake_schema['sha512sum'] = hashlib.sha512((schema_file_relative_dir / 'datasets.yaml').read_bytes()).hexdigest()
 
         with pytest.raises(tarfile.ReadError) as e:
