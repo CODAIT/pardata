@@ -224,7 +224,7 @@ def get_dataset_metadata(name: str, *,
     License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
     Available subdatasets: gmb_subset_full
 
-    Example get metadata as dict
+    Example get metadata as dict:
 
     >>> import pprint
     >>> metadata = get_dataset_metadata('gmb', human=False)
