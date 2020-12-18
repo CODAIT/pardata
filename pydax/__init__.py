@@ -17,7 +17,7 @@
 "PyDAX package"
 
 
-from . import dataset, loaders, schema
+from . import dataset, exceptions, loaders, schema
 from ._high_level import (export_schemata,
                           get_config,
                           get_dataset_metadata,
@@ -30,6 +30,7 @@ from ._version import version as __version__
 __all__ = (
            # modules & subpackages
            'dataset',
+           'exceptions',
            'loaders',
            'schema',
            # high-level functions
