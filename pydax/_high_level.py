@@ -35,6 +35,17 @@ def get_config() -> Config:
     """Returns global PyDAX configs.
 
     :return: Read-only global configs represented as a data class
+
+    Example:
+
+    >>> config = get_config()
+    >>> config.DATASET_SCHEMA_URL
+    'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/datasets.yaml'
+    >>> config.FORMAT_SCHEMA_URL
+    'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/formats.yaml'
+    >>> config.LICENSE_SCHEMA_URL
+    'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/licenses.yaml'
+
     """
     return _global_config  # type: ignore [name-defined]
 
@@ -79,6 +90,14 @@ def list_all_datasets() -> Dict[str, Tuple]:
     """Show all available pydax datasets and their versions.
 
     :return: Mapping of available datasets and their versions
+
+    Example:
+
+    >>> import pprint
+    >>> datasets = list_all_datasets()
+    >>> pprint.pprint(datasets)  # doctest:+ELLIPSIS
+    {'claim_sentences_search': ('1.0.2',),...
+     'wikitext103': ('1.0.1',)}
     """
 
     dataset_schema = export_schemata().schemata['datasets'].export_schema('datasets')
@@ -152,6 +171,15 @@ def load_dataset(name: str, *,
     :raises FileNotFoundError: The dataset files were not previously downloaded or can't be found, and ``download`` is
         False.
     :return: Dictionary that holds all subdatasets.
+
+    Example:
+
+    >>> data = load_dataset('noaa_jfk')
+    >>> data['jfk_weather_cleaned'][['DATE', 'HOURLYVISIBILITY', 'HOURLYDRYBULBTEMPF']].head(3)
+                     DATE  HOURLYVISIBILITY  HOURLYDRYBULBTEMPF
+    0 2010-01-01 01:00:00               6.0                33.0
+    1 2010-01-01 02:00:00               6.0                33.0
+    2 2010-01-01 03:00:00               5.0                33.0
     """
 
     schema = export_schemata().schemata['datasets'].export_schema('datasets', name, version)
@@ -184,6 +212,32 @@ def get_dataset_metadata(name: str, *,
     :param human: Whether to return the metadata as a string in human-readable form or to return a copy of the
         dataset's schema. Defaults to True.
     :return: Return a dataset's metadata either as a string or as a schema dictionary.
+
+    Example get metadata as string:
+
+    >>> metadata = get_dataset_metadata('gmb')
+    >>> print(metadata)  # doctest:+ELLIPSIS
+    Dataset name: Groningen Meaning Bank Modified
+    Description: A dataset of multi-sentence texts, together with annotations for parts-of-speech...
+    Size: 10M
+    Published date: 2019-12-19
+    License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
+    Available subdatasets: gmb_subset_full
+
+    Example get metadata as dict:
+
+    >>> import pprint
+    >>> metadata = get_dataset_metadata('gmb', human=False)
+    >>> metadata['name']
+    'Groningen Meaning Bank Modified'
+    >>> metadata['description']  # doctest:+ELLIPSIS
+    'A dataset of multi-sentence texts, together with annotations for parts-of-speech...
+    >>> pprint.pprint(metadata['subdatasets'])
+    {'gmb_subset_full': {'description': 'A full version of the raw dataset. Used '
+                                        'to train MAX model – Named Entity Tagger.',
+                         'format': 'txt',
+                         'name': 'GMB Subset Full',
+                         'path': 'groningen_meaning_bank_modified/gmb_subset_full.txt'}}
     """
 
     schema_manager = export_schemata()
