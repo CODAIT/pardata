@@ -25,7 +25,7 @@ class TestSchemaRetrieval:
 
     # We set tls_verification to False in this test. We don't test raising this warning because it is not within the
     # project's scope to guarantee that this warning will raise, and this warning raises only once, which means that
-    # whether the warning will be raised depending on the order in which the tests being executed.
+    # whether the warning will be raised depends on the order in which the tests are being executed.
     @pytest.mark.filterwarnings('ignore:Unverified HTTPS request .*:urllib3.exceptions.InsecureRequestWarning')
     @pytest.mark.parametrize('location_type',
                              ('absolute_dir',
