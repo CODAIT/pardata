@@ -67,7 +67,7 @@ To run all runtime tests on the Python version in the development environment, r
 
 To run only a specific runtime test, run:
 
-    $ pytest -vk [test_name]  # e.g., pytest -vk test_default_data_dir
+    $ pytest tests -vk [test_name]  # e.g., pytest tests -vk test_default_data_dir
 
 Read [pytest command line document](https://docs.pytest.org/en/stable/usage.html) for its more advanced usage.
 

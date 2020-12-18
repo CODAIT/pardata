@@ -38,14 +38,8 @@ def get_config() -> Config:
 
     Example:
 
-    >>> config = get_config()
-    >>> config.DATASET_SCHEMA_URL
-    'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/datasets.yaml'
-    >>> config.FORMAT_SCHEMA_URL
-    'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/formats.yaml'
-    >>> config.LICENSE_SCHEMA_URL
-    'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/licenses.yaml'
-
+    >>> get_config()
+    Config(DATASET_SCHEMA_URL=..., FORMAT_SCHEMA_URL=..., LICENSE_SCHEMA_URL=..., DATADIR=...)
     """
     return _global_config  # type: ignore [name-defined]
 
@@ -95,9 +89,8 @@ def list_all_datasets() -> Dict[str, Tuple]:
 
     >>> import pprint
     >>> datasets = list_all_datasets()
-    >>> pprint.pprint(datasets)  # doctest:+ELLIPSIS
-    {'claim_sentences_search': ('1.0.2',),...
-     'wikitext103': ('1.0.1',)}
+    >>> pprint.pprint(datasets)
+    {'gmb': ('1.0.2',),... 'wikitext103': ('1.0.1',)}
     """
 
     dataset_schema = export_schemata().schemata['datasets'].export_schema('datasets')
@@ -216,7 +209,7 @@ def get_dataset_metadata(name: str, *,
     Example get metadata as string:
 
     >>> metadata = get_dataset_metadata('gmb')
-    >>> print(metadata)  # doctest:+ELLIPSIS
+    >>> print(metadata)
     Dataset name: Groningen Meaning Bank Modified
     Description: A dataset of multi-sentence texts, together with annotations for parts-of-speech...
     Size: 10M
@@ -230,7 +223,7 @@ def get_dataset_metadata(name: str, *,
     >>> metadata = get_dataset_metadata('gmb', human=False)
     >>> metadata['name']
     'Groningen Meaning Bank Modified'
-    >>> metadata['description']  # doctest:+ELLIPSIS
+    >>> metadata['description']
     'A dataset of multi-sentence texts, together with annotations for parts-of-speech...
     >>> pprint.pprint(metadata['subdatasets'])
     {'gmb_subset_full': {'description': 'A full version of the raw dataset. Used '
