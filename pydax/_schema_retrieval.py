@@ -24,17 +24,25 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import requests
+import requests.exceptions
 
 from . import _typing
+from .exceptions import InsecureConnectionError
 
 
 # Semantically, _typing.PathLike doesn't cover strings that represent URLs
-def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: str = 'utf-8') -> str:
+def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], *,
+                         encoding: str = 'utf-8',
+                         tls_verification: Union[bool, _typing.PathLike] = True) -> str:
     """Retrieve a single schema file.
 
     :param url_or_path: URL or path to the schema file.
     :param encoding: The encoding of the text in ``url_or_path``.
+    :param tls_verification: When set to True, verify the remote link is https and whether the TLS certificate is valid.
+        When set to a path to a file, use this file as a CA bundle file. When set to False, allow http links and do not
+        verify any TLS certificates. Ignored if ``url_or_path`` is a local path.
     :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path.
+    :raises InsecureConnectionError: The connection is insecure. See ``tls_verification`` for more details.
     :return: A string of the content.
     """
 
@@ -48,7 +56,14 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], encoding: st
         parse_result = urlparse(url_or_path)
         scheme = parse_result.scheme
         if scheme in ('http', 'https'):
-            content = requests.get(url_or_path, allow_redirects=True).content
+            if scheme == 'http' and tls_verification:
+                raise InsecureConnectionError((f'{url_or_path} is a http link and insecure. '
+                                               'Set tls_verification=False to accept http links.'))
+            try:
+                content = requests.get(url_or_path, allow_redirects=True, verify=tls_verification).content
+            except requests.exceptions.SSLError as e:
+                raise InsecureConnectionError((f'Failed to securely connect to {url_or_path}. Caused by:\n{e}'))
+
             # We don't use requests.Response.encoding and requests.Response.text because it is always silent when
             # there's an encoding error
             return content.decode(encoding)

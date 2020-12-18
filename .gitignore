@@ -145,3 +145,5 @@ docs/source/api_reference/autosummary/
 ### pydax ###
 /pydax/_version.py
 /tests/datasets
+/tests/doctests
+/tests/tls/test_ca_bundle.pem
