@@ -88,16 +88,16 @@ class DirectoryLock:
             where the lock has been removed as an expected usage.
         """
         with self._thread_lock:
-            lock_exists: bool = False
+            lock_existed: bool = False
             write_lock_file = self._directory / f'write{self._lock_file_suffix}'
             if write_lock_file.exists():
                 write_lock_file.unlink()
-                lock_exists = True
+                lock_existed = True
             read_lock_file = self._directory / f'read{self._lock_file_suffix}'
             if read_lock_file.exists():
                 read_lock_file.unlink()
-                lock_exists = True
-            return lock_exists
+                lock_existed = True
+            return lock_existed
 
     @contextmanager
     def locking(self, *, write: bool) -> Iterator[bool]:
