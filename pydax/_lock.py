@@ -105,7 +105,7 @@ class DirectoryLock:
 
         Example:
 
-        .. code-blocks:: python
+        .. code-block:: python
 
            with some_lock.locking(write=True):
                # do the work ...
