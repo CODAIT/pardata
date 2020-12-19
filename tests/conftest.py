@@ -203,7 +203,7 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
 
 @pytest.fixture(scope='session')
 def schema_localized_url(_loaded_schemata, _download_dataset, dataset_base_url) -> Callable[[str, str], SchemaDict]:
-    "Utility function fixture for generating schema fixtures with its downloading URL modified to the local HTTP URL."
+    "Utility function fixture for generating schema fixtures with its downloading URL modified to the local HTTPS URL."
     # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
     # call a function-scoped fixture)
 
