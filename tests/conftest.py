@@ -177,7 +177,10 @@ def dataset_dir() -> Path:
 
 @pytest.fixture(scope='session')
 def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
-    "Utility function for downloading datasets to ``dataset_dir/{name}-{version}`` for testing purpose."
+    """Utility function for downloading datasets to ``tests/datasets/{name}-{version}`` for testing purpose. These files
+    will not be deleted after the test session terminates, and they are cached for future test sessions. Accordingly, if
+    ``tests/datasets/{name}-{version}`` is already present, this fixture does nothing.
+    """
     # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
     # call a function-scoped fixture)
 
@@ -223,7 +226,8 @@ def _loaded_schemata(schema_file_relative_dir) -> SchemaManager:
     ones used in other schema fixtures, so please do not assume that it is equal to other schema fixtures. One purpose
     of this fixture is to reduce repeated call in the test to the same function when ``loaded_schemata`` is used. The
     other purpose is to provide other session-scoped fixtures access to the loaded schemata, because session-scoped
-    fixtures can't load function-scoped fixtures."""
+    fixtures can't load function-scoped fixtures.
+    """
 
     return SchemaManager(datasets=Schema(schema_file_relative_dir / 'datasets.yaml'),
                          formats=Schema(schema_file_relative_dir / 'formats.yaml'),
