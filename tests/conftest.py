@@ -30,6 +30,7 @@ import certifi
 import pytest
 
 from pydax import init
+from pydax._high_level import _get_schemata
 from pydax.dataset import Dataset
 from pydax.schema import Schema, SchemaDict, SchemaManager
 
@@ -138,15 +139,21 @@ def untrust_self_signed_cert(local_https_server):
 
 
 @pytest.fixture(autouse=True)
-def pydax_initialization(schema_file_https_url):
+def pydax_initialization(schema_file_https_url, schema_localized_url):
     """Create the default initialization used for all tests. This is mainly for having a uniform initialization for all
     tests as well as avoiding using the actual default schema file URLs so as to decouple the two lines of development
-    (default schema files and this library)."""
+    (default schema files and this library). It also replaces all download URLs with localized URLs."""
 
     init(update_only=False,
          DATASET_SCHEMA_URL=f'{schema_file_https_url}/datasets.yaml',
          FORMAT_SCHEMA_URL=f'{schema_file_https_url}/formats.yaml',
          LICENSE_SCHEMA_URL=f'{schema_file_https_url}/licenses.yaml')
+
+    # Use local dataset locations by default in our tests
+    datasets = _get_schemata().schemata['datasets']._schema['datasets']
+    for name, versions in datasets.items():
+        for version in versions:
+            datasets[name][version] = schema_localized_url(name, version)
 
 # Dataset --------------------------------------
 
@@ -170,7 +177,10 @@ def dataset_dir() -> Path:
 
 @pytest.fixture(scope='session')
 def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
-    "Utility function for downloading datasets to ``dataset_dir/{name}-{version}`` for testing purpose."
+    """Utility function for downloading datasets to ``tests/datasets/{name}-{version}`` for testing purpose. These files
+    will not be deleted after the test session terminates, and they are cached for future test sessions. Accordingly, if
+    ``tests/datasets/{name}-{version}`` is already present, this fixture does nothing.
+    """
     # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
     # call a function-scoped fixture)
 
@@ -195,25 +205,29 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
 
 
 @pytest.fixture(scope='session')
-def _schema(_loaded_schemata, _download_dataset, dataset_base_url) -> Callable[[str, str], SchemaDict]:
-    "Utility function for generating schema fixtures with its downloading URL modified to the local HTTP URL."
+def schema_localized_url(_loaded_schemata, _download_dataset, dataset_base_url) -> Callable[[str, str], SchemaDict]:
+    "Utility function fixture for generating schema fixtures with its downloading URL modified to the local HTTPS URL."
     # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
     # call a function-scoped fixture)
 
-    def _schema_impl(name, version):
+    def _schema_localized_url_impl(name, version):
         _download_dataset(name, version)
         schema = _loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
         schema['download_url'] = str(f'{dataset_base_url}/{name}-{version}')
         return schema
 
-    return _schema_impl
+    return _schema_localized_url_impl
 
 
 @pytest.fixture(scope='session')
 def _loaded_schemata(schema_file_relative_dir) -> SchemaManager:
-    """Loaded schemata, but this should never be modified. One purpose of this fixture is to reduce repeated call in the
-    test to the same function when ``loaded_schemata`` is used. The other purpose is to provide other session-scoped
-    fixtures access to the loaded schemata, because session-scoped fixtures can't load function-scoped fixtures."""
+    """A loaded ``SchemaManager`` object, but this should never be modified. This object manages ``Schema`` objects
+    corresponding to ``tests/{datasets,formats,licenses}.yaml``. Note that these are not necessarily the same as the
+    ones used in other schema fixtures, so please do not assume that it is equal to other schema fixtures. One purpose
+    of this fixture is to reduce repeated call in the test to the same function when ``loaded_schemata`` is used. The
+    other purpose is to provide other session-scoped fixtures access to the loaded schemata, because session-scoped
+    fixtures can't load function-scoped fixtures.
+    """
 
     return SchemaManager(datasets=Schema(schema_file_relative_dir / 'datasets.yaml'),
                          formats=Schema(schema_file_relative_dir / 'formats.yaml'),
@@ -235,8 +249,8 @@ def loaded_schemata(_loaded_schemata) -> SchemaManager:
 # would be easier to understand the error when a test fails.
 
 @pytest.fixture(scope='session')
-def _gmb_schema(_schema):
-    return _schema('gmb', '1.0.2')
+def _gmb_schema(schema_localized_url):
+    return schema_localized_url('gmb', '1.0.2')
 
 
 @pytest.fixture
@@ -245,8 +259,8 @@ def gmb_schema(_gmb_schema):
 
 
 @pytest.fixture(scope='session')
-def _noaa_jfk_schema(_schema):
-    return _schema('noaa_jfk', '1.1.4')
+def _noaa_jfk_schema(schema_localized_url):
+    return schema_localized_url('noaa_jfk', '1.1.4')
 
 
 @pytest.fixture
@@ -255,8 +269,8 @@ def noaa_jfk_schema(_noaa_jfk_schema):
 
 
 @pytest.fixture(scope='session')
-def _wikitext103_schema(_schema):
-    return _schema('wikitext103', '1.0.1')
+def _wikitext103_schema(schema_localized_url):
+    return schema_localized_url('wikitext103', '1.0.1')
 
 
 @pytest.fixture
