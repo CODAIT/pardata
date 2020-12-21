@@ -90,6 +90,7 @@ def local_http_server() -> HTTPServer:
         # Start a new thread, because httpd.serve_forever is blocking
         threading.Thread(target=httpd.serve_forever, name='Local Http Server', daemon=True).start()
         yield httpd
+        httpd.shutdown()
 
 
 @pytest.fixture(scope='session')
@@ -119,6 +120,7 @@ def local_https_server() -> HTTPServer:
         # Start a new thread, because httpd.serve_forever is blocking
         threading.Thread(target=httpd.serve_forever, name='Local Https Server', daemon=True).start()
         yield httpd
+        httpd.shutdown()
 
 
 @pytest.fixture(scope='session')
