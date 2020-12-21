@@ -1,5 +1,8 @@
 # Always check out text files with LF ending. This will maintain consistency for Windows developers and CI.
 * text=auto eol=lf
+# Some files are not encoded with a super-ASCII charset
+/tests/schemata/formats-utf-16be.yaml text working-tree-encoding=UTF-16BE
+/tests/schemata/formats-utf-16le-bom.yaml text working-tree-encoding=UTF-16
 # Treat files as binary for cleaner git history
 *.ipynb binary
 *.key binary
