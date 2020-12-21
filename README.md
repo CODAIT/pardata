@@ -1,5 +1,12 @@
 # PyDAX (Under Development)
 
+[![Pyversions](https://img.shields.io/pypi/pyversions/pydax.svg?style=flat-square)](https://pypi.python.org/pypi/pydax)
+![PyPI](https://img.shields.io/pypi/v/pydax.svg)
+![Runtime Tests](https://github.com/codait/pydax/workflows/Runtime%20Tests/badge.svg)
+![Lint](https://github.com/codait/pydax/workflows/Lint/badge.svg)
+![Docs](https://github.com/codait/pydax/workflows/Docs/badge.svg)
+![Development Environment](https://github.com/codait/pydax/workflows/Development%20Environment/badge.svg)
+
 A simple Python API for downloading and loading datasets from IBM's [Data Asset Exchange](https://ibm.biz/data-exchange).
 
 ## Install the Package & its Dependencies
