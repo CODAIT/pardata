@@ -138,7 +138,7 @@ We should pin the versions of all Python packages that we are using solely for t
 generating for a stable test and doc env (e.g., future incompatibility, regression, etc.). We want
 to pin these because, in this project, we use these packages solely for deployment of our development
 environment (i.e., running tests and generating docs) and we want stable packages that are used by
-us for these purposes. We let GitHub's Dependabot verify that bumping the versions won't
+us for these purposes. We let Renovate verify that bumping the versions won't
 break anything before we actually upgrade any of these dependencies.
 
 We should not pin the actual dependencies of PyDAX (as specified in `setup.py`), because PyDAX is an
