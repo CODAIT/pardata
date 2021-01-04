@@ -23,14 +23,13 @@ on:  # yamllint disable-line rule:truthy
     branches: '*'
 
 jobs:
-  test:
-
+  python-yaml-lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8]
 
-    name: Lint
+    name: Lint Python and yaml files
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -61,3 +60,20 @@ jobs:
           SLACK_ICON_EMOJI: ":scott-yikes:"
           SLACK_TITLE: Message (**Lint**)
         uses: rtCamp/action-slack-notify@v2
+
+  renovate-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    name: Lint Renovate configurations
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - name: Install Dependencies
+        run: npm install -g renovate
+      - name: Run renovate-config-validator
+        run: renovate-config-validator
