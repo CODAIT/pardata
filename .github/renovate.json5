@@ -18,7 +18,7 @@
     ],
 
     "pip_requirements": {
-        "fileMatch": ["\.requirements-dev\.txt$"]
+        "fileMatch": ["requirements-dev\.txt$"]
     },
 
     "labels": [
