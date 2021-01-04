@@ -23,7 +23,7 @@ on:  # yamllint disable-line rule:truthy
     branches: '*'
 
 jobs:
-  test:
+  python-yaml-lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
