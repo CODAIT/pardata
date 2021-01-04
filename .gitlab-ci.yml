@@ -15,7 +15,7 @@
 #
 
 default:
-  image: pypy:3.6
+  image: pypy:3.7
 
 pypy3:
   script:
