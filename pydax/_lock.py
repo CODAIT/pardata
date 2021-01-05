@@ -17,6 +17,7 @@
 "Directory lock."
 
 from contextlib import contextmanager
+import itertools
 import os
 import pathlib
 import threading
@@ -48,6 +49,29 @@ class DirectoryLock:
         "The suffix of the lock file."
         return f'.{os.getpid()}.{self._uuid}.lock'
 
+    def _get_read_locks(self) -> Iterator[pathlib.Path]:
+        """Get a list of read lock files.
+
+        :return: An iterable of read lock file paths. Empty if there's no read lock file.
+        """
+        return self._directory.glob("read.*.lock")
+
+    def _get_write_locks(self) -> Iterator[pathlib.Path]:
+        """Get a list of write lock files.
+
+        :return: An iterable of write lock file paths. Empty if there's no write lock file.
+        """
+
+        return self._directory.glob("write.*.lock")
+
+    def _does_read_lock_exist(self) -> bool:
+        "Returns True if a read lock file exists, otherwise False."
+        return next(self._get_read_locks(), None) is not None
+
+    def _does_write_lock_exist(self) -> bool:
+        "Returns True if a write lock file exists, otherwise False."
+        return next(self._get_write_locks(), None) is not None
+
     def lock(self, *, write: bool) -> bool:
         """Lock the directory (create the lock file in the directory).
 
@@ -60,20 +84,14 @@ class DirectoryLock:
 
         lock_file = self._directory / f'{"write" if write else "read"}{self._lock_file_suffix}'
 
-        def does_read_lock_exist() -> bool:
-            return next(self._directory.glob("read.*.lock"), None) is not None
-
-        def does_write_lock_exist() -> bool:
-            return next(self._directory.glob("write.*.lock"), None) is not None
-
         with self._thread_lock:
             if write:  # write lock
-                if does_read_lock_exist() or does_write_lock_exist():
+                if self._does_read_lock_exist() or self._does_write_lock_exist():
                     return False
                 else:
                     lock_file.touch(exist_ok=False)
             else:  # read lock
-                if does_write_lock_exist():
+                if self._does_write_lock_exist():
                     return False
                 else:
                     lock_file.touch(exist_ok=False)
@@ -112,3 +130,11 @@ class DirectoryLock:
         """
         yield self.lock(write=write)
         self.unlock()
+
+    def force_clear_all_locks(self) -> None:
+        """Force clear all read locks. This is useful in situations such as those when system crashes and locks must be
+        reset.
+        """
+
+        for f in itertools.chain(self._get_read_locks(), self._get_write_locks()):
+            os.remove(f)
