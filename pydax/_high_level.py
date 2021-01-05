@@ -21,7 +21,7 @@
 from copy import deepcopy
 import dataclasses
 import functools
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Union, no_type_check
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, TypeVar, Union, cast
 from packaging.version import parse as version_parser
 
 from ._config import Config
@@ -29,6 +29,8 @@ from ._dataset import Dataset
 from ._schema import Schema, SchemaDict, SchemaManager
 
 # Global configurations --------------------------------------------------
+
+_global_config: Config
 
 
 def get_config() -> Config:
@@ -41,7 +43,7 @@ def get_config() -> Config:
     >>> get_config()
     Config(DATASET_SCHEMA_URL=..., FORMAT_SCHEMA_URL=..., LICENSE_SCHEMA_URL=..., DATADIR=...)
     """
-    return _global_config  # type: ignore [name-defined]
+    return _global_config
 
 
 # The SchemaManager object that is managed by high-level functions
@@ -67,11 +69,11 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
     if update_only:
         # We don't use dataclasses.replace here because it is uncertain whether it would work well with
         # pydantic.dataclasses.
-        prev = dataclasses.asdict(_global_config)  # type: ignore [name-defined]
+        prev = dataclasses.asdict(_global_config)
         prev.update(kwargs)
-        _global_config = Config(**prev)  # type: ignore [name-defined]
+        _global_config = Config(**prev)
     else:
-        _global_config = Config(**kwargs)  # type: ignore [name-defined]
+        _global_config = Config(**kwargs)
         _schemata = None
 
 
@@ -100,8 +102,14 @@ def list_all_datasets() -> Dict[str, Tuple]:
     }
 
 
-@no_type_check
-def _handle_name_param(func: Callable) -> Callable:
+# We would like to be more specific about what this function does and avoid using "cast", but this seems to be the best
+# we can do at this moment: It at least preserves all type hints of the decorated functions. When callback protocols
+# come out, we may be able to make improvements over this part:
+# https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols
+_DecoratedFuncType = TypeVar("_DecoratedFuncType", bound=Callable)
+
+
+def _handle_name_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
     """Decorator for handling ``name`` parameter.
 
     :raises TypeError: ``name`` is not a string.
@@ -109,7 +117,7 @@ def _handle_name_param(func: Callable) -> Callable:
     :return: Wrapped function that handles ``name`` parameter properly.
     """
     @functools.wraps(func)
-    def name_wrapper(name: str, *args, **kwargs):
+    def name_wrapper(name: str, *args: Any, **kwargs: Any) -> Any:
 
         if not isinstance(name, str):
             raise TypeError('The name parameter must be supplied a str.')
@@ -118,11 +126,10 @@ def _handle_name_param(func: Callable) -> Callable:
             raise KeyError(f'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their versions '
                            'by running the function pydax.list_all_datasets().')
         return func(name, *args, **kwargs)
-    return name_wrapper
+    return cast(_DecoratedFuncType, name_wrapper)
 
 
-@no_type_check
-def _handle_version_param(func: Callable) -> Callable:
+def _handle_version_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
     """Decorator for handling ``version`` parameter. Must still be supplied a dataset ``name``.
 
     :raises TypeError: ``version`` is not a string.
@@ -130,7 +137,7 @@ def _handle_version_param(func: Callable) -> Callable:
     :return: Wrapped function that handles ``version`` parameter properly.
     """
     @functools.wraps(func)
-    def version_wrapper(name: str, version: str = 'latest', *args, **kwargs):
+    def version_wrapper(name: str, version: str = 'latest', *args: Any, **kwargs: Any) -> Any:
 
         if not isinstance(version, str):
             raise TypeError('The version parameter must be supplied a str.')
@@ -142,7 +149,7 @@ def _handle_version_param(func: Callable) -> Callable:
             raise KeyError(f'"{version}" is not a valid PyDAX version for the dataset "{name}". You can view all '
                            'valid datasets and their versions by running the function pydax.list_all_datasets().')
         return func(name=name, version=version, *args, **kwargs)
-    return version_wrapper
+    return cast(_DecoratedFuncType, version_wrapper)
 
 
 @_handle_name_param
@@ -246,6 +253,7 @@ def get_dataset_metadata(name: str, *,
     else:
         return dataset_schema
 
+
 # Schemata --------------------------------------------------
 
 
@@ -288,4 +296,6 @@ def _get_schemata() -> SchemaManager:
     load_schemata()
 
     # The return value is guranteed to be SchemaManager instead of Optional[SchemaManager] after load_schemata
-    return _schemata  # type: ignore [return-value]
+    assert _schemata is not None  # nosec: We use assertion for code clarity and mypy detection of _schemata's type
+
+    return _schemata
