@@ -92,7 +92,7 @@ def list_all_datasets() -> Dict[str, Tuple]:
     >>> import pprint
     >>> datasets = list_all_datasets()
     >>> pprint.pprint(datasets)
-    {'gmb': ('1.0.2',),... 'wikitext103': ('1.0.1',)}
+    {...'gmb': ('1.0.2',),... 'wikitext103': ('1.0.1',)...}
     """
 
     dataset_schema = export_schemata().schemata['datasets'].export_schema('datasets')
@@ -258,7 +258,16 @@ def get_dataset_metadata(name: str, *,
 
 
 def export_schemata() -> SchemaManager:
-    "Return a copy of the ``SchemaManager`` object managed by high-level functions."
+    """Return a copy of the :class:`SchemaManager`` object managed by high-level functions.
+
+    :return: A copy of the :class:`SchemaManager` object
+
+    Example:
+
+    >>> schema_manager = export_schemata()
+    >>> schema_manager.schemata
+    {'datasets': ..., 'formats': ..., 'licenses':...}
+    """
 
     return deepcopy(_get_schemata())
 
@@ -269,7 +278,14 @@ def load_schemata(*, force_reload: bool = False) -> None:
 
     :param force_reload: If ``True``, force reloading even if the provided URLs by :func:`pydax.init` are the same as
          provided last time. Otherwise, only those that are different from previous given ones are reloaded.
+
+    Example:
+    >>> load_schemata()
+    >>> loaded_schemata = export_schemata()
+    >>> loaded_schemata.schemata
+    {'datasets': ..., 'formats': ..., 'licenses':...}
     """
+
     urls = {
         'datasets': get_config().DATASET_SCHEMA_URL,
         'formats': get_config().FORMAT_SCHEMA_URL,
