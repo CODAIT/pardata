@@ -250,16 +250,15 @@ def get_dataset_metadata(name: str, *,
 
 
 def export_schemata() -> SchemaManager:
-    """Return a copy of the ``SchemaManager`` object managed by high-level functions.
+    """Return a copy of the :class:`SchemaManager`` object managed by high-level functions.
 
-    :return: Return a copy of the SchemaManager object
+    :return: A copy of the :class:`SchemaManager` object
 
     Example:
 
     >>> schema_manager = export_schemata()
     >>> schema_manager.schemata
     {'datasets': ..., 'formats': ..., 'licenses':...}
-
     """
 
     return deepcopy(_get_schemata())
@@ -278,6 +277,7 @@ def load_schemata(*, force_reload: bool = False) -> None:
     >>> loaded_schemata.schemata
     {'datasets': ..., 'formats': ..., 'licenses':...}
     """
+
     urls = {
         'datasets': get_config().DATASET_SCHEMA_URL,
         'formats': get_config().FORMAT_SCHEMA_URL,
