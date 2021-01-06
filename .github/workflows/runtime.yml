@@ -57,6 +57,12 @@ jobs:
           - os: windows-2019
             python-version: 3.9
             LC_ALL: en.UTF-8
+          - os: ubuntu-18.04
+            LC_ALL: en.UTF-8
+            python-version: pypy-3.6
+          - os: ubuntu-20.04
+            LC_ALL: C.UTF-8
+            python-version: pypy-3.7
 
     name: (Runtime) Python ${{ matrix.python-version }} -- Platform = ${{ matrix.os }} -- LC_ALL = ${{ matrix.LC_ALL }}
     steps:
