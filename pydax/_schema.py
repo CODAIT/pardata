@@ -34,12 +34,19 @@ class Schema(ABC):
     """Abstract class that provides functionality to load and export schemata.
 
     :param url_or_path: URL or path to a schema file.
+    :param tls_verification: When set to True, verify the remote link is https and whether the TLS certificate is valid.
+        When set to a path to a file, use this file as a CA bundle file. When set to False, allow http links and do not
+        verify any TLS certificates. Ignored if ``url_or_path`` is a local path.
+    :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path.
+    :raises InsecureConnectionError: The connection is insecure. See ``tls_verification`` for more details.
     """
 
-    def __init__(self, url_or_path: Union[_typing.PathLike, str]) -> None:
+    def __init__(self, url_or_path: Union[_typing.PathLike, str], *,
+                 tls_verification: Union[bool, _typing.PathLike] = True) -> None:
         """Constructor method.
         """
-        self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path))
+        self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path,
+                                                                                    tls_verification=tls_verification))
 
         # The URL or path from which the schema was retrieved
         self._retrieved_url_or_path: Union[_typing.PathLike, str] = url_or_path
