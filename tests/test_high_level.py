@@ -23,7 +23,7 @@ from packaging.version import parse as version_parser
 import pytest
 from pydantic import ValidationError
 
-from pydax import (export_schemata, get_config, get_dataset_metadata, init, list_all_datasets,
+from pydax import (describe_dataset, export_schemata, get_config, get_dataset_metadata, init, list_all_datasets,
                    load_dataset, load_schemata)
 from pydax.dataset import Dataset
 from pydax._config import Config
@@ -193,26 +193,35 @@ class TestLoadDataset:
         assert 'Failed to load the dataset because some files are not found.' in str(e.value)
 
 
-class TestGetDatasetMetadata:
-    "Test high-level get_dataset_metadata function."
+def test_get_dataset_metadata():
+    "Test ``get_dataset_metadata``."
 
-    def test_human_param(self):
-        "Test the ``human`` parameter of ``get_dataset_metadata``."
+    name, version = 'gmb', '1.0.2'
 
-        name, version = 'gmb', '1.0.2'
+    gmb_schema = get_dataset_metadata(name, version=version)
+    assert gmb_schema == export_schemata().schemata['datasets'].export_schema('datasets', name, version)
 
-        gmb_metadata = get_dataset_metadata(name, version=version)
-        dataset_schema = export_schemata().schemata['datasets'].export_schema('datasets', name, version)
-        license_schema = export_schemata().schemata['licenses'].export_schema('licenses')
-        assert gmb_metadata == (f'Dataset name: {dataset_schema["name"]}\n'
-                                f'Description: {dataset_schema["description"]}\n'
-                                f'Size: {dataset_schema["estimated_size"]}\n'
-                                f'Published date: {dataset_schema["published"]}\n'
-                                f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
-                                f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
 
-        gmb_schema = get_dataset_metadata(name, version=version, human=False)
-        assert gmb_schema == export_schemata().schemata['datasets'].export_schema('datasets', name, version)
+def test_describe_dataset():
+    "Test ``describe_dataset``."
+
+    name, version = 'gmb', '1.0.2'
+
+    gmb_description = describe_dataset(name, version=version)
+    dataset_schema = export_schemata().schemata['datasets'].export_schema('datasets', name, version)
+    license_schema = export_schemata().schemata['licenses'].export_schema('licenses')
+
+    # Check a couple of spots
+    assert dataset_schema['name'] in gmb_description
+    assert dataset_schema['estimated_size'] in gmb_description
+    assert license_schema[dataset_schema["license"]]["name"] in gmb_description
+
+    # Instead of copy over the string for testing, we test a couple of important characteristics here
+    gmb_lines = gmb_description.splitlines()
+    assert len(gmb_lines) == 6  # number of lines
+    assert all(line.strip() != '' for line in gmb_lines)  # no blank line
+    assert all(line.strip() == line for line in gmb_lines)  # no trailing or leading whitespace
+    assert all(':' in line for line in gmb_lines)  # no missing colons
 
 # Schemata --------------------------------------------------
 
