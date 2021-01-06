@@ -44,6 +44,11 @@ jobs:
       - name: Test
         run: tox -e docs -vv
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: docs
+          path: .tox/docs/out
+
       - name: Notify Slack success
         if: ${{ success() && github.event_name == 'push' }}
         env:
