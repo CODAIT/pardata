@@ -19,7 +19,7 @@
 import os
 from typing import Dict, Union
 
-import pandas as pd  # type: ignore
+import pandas as pd  # type: ignore[import]
 
 from .. import _typing
 from ..schema import SchemaDict
