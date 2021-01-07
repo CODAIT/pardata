@@ -225,8 +225,7 @@ def get_dataset_metadata(name: str, *, version: str = 'latest') -> SchemaDict:
 @_handle_name_param
 @_handle_version_param
 def describe_dataset(name: str, *, version: str = 'latest') -> str:
-    """Describe a dataset's metadata either in human language. Parameters mean the same as
-    :func:`.get_dataset_metadata`.
+    """Describe a dataset's metadata in human language. Parameters mean the same as :func:`.get_dataset_metadata`.
 
     :return: The description.
 

@@ -216,7 +216,7 @@ def test_describe_dataset():
     assert dataset_schema['estimated_size'] in gmb_description
     assert license_schema[dataset_schema["license"]]["name"] in gmb_description
 
-    # Instead of copy over the string for testing, we test a couple of important characteristics here
+    # Instead of copying over the string for testing, we test a couple of important characteristics here
     gmb_lines = gmb_description.splitlines()
     assert len(gmb_lines) == 6  # number of lines
     assert all(line.strip() != '' for line in gmb_lines)  # no blank line
