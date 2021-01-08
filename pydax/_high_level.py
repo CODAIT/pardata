@@ -27,6 +27,7 @@ from packaging.version import parse as version_parser
 
 from ._config import Config
 from ._dataset import Dataset
+from . import _typing
 from ._schema import Schema, SchemaDict, SchemaManager
 
 # Global configurations --------------------------------------------------
@@ -278,12 +279,15 @@ def export_schemata() -> SchemaManager:
     return deepcopy(_get_schemata())
 
 
-def load_schemata(*, force_reload: bool = False) -> None:
+def load_schemata(*, force_reload: bool = False, tls_verification: Union[bool, _typing.PathLike] = True) -> None:
     """Loads a :class:`SchemaManager` object that stores all schemata. To export the loaded :class:`SchemaManager`
     object, please use :func:`.export_schemata`.
 
     :param force_reload: If ``True``, force reloading even if the provided URLs by :func:`pydax.init` are the same as
          provided last time. Otherwise, only those that are different from previous given ones are reloaded.
+    :param tls_verification: Same as ``tls_verification`` in :class:`pydax.Schema`.
+    :raises ValueError: See :class:`pydax.Schema`.
+    :raises InsecureConnectionError: See :class:`pydax.Schema`.
 
     Example:
     >>> load_schemata()
@@ -300,11 +304,12 @@ def load_schemata(*, force_reload: bool = False) -> None:
 
     global _schemata
     if force_reload or _schemata is None:  # Force reload or clean slate, create a new SchemaManager object
-        _schemata = SchemaManager(**{name: Schema(url) for name, url in urls.items()})
+        _schemata = SchemaManager(**{
+            name: Schema(url, tls_verification=tls_verification) for name, url in urls.items()})
     else:
         for name, schema in _schemata.schemata.items():
             if schema.retrieved_url_or_path != urls[name]:
-                _schemata.add_schema(name, Schema(urls[name]))
+                _schemata.add_schema(name, Schema(urls[name], tls_verification=tls_verification))
 
 
 def _get_schemata() -> SchemaManager:
