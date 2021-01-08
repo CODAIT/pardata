@@ -78,7 +78,7 @@ class TestSecureSchemaRetrieval:
 
     @pytest.fixture(params=('absolute_dir', 'relative_dir', 'file_url', 'https_url'))
     def dataset_schema_url_or_path(self, request) -> str:
-        "Every kind of url or path to datasets.yaml."
+        "Every kind of URL or path (other than http URL) to datasets.yaml."
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
         return str(request.getfixturevalue('schema_file_' + request.param)) + '/datasets.yaml'
