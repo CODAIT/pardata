@@ -21,6 +21,7 @@
 from copy import deepcopy
 import dataclasses
 import functools
+from textwrap import dedent
 from typing import Any, Callable, Dict, Iterable, Optional, Tuple, TypeVar, Union, cast
 from packaging.version import parse as version_parser
 
@@ -200,34 +201,19 @@ def load_dataset(name: str, *,
 
 @_handle_name_param
 @_handle_version_param
-def get_dataset_metadata(name: str, *,
-                         version: str = 'latest',
-                         human: bool = True) -> Union[str, SchemaDict]:
+def get_dataset_metadata(name: str, *, version: str = 'latest') -> SchemaDict:
     """Return a dataset's metadata either in human-readable form or as a copy of its schema.
 
     :param name: Name of the dataset you want get the metadata of. You can get a list of these
         datasets by calling :func:`pydax.list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
         available versions for a dataset by calling :func:`pydax.list_all_datasets`.
-    :param human: Whether to return the metadata as a string in human-readable form or to return a copy of the
-        dataset's schema. Defaults to True.
-    :return: Return a dataset's metadata either as a string or as a schema dictionary.
+    :return: A dataset's metadata.
 
-    Example get metadata as string:
-
-    >>> metadata = get_dataset_metadata('gmb')
-    >>> print(metadata)
-    Dataset name: Groningen Meaning Bank Modified
-    Description: A dataset of multi-sentence texts, together with annotations for parts-of-speech...
-    Size: 10M
-    Published date: 2019-12-19
-    License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
-    Available subdatasets: gmb_subset_full
-
-    Example get metadata as dict:
+    Example:
 
     >>> import pprint
-    >>> metadata = get_dataset_metadata('gmb', human=False)
+    >>> metadata = get_dataset_metadata('gmb')
     >>> metadata['name']
     'Groningen Meaning Bank Modified'
     >>> metadata['description']
@@ -240,18 +226,38 @@ def get_dataset_metadata(name: str, *,
                          'path': 'groningen_meaning_bank_modified/gmb_subset_full.txt'}}
     """
 
+    return export_schemata().schemata['datasets'].export_schema('datasets', name, version)
+
+
+@_handle_name_param
+@_handle_version_param
+def describe_dataset(name: str, *, version: str = 'latest') -> str:
+    """Describe a dataset's metadata in human language. Parameters mean the same as :func:`.get_dataset_metadata`.
+
+    :return: The description.
+
+    Example:
+
+    >>> print(describe_dataset('gmb'))
+    Dataset name: Groningen Meaning Bank Modified
+    Description: A dataset of multi-sentence texts, ...
+    Size: 10M
+    Published date: 2019-12-19
+    License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
+    Available subdatasets: gmb_subset_full
+    """
+
     schema_manager = export_schemata()
     dataset_schema = schema_manager.schemata['datasets'].export_schema('datasets', name, version)
     license_schema = schema_manager.schemata['licenses'].export_schema('licenses')
-    if human:
-        return (f'Dataset name: {dataset_schema["name"]}\n'
-                f'Description: {dataset_schema["description"]}\n'
-                f'Size: {dataset_schema["estimated_size"]}\n'
-                f'Published date: {dataset_schema["published"]}\n'
-                f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
-                f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
-    else:
-        return dataset_schema
+    return dedent(f'''
+            Dataset name: {dataset_schema["name"]}
+            Description: {dataset_schema["description"]}
+            Size: {dataset_schema["estimated_size"]}
+            Published date: {dataset_schema["published"]}
+            License: {license_schema[dataset_schema["license"]]["name"]}
+            Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}
+    ''').strip()
 
 
 # Schemata --------------------------------------------------
