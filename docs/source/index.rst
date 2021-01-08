@@ -12,11 +12,11 @@ PyDAX is a simple Python API for downloading and loading datasets from IBM's `Da
 
    user_guide/*
 
-API references
+API References
 --------------
 
 .. autosummary::
-   :caption: API references
+   :caption: API References
    :toctree: api-references
    :template: our-module.rst
 
@@ -29,7 +29,7 @@ Loaders
 ~~~~~~~
 
 .. autosummary::
-   :caption: API references (Loaders)
+   :caption: API References (Loaders)
    :toctree: api-references
    :template: our-module.rst
 
