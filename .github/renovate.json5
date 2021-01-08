@@ -18,7 +18,7 @@
     ],
 
     "pip_requirements": {
-        "fileMatch": ["requirements-dev\.txt$"]
+        "fileMatch": ["requirements.*\.txt$"]
     },
 
     "labels": [
@@ -37,7 +37,6 @@
                 "*"
             ],
             "updateTypes": [
-                "minor",
                 "patch"
             ],
             // Group all minor version bump together

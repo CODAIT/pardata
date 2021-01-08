@@ -21,7 +21,8 @@
 from copy import deepcopy
 import dataclasses
 import functools
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Union, no_type_check
+from textwrap import dedent
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, TypeVar, Union, cast
 from packaging.version import parse as version_parser
 
 from ._config import Config
@@ -29,6 +30,8 @@ from ._dataset import Dataset
 from ._schema import Schema, SchemaDict, SchemaManager
 
 # Global configurations --------------------------------------------------
+
+_global_config: Config
 
 
 def get_config() -> Config:
@@ -41,7 +44,7 @@ def get_config() -> Config:
     >>> get_config()
     Config(DATASET_SCHEMA_URL=..., FORMAT_SCHEMA_URL=..., LICENSE_SCHEMA_URL=..., DATADIR=...)
     """
-    return _global_config  # type: ignore [name-defined]
+    return _global_config
 
 
 # The SchemaManager object that is managed by high-level functions
@@ -67,11 +70,11 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
     if update_only:
         # We don't use dataclasses.replace here because it is uncertain whether it would work well with
         # pydantic.dataclasses.
-        prev = dataclasses.asdict(_global_config)  # type: ignore [name-defined]
+        prev = dataclasses.asdict(_global_config)
         prev.update(kwargs)
-        _global_config = Config(**prev)  # type: ignore [name-defined]
+        _global_config = Config(**prev)
     else:
-        _global_config = Config(**kwargs)  # type: ignore [name-defined]
+        _global_config = Config(**kwargs)
         _schemata = None
 
 
@@ -100,8 +103,14 @@ def list_all_datasets() -> Dict[str, Tuple]:
     }
 
 
-@no_type_check
-def _handle_name_param(func: Callable) -> Callable:
+# We would like to be more specific about what this function does and avoid using "cast", but this seems to be the best
+# we can do at this moment: It at least preserves all type hints of the decorated functions. When callback protocols
+# come out, we may be able to make improvements over this part:
+# https://mypy.readthedocs.io/en/stable/protocols.html#callback-protocols
+_DecoratedFuncType = TypeVar("_DecoratedFuncType", bound=Callable)
+
+
+def _handle_name_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
     """Decorator for handling ``name`` parameter.
 
     :raises TypeError: ``name`` is not a string.
@@ -109,7 +118,7 @@ def _handle_name_param(func: Callable) -> Callable:
     :return: Wrapped function that handles ``name`` parameter properly.
     """
     @functools.wraps(func)
-    def name_wrapper(name: str, *args, **kwargs):
+    def name_wrapper(name: str, *args: Any, **kwargs: Any) -> Any:
 
         if not isinstance(name, str):
             raise TypeError('The name parameter must be supplied a str.')
@@ -118,11 +127,10 @@ def _handle_name_param(func: Callable) -> Callable:
             raise KeyError(f'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their versions '
                            'by running the function pydax.list_all_datasets().')
         return func(name, *args, **kwargs)
-    return name_wrapper
+    return cast(_DecoratedFuncType, name_wrapper)
 
 
-@no_type_check
-def _handle_version_param(func: Callable) -> Callable:
+def _handle_version_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
     """Decorator for handling ``version`` parameter. Must still be supplied a dataset ``name``.
 
     :raises TypeError: ``version`` is not a string.
@@ -130,7 +138,7 @@ def _handle_version_param(func: Callable) -> Callable:
     :return: Wrapped function that handles ``version`` parameter properly.
     """
     @functools.wraps(func)
-    def version_wrapper(name: str, version: str = 'latest', *args, **kwargs):
+    def version_wrapper(name: str, version: str = 'latest', *args: Any, **kwargs: Any) -> Any:
 
         if not isinstance(version, str):
             raise TypeError('The version parameter must be supplied a str.')
@@ -142,7 +150,7 @@ def _handle_version_param(func: Callable) -> Callable:
             raise KeyError(f'"{version}" is not a valid PyDAX version for the dataset "{name}". You can view all '
                            'valid datasets and their versions by running the function pydax.list_all_datasets().')
         return func(name=name, version=version, *args, **kwargs)
-    return version_wrapper
+    return cast(_DecoratedFuncType, version_wrapper)
 
 
 @_handle_name_param
@@ -193,34 +201,19 @@ def load_dataset(name: str, *,
 
 @_handle_name_param
 @_handle_version_param
-def get_dataset_metadata(name: str, *,
-                         version: str = 'latest',
-                         human: bool = True) -> Union[str, SchemaDict]:
+def get_dataset_metadata(name: str, *, version: str = 'latest') -> SchemaDict:
     """Return a dataset's metadata either in human-readable form or as a copy of its schema.
 
     :param name: Name of the dataset you want get the metadata of. You can get a list of these
         datasets by calling :func:`pydax.list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
         available versions for a dataset by calling :func:`pydax.list_all_datasets`.
-    :param human: Whether to return the metadata as a string in human-readable form or to return a copy of the
-        dataset's schema. Defaults to True.
-    :return: Return a dataset's metadata either as a string or as a schema dictionary.
+    :return: A dataset's metadata.
 
-    Example get metadata as string:
-
-    >>> metadata = get_dataset_metadata('gmb')
-    >>> print(metadata)
-    Dataset name: Groningen Meaning Bank Modified
-    Description: A dataset of multi-sentence texts, together with annotations for parts-of-speech...
-    Size: 10M
-    Published date: 2019-12-19
-    License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
-    Available subdatasets: gmb_subset_full
-
-    Example get metadata as dict:
+    Example:
 
     >>> import pprint
-    >>> metadata = get_dataset_metadata('gmb', human=False)
+    >>> metadata = get_dataset_metadata('gmb')
     >>> metadata['name']
     'Groningen Meaning Bank Modified'
     >>> metadata['description']
@@ -233,18 +226,39 @@ def get_dataset_metadata(name: str, *,
                          'path': 'groningen_meaning_bank_modified/gmb_subset_full.txt'}}
     """
 
+    return export_schemata().schemata['datasets'].export_schema('datasets', name, version)
+
+
+@_handle_name_param
+@_handle_version_param
+def describe_dataset(name: str, *, version: str = 'latest') -> str:
+    """Describe a dataset's metadata in human language. Parameters mean the same as :func:`.get_dataset_metadata`.
+
+    :return: The description.
+
+    Example:
+
+    >>> print(describe_dataset('gmb'))
+    Dataset name: Groningen Meaning Bank Modified
+    Description: A dataset of multi-sentence texts, ...
+    Size: 10M
+    Published date: 2019-12-19
+    License: Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)
+    Available subdatasets: gmb_subset_full
+    """
+
     schema_manager = export_schemata()
     dataset_schema = schema_manager.schemata['datasets'].export_schema('datasets', name, version)
     license_schema = schema_manager.schemata['licenses'].export_schema('licenses')
-    if human:
-        return (f'Dataset name: {dataset_schema["name"]}\n'
-                f'Description: {dataset_schema["description"]}\n'
-                f'Size: {dataset_schema["estimated_size"]}\n'
-                f'Published date: {dataset_schema["published"]}\n'
-                f'License: {license_schema[dataset_schema["license"]]["name"]}\n'
-                f'Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}')
-    else:
-        return dataset_schema
+    return dedent(f'''
+            Dataset name: {dataset_schema["name"]}
+            Description: {dataset_schema["description"]}
+            Size: {dataset_schema["estimated_size"]}
+            Published date: {dataset_schema["published"]}
+            License: {license_schema[dataset_schema["license"]]["name"]}
+            Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}
+    ''').strip()
+
 
 # Schemata --------------------------------------------------
 
@@ -304,4 +318,6 @@ def _get_schemata() -> SchemaManager:
     load_schemata()
 
     # The return value is guranteed to be SchemaManager instead of Optional[SchemaManager] after load_schemata
-    return _schemata  # type: ignore [return-value]
+    assert _schemata is not None  # nosec: We use assertion for code clarity and mypy detection of _schemata's type
+
+    return _schemata

@@ -10,6 +10,7 @@ Functions
 .. autosummary::
    :toctree: autosummary
 
+   describe_dataset
    export_schemata
    get_config
    get_dataset_metadata
