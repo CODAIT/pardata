@@ -18,7 +18,8 @@
 
 
 from . import dataset, exceptions, loaders, schema
-from ._high_level import (export_schemata,
+from ._high_level import (describe_dataset,
+                          export_schemata,
                           get_config,
                           get_dataset_metadata,
                           init,
@@ -34,6 +35,7 @@ __all__ = (
            'loaders',
            'schema',
            # high-level functions
+           'describe_dataset',
            'export_schemata',
            'get_config',
            'get_dataset_metadata',
