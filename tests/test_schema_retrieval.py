@@ -83,11 +83,11 @@ class TestSecureSchemaRetrieval:
         # both. This is not an issue for the purpose of this test.
         return str(request.getfixturevalue('schema_file_' + request.param)) + '/datasets.yaml'
 
-    @pytest.mark.parametrize('func', (retrieve_schema_file, Schema))
-    def test_insecure_connections_fail(self, remote_dataset_schema_url, untrust_self_signed_cert, func):
+    @pytest.mark.parametrize('caller', (retrieve_schema_file, Schema))
+    def test_insecure_connections_fail(self, remote_dataset_schema_url, untrust_self_signed_cert, caller):
         "Test insecure connections that should fail."
         with pytest.raises(InsecureConnectionError) as e:
-            func(remote_dataset_schema_url, tls_verification=True)
+            caller(remote_dataset_schema_url, tls_verification=True)
         assert remote_dataset_schema_url in str(e.value)
 
     def test_secure_connections_succeed_retrieve_schema_file(self,
@@ -115,7 +115,7 @@ class TestSecureSchemaRetrieval:
         load_schemata(force_reload=True, tls_verification=False)
         assert export_schemata().schemata['datasets'].retrieved_url_or_path == remote_dataset_schema_url
 
-    def test_secure_connections_succeed_load_schemata(self, dataset_schema_url_or_path, schema_file_relative_dir):
+    def test_secure_connections_succeed_load_schemata(self, dataset_schema_url_or_path):
         "Test secure connections that should succeed for :func:`pydax.load_schemata`."
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
@@ -123,7 +123,7 @@ class TestSecureSchemaRetrieval:
         load_schemata(force_reload=True, tls_verification=True)
         assert export_schemata().schemata['datasets'].retrieved_url_or_path == dataset_schema_url_or_path
 
-    @pytest.mark.parametrize('func', (retrieve_schema_file, Schema.__init__, load_schemata))
-    def test_default_tls_verification(self, func):
+    @pytest.mark.parametrize('caller', (retrieve_schema_file, Schema.__init__, load_schemata))
+    def test_default_tls_verification(self, caller):
         "Ensure that ``tls_verification=True`` by default."
-        assert func.__kwdefaults__['tls_verification'] is True
+        assert caller.__kwdefaults__['tls_verification'] is True
