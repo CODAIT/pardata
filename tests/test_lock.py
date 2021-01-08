@@ -80,6 +80,9 @@ class TestDirectoryLock:
         for f in lock_file_list:
             (tmp_path / f).touch()
 
+        # Sanity check: lock files exist
+        assert all((tmp_path / f).exists() for f in lock_file_list)
+
         for write in (True, False):
             self._ensure_lock_fails(tmp_path, write)
 
@@ -98,6 +101,34 @@ class TestDirectoryLock:
         for f in lock_file_list:
             (tmp_path / f).touch()
 
+        # Sanity check: lock files exist
+        assert all((tmp_path / f).exists() for f in lock_file_list)
+
         self._ensure_lock_fails(tmp_path, write=True)
         self._ensure_lock_unlock_succeeds(tmp_path, write=False)
         self._ensure_unlock_fails(tmp_path)
+
+    @pytest.mark.parametrize('lock_file_list',
+                             [
+                                 # One write lock
+                                 ('write.ding.dong.lock',),
+                                 # Two write locks
+                                 ('write.dong.ding.lock', 'write.777.lock'),
+                                 # One write lock and one read lock
+                                 ('write.ding.dong.lock', 'read.ibm-codait.lock'),
+                                 # 100 write and read locks
+                                 tuple(f'write.{i}.lock' for i in range(100)) +
+                                 tuple(f'read.{i}.lock' for i in range(100)),
+                             ])
+    def test_force_clear_all_locks(self, tmp_path, lock_file_list):
+        "Test clearing all locks."
+
+        for f in lock_file_list:
+            (tmp_path / f).touch()
+
+        # Sanity check: lock files exist
+        assert all((tmp_path / f).exists() for f in lock_file_list)
+
+        DirectoryLock(tmp_path).force_clear_all_locks()
+
+        assert all(not (tmp_path / f).exists() for f in lock_file_list)
