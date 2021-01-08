@@ -33,8 +33,8 @@ class DirectoryLock:
     A lock file is named as ``{read|write}.{pid}.{uuid}.lock``. This should be able to resolve all potential name
     clashes. We put process ID here in case someone wants to figure out which process created the file.
 
-    As a reservation for future compatibility, this class reserves all files starting with ``read.`` and ends with
-    ``.lock`` for its own use.
+    As a reservation for future compatibility, this class reserves all files starting with ``read.``/``write.`` and ends
+    with ``.lock`` for its own use.
 
     :param directory: The directory where lock files would be put.
     """
