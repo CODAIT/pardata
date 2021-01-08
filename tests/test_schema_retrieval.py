@@ -112,7 +112,7 @@ class TestSecureSchemaRetrieval:
         assert remote_dataset_schema_url in str(e.value)
 
         # Insecure load succeeds, no exception raised
-        load_schemata(tls_verification=False)
+        load_schemata(force_reload=True, tls_verification=False)
         assert export_schemata().schemata['datasets'].retrieved_url_or_path == remote_dataset_schema_url
 
     def test_secure_connections_succeed_load_schemata(self, dataset_schema_url_or_path, schema_file_relative_dir):
@@ -120,7 +120,7 @@ class TestSecureSchemaRetrieval:
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
         init(update_only=True, DATASET_SCHEMA_URL=dataset_schema_url_or_path)
-        load_schemata(tls_verification=True)
+        load_schemata(force_reload=True, tls_verification=True)
         assert export_schemata().schemata['datasets'].retrieved_url_or_path == dataset_schema_url_or_path
 
     @pytest.mark.parametrize('func', (retrieve_schema_file, Schema.__init__, load_schemata))
