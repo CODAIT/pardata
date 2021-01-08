@@ -16,6 +16,8 @@
 
 import pytest
 
+from pydax import export_schemata, init, load_schemata
+from pydax.schema import Schema
 from pydax.exceptions import InsecureConnectionError
 from pydax._schema_retrieval import retrieve_schema_file
 
@@ -65,24 +67,63 @@ class TestSchemaRetrieval:
 
         assert str(e.value) == 'Unknown scheme in "ftp://ftp/is/unsupported": "ftp"'
 
-    @pytest.mark.parametrize('location_type', ('http_url', 'https_url'))
-    def test_insecure_connections_fail(self, location_type, untrust_self_signed_cert, request):
-        "Test insecure connections that should fail."
-        url = str(request.getfixturevalue('schema_file_' + location_type)) + '/datasets.yaml'
-        with pytest.raises(InsecureConnectionError) as e:
-            retrieve_schema_file(url, tls_verification=True)
-        assert url in str(e.value)
-        assert retrieve_schema_file.__kwdefaults__['tls_verification'] is True
 
-    @pytest.mark.parametrize('location_type',
-                             ('absolute_dir',
-                              'relative_dir',
-                              'file_url',
-                              'https_url'))
-    def test_insecure_connections_succeed(self, location_type, schema_file_relative_dir, request):
-        "Test secure connections that should succeed."
+class TestSecureSchemaRetrieval:
+    "Common tests that mainly concern securely retrieving schema files."
+
+    @pytest.fixture(params=('http_url', 'https_url'))
+    def remote_dataset_schema_url(self, request) -> str:
+        "http/https url to datasets.yaml."
+        return str(request.getfixturevalue('schema_file_' + request.param)) + '/datasets.yaml'
+
+    @pytest.fixture(params=('absolute_dir', 'relative_dir', 'file_url', 'https_url'))
+    def dataset_schema_url_or_path(self, request) -> str:
+        "Every kind of URL or path (other than http URL) to datasets.yaml."
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
-        path_or_url = str(request.getfixturevalue('schema_file_' + location_type)) + '/datasets.yaml'
-        assert retrieve_schema_file(path_or_url, tls_verification=True) == \
+        return str(request.getfixturevalue('schema_file_' + request.param)) + '/datasets.yaml'
+
+    @pytest.mark.parametrize('caller', (retrieve_schema_file, Schema))
+    def test_insecure_connections_fail(self, remote_dataset_schema_url, untrust_self_signed_cert, caller):
+        "Test insecure connections that should fail."
+        with pytest.raises(InsecureConnectionError) as e:
+            caller(remote_dataset_schema_url, tls_verification=True)
+        assert remote_dataset_schema_url in str(e.value)
+
+    def test_secure_connections_succeed_retrieve_schema_file(self,
+                                                             dataset_schema_url_or_path,
+                                                             schema_file_relative_dir):
+        "Test secure connections that should succeed for ``retrieve_schema_file``."
+        assert retrieve_schema_file(dataset_schema_url_or_path, tls_verification=True) == \
             (schema_file_relative_dir / 'datasets.yaml').read_text(encoding='utf-8')
+
+    def test_secure_connections_succeed_schema(self,
+                                               dataset_schema_url_or_path,
+                                               schema_file_relative_dir):
+        "Test secure connections that should succeed for ``Schema()``."
+        assert Schema(dataset_schema_url_or_path, tls_verification=True).retrieved_url_or_path == \
+            dataset_schema_url_or_path
+
+    def test_insecure_connections_load_schemata(self, remote_dataset_schema_url, untrust_self_signed_cert):
+        "Test insecure connections that should fail when ``tls_verification=True`` for ``load_schemata``."
+        init(update_only=True, DATASET_SCHEMA_URL=remote_dataset_schema_url)
+        with pytest.raises(InsecureConnectionError) as e:
+            load_schemata(force_reload=True, tls_verification=True)
+        assert remote_dataset_schema_url in str(e.value)
+
+        # Insecure load succeeds, no exception raised
+        load_schemata(force_reload=True, tls_verification=False)
+        assert export_schemata().schemata['datasets'].retrieved_url_or_path == remote_dataset_schema_url
+
+    def test_secure_connections_succeed_load_schemata(self, dataset_schema_url_or_path):
+        "Test secure connections that should succeed for :func:`pydax.load_schemata`."
+        # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
+        # both. This is not an issue for the purpose of this test.
+        init(update_only=True, DATASET_SCHEMA_URL=dataset_schema_url_or_path)
+        load_schemata(force_reload=True, tls_verification=True)
+        assert export_schemata().schemata['datasets'].retrieved_url_or_path == dataset_schema_url_or_path
+
+    @pytest.mark.parametrize('caller', (retrieve_schema_file, Schema.__init__, load_schemata))
+    def test_default_tls_verification(self, caller):
+        "Ensure that ``tls_verification=True`` by default."
+        assert caller.__kwdefaults__['tls_verification'] is True

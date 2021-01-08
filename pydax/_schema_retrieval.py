@@ -38,11 +38,9 @@ def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], *,
 
     :param url_or_path: URL or path to the schema file.
     :param encoding: The encoding of the text in ``url_or_path``.
-    :param tls_verification: When set to True, verify the remote link is https and whether the TLS certificate is valid.
-        When set to a path to a file, use this file as a CA bundle file. When set to False, allow http links and do not
-        verify any TLS certificates. Ignored if ``url_or_path`` is a local path.
-    :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path.
-    :raises InsecureConnectionError: The connection is insecure. See ``tls_verification`` for more details.
+    :param tls_verification: Same as ``tls_verification`` in :class:`pydax.Schema`.
+    :raises ValueError: See :class:`pydax.Schema`.
+    :raises InsecureConnectionError: See :class:`pydax.Schema`.
     :return: A string of the content.
     """
 
