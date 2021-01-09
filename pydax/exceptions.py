@@ -17,6 +17,9 @@
 "Exceptions of this module."
 
 
+from ._lock import DirectoryLockAcquisitionError
+
+
 class InsecureConnectionError(RuntimeError):
     "The connection is insecure."
     pass
