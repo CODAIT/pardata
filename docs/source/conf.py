@@ -40,7 +40,7 @@ sys.path.insert(0, os.path.abspath('../..'))  # Source code dir relative to this
 # -- Project information -----------------------------------------------------
 
 project = 'PyDAX'
-copyright = '2020, International Business Machines Corp. (IBM)'
+copyright = '2020--2021, International Business Machines Corp. (IBM)'
 version = pydax_version
 release = version
 
@@ -57,6 +57,7 @@ extensions = [
     ]
 
 autosummary_generate = True  # Automate sphinx.ext.autosummary to run when html is generated
+autosummary_imported_members = True  # Imported members should be documented
 autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
 autodoc_inherit_docstrings = True  # If no class summary, inherit base class summary
 
