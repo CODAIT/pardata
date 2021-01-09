@@ -140,7 +140,7 @@ dmypy.json
 
 ### sphinx docs ###
 docs/build/
-docs/source/api_reference/autosummary/
+docs/source/api-references
 
 ### pydax ###
 /pydax/_version.py
