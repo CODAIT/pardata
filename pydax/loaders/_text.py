@@ -14,9 +14,8 @@
 # limitations under the License.
 #
 
-import os
 import pathlib
-from typing import Dict, Union
+from typing import cast, Dict, Union
 
 from .. import _typing
 from ..schema import SchemaDict
@@ -34,9 +33,9 @@ class PlainTextLoader(Loader):
         :raises TypeError: ``path`` is not a path object.
         """
 
-        if not isinstance(path, (str, os.PathLike)):
-            # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
-            raise TypeError(f'Unsupported path type "{type(path)}".')
+        super().load(path, options)
 
         encoding = options.get('encoding', 'utf-8')
+        # We can remove usage of cast once Dict[str, str] handling is added
+        path = cast(_typing.PathLike, path)
         return pathlib.Path(path).read_text(encoding=encoding)

@@ -16,7 +16,6 @@
 
 "Tabular data loaders."
 
-import os
 from typing import Dict, Union
 
 import pandas as pd  # type: ignore[import]
@@ -43,9 +42,7 @@ class CSVPandasLoader(Loader):
         :raises TypeError: ``path`` is not a path object.
         """
 
-        if not isinstance(path, (str, os.PathLike)):
-            # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
-            raise TypeError(f'Unsupported path type "{type(path)}".')
+        super().load(path, options)
 
         parse_dates = []
         dtypes = {}
