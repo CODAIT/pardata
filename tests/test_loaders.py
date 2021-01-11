@@ -45,7 +45,7 @@ class TestBaseLoader:
         class MyLoader(Loader):
             pass
 
-        # Error out in instantiating MyLoader because loader is not overridden
+        # Error out when instantiating MyLoader because load method is not overridden
         with pytest.raises(TypeError) as e:
             MyLoader()
         assert "Can't instantiate abstract class MyLoader with abstract method" in str(e.value)
@@ -56,6 +56,19 @@ class TestBaseLoader:
                 super().load(path, options)
         # This line shouldn't error out even though it calls an abstract method in its parent
         MyLoader().load(tmp_path, None)
+
+    def test_check_path(self):
+        "Test Loader.check_path method."
+
+        class MyLoader(Loader):
+            def load(self):
+                pass
+
+        loader = MyLoader()
+        integer = 1
+        with pytest.raises(TypeError) as e:
+            loader.check_path(integer)
+        assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 
 
 class TestFormatLoaderMap:
