@@ -116,17 +116,17 @@ class TestDataset:
     def test_load(self, downloaded_wikitext103_dataset):
         "Test basic loading functionality."
 
-        downloaded_wikitext103_dataset.load()
+        data = downloaded_wikitext103_dataset.load()
 
-        assert (hashlib.sha512(downloaded_wikitext103_dataset.data['train'].encode()).hexdigest() ==
+        assert (hashlib.sha512(data['train'].encode()).hexdigest() ==
                 ('df7615f77cb9dd19975881f271e3e3525bee38c08a67fea36a51c96be69a3ecabc9e05c02cbaf'
                  '6fc63a0082efb44156f61c81061d3b0272bbccd7657c682e791'))
 
-        assert (hashlib.sha512(downloaded_wikitext103_dataset.data['valid'].encode()).hexdigest() ==
+        assert (hashlib.sha512(data['valid'].encode()).hexdigest() ==
                 ('e4834d365d5f8313503895fd8304d29a566ff4a2df77efb32457fdc353304fb61460511f89bb9'
                  '0f14a47132c1539aaa324d3e71f5f56045a61a7292ad25a3c02'))
 
-        assert (hashlib.sha512(downloaded_wikitext103_dataset.data['test'].encode()).hexdigest() ==
+        assert (hashlib.sha512(data['test'].encode()).hexdigest() ==
                 ('6fe665d33c0f788eba76da50539f0ca02432c70c94b788a493da491215e86043fc732dbeef9bb'
                  '49a72341c7283ea55f59d10941ac41f7ac58aea3bdcd72f5cd8'))
 
@@ -134,16 +134,16 @@ class TestDataset:
         "Test ``format_loader_map`` param in ``Dataset.load``."
 
         # Default
-        downloaded_noaa_jfk_dataset.load(format_loader_map=None)
-        data = downloaded_noaa_jfk_dataset.data['jfk_weather_cleaned']
-        assert isinstance(data, pd.DataFrame)
+        data = downloaded_noaa_jfk_dataset.load(format_loader_map=None)
+        cleaned_data = data['jfk_weather_cleaned']
+        assert isinstance(cleaned_data, pd.DataFrame)
 
         # Load CSV using the plain text loader
-        downloaded_noaa_jfk_dataset.load(format_loader_map=FormatLoaderMap({
+        data = downloaded_noaa_jfk_dataset.load(format_loader_map=FormatLoaderMap({
             'csv': PlainTextLoader()
         }))
-        data = downloaded_noaa_jfk_dataset.data['jfk_weather_cleaned']
-        assert isinstance(data, str)
+        cleaned_data = data['jfk_weather_cleaned']
+        assert isinstance(cleaned_data, str)
 
     def test_constructor_download_and_load(self, tmp_path, wikitext103_schema):
         "Test the full power of Dataset.__init__() (mode being ``InitializationMode.DOWNLOAD_AND_LOAD``)."
@@ -178,13 +178,15 @@ class TestDataset:
         dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
         with pytest.raises(RuntimeError) as e:
             dataset.data
-        assert 'Data has not been loaded yet. Call Dataset.load() to load data.' == str(e.value)
+        assert str(e.value) == 'Data has not been downloaded and/or loaded yet. Call Dataset.download() to download ' \
+                               'data, call Dataset.load() to load data.'
 
         # Same after downloading
         dataset.download()
         with pytest.raises(RuntimeError) as e:
             dataset.data
-        assert str(e.value) == 'Data has not been loaded yet. Call Dataset.load() to load data.'
+        assert str(e.value) == 'Data has not been downloaded and/or loaded yet. Call Dataset.download() to download ' \
+                               'data, call Dataset.load() to load data.'
 
     def test_deleting_data_dir(self, tmp_path, gmb_schema):
         "Test ``Dataset.delete()``."
