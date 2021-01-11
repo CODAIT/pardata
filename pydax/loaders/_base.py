@@ -15,7 +15,7 @@
 #
 
 from abc import ABC, abstractmethod
-
+import os
 from typing import Any, Dict, Union
 
 from .. import _typing
@@ -33,4 +33,15 @@ class Loader(ABC):
         :param options: Options passed to the loader.
         :return: The object representing the loaded file.
         """
-        pass
+        self.check_path(path)
+
+    def check_path(self, path: Union[_typing.PathLike, Dict[str, str]]) -> None:
+        """Check if the given path is a valid path to the file to be loaded. Raise an error if it is not.
+
+        :param path: The path of the file to be loaded.
+        :raises TypeError: ``path`` is not a path object.
+        :return: No return unless the path is invalid, in which case see TypeError.
+        """
+        if not isinstance(path, (str, os.PathLike)):
+            # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
+            raise TypeError(f'Unsupported path type "{type(path)}".')
