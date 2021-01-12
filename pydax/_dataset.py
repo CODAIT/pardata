@@ -65,7 +65,7 @@ class Dataset:
         self._schema: SchemaDict = schema
         self._data_dir_: pathlib.Path = pathlib.Path(os.path.abspath(data_dir))
         self._data: Optional[Dict[str, Any]] = None
-        # put directory lock under self._pydax_dir. We use self._pydax_dir_ instead of self._pydax_dir because we don't
+        # Put directory lock under self._pydax_dir. We use self._pydax_dir_ instead of self._pydax_dir because we don't
         # want to have the directory created in lazy mode upon construction of a Dataset object.
         self._lock: DirectoryLock = DirectoryLock(self._pydax_dir_)
 
