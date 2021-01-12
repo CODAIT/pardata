@@ -113,8 +113,6 @@ class Dataset:
         :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
         :raises tarfile.ReadError: The tar archive was unable to be read.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
-
-        :return: True if downloading succeeds, False if loading fails due to the existence of a directory write lock.
         """
         download_url = self._schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
