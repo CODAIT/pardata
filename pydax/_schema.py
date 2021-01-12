@@ -44,6 +44,10 @@ class Schema(ABC):
     def __init__(self, url_or_path: Union[_typing.PathLike, str], *,
                  tls_verification: Union[bool, _typing.PathLike] = True) -> None:
         """Constructor method.
+
+        Example:
+
+        >>> schema = Schema('./tests/schemata/datasets.yaml')
         """
         self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path,
                                                                                     tls_verification=tls_verification))
@@ -64,6 +68,12 @@ class Schema(ABC):
 
         :param keys: The sequence of keys that leads to the portion of the schema to be exported.
         :return: Copy of the schema dictionary
+
+        Example:
+
+        >>> schema = Schema('./tests/schemata/datasets.yaml')
+        >>> schema.export_schema('datasets', 'noaa_jfk', '1.1.4')
+        {'name': 'NOAA Weather Data – JFK Airport'...}
         """
         schema: SchemaDict = self._schema
         for k in keys:
@@ -72,7 +82,16 @@ class Schema(ABC):
 
     @property
     def retrieved_url_or_path(self) -> Union[_typing.PathLike, str]:
-        "The URL or path from which the schema was retrieved."
+        """The URL or path from which the schema was retrieved.
+
+        :return: The URL or path from which the schema was retrieved.
+
+        Example:
+
+        >>> schema = Schema('./tests/schemata/datasets.yaml')
+        >>> schema.retrieved_url_or_path
+        './tests/schemata/datasets.yaml'
+        """
         return self._retrieved_url_or_path
 
 
@@ -108,6 +127,11 @@ class SchemaManager():
 
     def __init__(self, **kwargs: Schema) -> None:
         """Constructor method
+
+        Example:
+
+        >>> dataset_schema = Schema('./tests/schemata/datasets.yaml')
+        >>> schema_manager = SchemaManager(datasets=dataset_schema)
         """
         self.schemata: Dict[str, Schema] = {}
         for name, val in kwargs.items():
@@ -119,6 +143,13 @@ class SchemaManager():
 
         :param name: Schema name
         :param val: Schema instance
+
+        Example:
+
+        >>> dataset_schema = Schema('./tests/schemata/datasets.yaml')
+        >>> schema_manager = SchemaManager(datasets=dataset_schema)
+        >>> licenses_schema = Schema('./tests/schemata/licenses.yaml')
+        >>> schema_manager.add_schema('licenses', licenses_schema)
         """
         if not isinstance(val, Schema):
             raise TypeError('val must be a Schema instance.')
