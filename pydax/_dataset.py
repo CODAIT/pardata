@@ -172,6 +172,7 @@ class Dataset:
                                                              path=self._data_dir / subdataset_schema['path'],
                                                              format_loader_map=format_loader_map)
                 except FileNotFoundError as e:
+                    self._data = None
                     raise FileNotFoundError(
                         f'Failed to load subdataset "{subdataset}" because some files are not found. '
                         f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n{e}')

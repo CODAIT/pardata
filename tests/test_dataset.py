@@ -173,6 +173,14 @@ class TestDataset:
         assert ('Failed to load subdataset "gmb_subset_full" because some files are not found. '
                 'Did you forget to call Dataset.download()?\nCaused by:\n') in str(e.value)
 
+        # Half-loaded data objects should get reset to None
+        assert dataset._data is None
+
+        with pytest.raises(RuntimeError) as e:
+            dataset.data
+        assert str(e.value) == ('Data has not been downloaded and/or loaded yet. Call Dataset.download() to download '
+                                'data, call Dataset.load() to load data.')
+
     def test_unloaded_access_to_data(self, tmp_path, gmb_schema):
         "Test access to ``Dataset.data`` when no data has been loaded."
 
