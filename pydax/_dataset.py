@@ -150,7 +150,7 @@ class Dataset:
 
     def load(self,
              subdatasets: Optional[Iterable[str]] = None,
-             format_loader_map: Optional[FormatLoaderMap] = None) -> None:
+             format_loader_map: Optional[FormatLoaderMap] = None) -> Dict[str, Any]:
         """Load data files to RAM. It adds a directory read lock during execution.
 
         :param subdatasets: The subdatasets to load. ``None`` means all subdatasets.
@@ -158,7 +158,7 @@ class Dataset:
         :raises FileNotFoundError: The dataset files are not found on the disk. Usually this is because
             :func:`~Dataset.download` has never been called.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
-        :return: Loaded data objects.
+        :return: Loaded data objects. Same as :attr:`.data`.
         """
         if subdatasets is None:
             subdatasets = self._schema['subdatasets'].keys()
@@ -196,11 +196,7 @@ class Dataset:
 
     @property
     def data(self) -> Dict[str, Any]:
-        """Access loaded data objects.
-
-        :raises RuntimeError: The dataset files were not downloaded and/or not loaded.
-        :return: Loaded data objects.
-        """
+        """Access loaded data objects."""
         if self._data is None:
             raise RuntimeError(f'Data has not been downloaded and/or loaded yet. Call '
                                f'{self.__class__.__name__}.download() to download data, call '

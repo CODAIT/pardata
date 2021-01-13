@@ -117,6 +117,7 @@ class TestDataset:
         "Test basic loading functionality."
 
         data = downloaded_wikitext103_dataset.load()
+        assert data is downloaded_wikitext103_dataset.data
 
         assert (hashlib.sha512(data['train'].encode()).hexdigest() ==
                 ('df7615f77cb9dd19975881f271e3e3525bee38c08a67fea36a51c96be69a3ecabc9e05c02cbaf'
@@ -178,15 +179,15 @@ class TestDataset:
         dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
         with pytest.raises(RuntimeError) as e:
             dataset.data
-        assert str(e.value) == 'Data has not been downloaded and/or loaded yet. Call Dataset.download() to download ' \
-                               'data, call Dataset.load() to load data.'
+        assert str(e.value) == ('Data has not been downloaded and/or loaded yet. Call Dataset.download() to download '
+                                'data, call Dataset.load() to load data.')
 
         # Same after downloading
         dataset.download()
         with pytest.raises(RuntimeError) as e:
             dataset.data
-        assert str(e.value) == 'Data has not been downloaded and/or loaded yet. Call Dataset.download() to download ' \
-                               'data, call Dataset.load() to load data.'
+        assert str(e.value) == ('Data has not been downloaded and/or loaded yet. Call Dataset.download() to download '
+                                'data, call Dataset.load() to load data.')
 
     def test_deleting_data_dir(self, tmp_path, gmb_schema):
         "Test ``Dataset.delete()``."
@@ -304,7 +305,8 @@ class TestDataset:
             lambda: downloaded_gmb_dataset.load(), write=False, directory=downloaded_gmb_dataset._pydax_dir)
         with pytest.raises(RuntimeError) as e:
             downloaded_gmb_dataset.data
-        assert str(e.value) == 'Data has not been loaded yet. Call Dataset.load() to load data.'
+        assert str(e.value) == ('Data has not been downloaded and/or loaded yet. Call Dataset.download() to download '
+                                'data, call Dataset.load() to load data.')
 
         self._test_lock_exception(
             lambda: downloaded_gmb_dataset.delete(), write=True, directory=downloaded_gmb_dataset._pydax_dir)
