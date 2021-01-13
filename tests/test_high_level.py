@@ -180,9 +180,9 @@ class TestLoadDataset:
         "Test to see the function downloads and loads properly when download=True."
 
         init(DATADIR=tmp_path)
-        downloaded_gmb_dataset.load()
+        downloaded_gmb_dataset_data = downloaded_gmb_dataset.load()
         gmb_data = load_dataset('gmb', version='1.0.2', download=True)
-        assert downloaded_gmb_dataset.data == gmb_data
+        assert downloaded_gmb_dataset_data == gmb_data
 
     def test_loading_undownloaded(self, tmp_path):
         "Test loading before ``Dataset.download()`` has been called."

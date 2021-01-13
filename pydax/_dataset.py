@@ -44,8 +44,8 @@ class Dataset:
         upon initialization.
     :param mode: Mode with which to treat a dataset. Available options are:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
-        :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`
-    :raises ValueError: An invalid `mode` was specified for handling the dataset
+        :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`.
+    :raises ValueError: An invalid `mode` was specified for handling the dataset.
     """
 
     class InitializationMode(IntFlag):
@@ -150,15 +150,15 @@ class Dataset:
 
     def load(self,
              subdatasets: Optional[Iterable[str]] = None,
-             format_loader_map: Optional[FormatLoaderMap] = None) -> None:
-        """Load data files to RAM. The loaded data objects can be retrieved via :attr:`data`. It adds a directory read
-        lock during execution.
+             format_loader_map: Optional[FormatLoaderMap] = None) -> Dict[str, Any]:
+        """Load data files to RAM. It adds a directory read lock during execution.
 
-        :param subdatasets: The subdatasets to load. None means all subdatasets.
+        :param subdatasets: The subdatasets to load. ``None`` means all subdatasets.
         :param format_loader_map: The :class:`FormatLoaderMap` object that determines which loader to use.
         :raises FileNotFoundError: The dataset files are not found on the disk. Usually this is because
             :func:`~Dataset.download` has never been called.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
+        :return: Loaded data objects. Same as :attr:`.data`.
         """
         if subdatasets is None:
             subdatasets = self._schema['subdatasets'].keys()
@@ -172,9 +172,12 @@ class Dataset:
                                                              path=self._data_dir / subdataset_schema['path'],
                                                              format_loader_map=format_loader_map)
                 except FileNotFoundError as e:
+                    self._data = None
                     raise FileNotFoundError(
                         f'Failed to load subdataset "{subdataset}" because some files are not found. '
                         f'Did you forget to call {self.__class__.__name__}.download()?\nCaused by:\n{e}')
+
+        return self.data
 
     def delete(self, *, force: bool = False) -> None:
         """Clear the data directory. It adds a directory write lock before deletion during execution if the data
@@ -183,6 +186,7 @@ class Dataset:
         :param force: If True, delete the directory even if directory locks are present.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
         """
+
         if self._data_dir_.exists():
             if force:
                 lock_func: Callable = self._lock.locking
@@ -195,8 +199,10 @@ class Dataset:
     def data(self) -> Dict[str, Any]:
         """Access loaded data objects."""
         if self._data is None:
-            raise RuntimeError(f'Data has not been loaded yet. Call {self.__class__.__name__}.load() to load data.')
-        # we don't copy here because it is too expensive and users may actually want to update the datasets and it
+            raise RuntimeError(f'Data has not been downloaded and/or loaded yet. Call '
+                               f'{self.__class__.__name__}.download() to download data, call '
+                               f'{self.__class__.__name__}.load() to load data.')
+        # We don't copy here because it is too expensive and users may actually want to update the datasets and it
         # doesn't cause security issues as in the Schema class
         return self._data
 
