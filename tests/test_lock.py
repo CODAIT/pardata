@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import os
 import pytest
 
 from pydax._lock import DirectoryLock
+from pydax.exceptions import DirectoryLockAcquisitionError
 
 
 class TestDirectoryLock:
@@ -39,6 +40,10 @@ class TestDirectoryLock:
             assert succeed is True
         assert not (directory / f'{prefix}{lock._lock_file_suffix}').exists()
 
+        with lock.locking_with_exception(write=write):
+            assert (directory / f'{prefix}{lock._lock_file_suffix}').exists()
+        assert not (directory / f'{prefix}{lock._lock_file_suffix}').exists()
+
     @staticmethod
     def _ensure_lock_fails(directory: os.PathLike, write: bool):
         "A utility function that ensures some locks should fail."
@@ -50,6 +55,12 @@ class TestDirectoryLock:
         with lock.locking(write=write) as succeed:
             assert succeed is False
             assert not (directory / f'{prefix}{lock._lock_file_suffix}').exists()
+        assert not (directory / f'{prefix}{lock._lock_file_suffix}').exists()
+
+        with pytest.raises(DirectoryLockAcquisitionError) as e:
+            with lock.locking_with_exception(write=write):
+                pass
+        assert str(e.value) == f'Failed to acquire directory {"write" if write else "read"} lock for "{directory}"'
         assert not (directory / f'{prefix}{lock._lock_file_suffix}').exists()
 
     @staticmethod
