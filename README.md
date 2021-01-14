@@ -7,7 +7,7 @@
 ![Docs](https://github.com/codait/pydax/workflows/Docs/badge.svg)
 ![Development Environment](https://github.com/codait/pydax/workflows/Development%20Environment/badge.svg)
 
-A simple Python API for downloading and loading datasets from IBM's [Data Asset Exchange](https://ibm.biz/data-exchange).
+PyDAX is a Python API that offers users a simple and quick way to download and load any dataset with an associated PyDAX schema in just a few lines of code.
 
 ## Install the Package & its Dependencies
 
@@ -23,38 +23,37 @@ Alternatively, if you have downloaded the source, switch to the source directory
 pip install -U .
 ```
 
-## Simple Examples
+## Simple Example
 
-Import the full package.
+Import the package and load a dataset. PyDAX will download [WikiText-103](https://developer.ibm.com/exchanges/data/all/wikitext-103/) dataset (version `1.0.1`) if it's not already downloaded, and then load it.
 ```python
 import pydax
+wikitext103_data = pydax.load_dataset('wikitext103')
 ```
 
 View available PyDAX datasets and their versions.
 ```python
-from pydax.dataset import list_all_datasets
-list_all_datasets()
-# {'gmb': ('1.0.2',), 'wikitext103': ('1.0.1',)}
+pydax.list_all_datasets()
+# {'claim_sentences_search': ('1.0.2',), ..., 'wikitext103': ('1.0.1',)}
 ```
 
-Load a dataset into memory as a dict composed of subdatasets using `load_dataset()`. By default, `load_dataset()` will download the dataset to your default data directory if it is not already present there. If the `version` parameter is not specified, the dataset's latest version available on PyDAX is assumed. In this example, PyDAX will download the [GMB](https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/) dataset (version `1.0.2`) to `~/.pydax/data/gmb/1.0.2/` and loads its subdatasets into `gmb_data`. 
+To view your globally set configs for PyDAX, such as your default data directory, use `get_config`.
 ```python
-from pydax.dataset import load_dataset
-gmb_data = load_dataset('gmb')
+pydax.get_config()
+# Config(DATADIR=PosixPath('dir/to/dowload/load/from'), ..., DATASET_SCHEMA_URL='file/to/load/datasets/from')
 ```
 
-By default, `load_dataset()` downloads to and loads from `~/.pydax/data/<dataset-name>/<dataset-version>/`. To change the default data directory, use `pydax.init`.
+By default, `load_dataset` downloads to and loads from `~/.pydax/data/<dataset-name>/<dataset-version>/`. To change the default data directory, use `pydax.init`.
 ```python
 pydax.init(DATADIR='new/dir/to/dowload/load/from')
 ```
 
-To view your globally set configs for PyDAX, such as your default data directory, use `get_config()`.
+Load a previously downloaded dataset using `load_dataset`. With the new default data dir set, PyDAX now searches for the [Groningen Meaning Bank](https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/) dataset (version `1.0.2`) in `new/dir/to/dowload/load/from/gmb/1.0.2/`.
 ```python
-pydax.get_config()
-# Config(DATADIR=PosixPath('new/dir/to/dowload/load/from'))
+gmb_data = load_dataset('gmb', version='1.0.2', download=False)  # assuming GMB dataset was already downloaded
 ```
 
-Load a previously downloaded dataset using `load_dataset`. With the new default data dir set, PyDAX now searches for the [WikiText-103](https://developer.ibm.com/exchanges/data/all/wikitext-103/) dataset (version `1.0.1`) in `new/dir/to/dowload/load/from/wikitext103/1.0.1/`.
-```python
-wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=False)  # assuming wikitext103 was already downloaded
-```
+## Notebooks
+
+For a more extensive look at PyDAX functionality, check out these notebooks:
+* [Early PyDAX Features Walkthrough](https://github.com/CODAIT/pydax/blob/master/docs/notebooks/pydax-mvp-demo.ipynb)
