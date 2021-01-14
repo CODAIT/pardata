@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Text file loaders."
+
+
 import pathlib
 from typing import cast, Dict, Union
 
@@ -23,6 +26,8 @@ from ._base import Loader
 
 
 class PlainTextLoader(Loader):
+    """Plain text to string loader.
+    """
 
     def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> str:
         """The type hint says Dict, because this loader will be handling those situations in the future.
@@ -31,6 +36,7 @@ class PlainTextLoader(Loader):
         :param options:
                - ``encoding`` key specifies the encoding of the plain text.
         :raises TypeError: ``path`` is not a path object.
+        :return: Data loaded into a ``str``.
         """
 
         super().load(path, options)

@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Dataset downloading and loading functionality."
+
+
 from ._dataset import Dataset
 
 __all__ = ('Dataset',)

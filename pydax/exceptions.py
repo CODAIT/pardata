@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"Exceptions of this module."
+"Custom exceptions used by this package."
 
 
 from ._lock import DirectoryLockAcquisitionError

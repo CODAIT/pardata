@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Format to loader map."
+
+
 from typing import Any, Dict, Mapping, Optional, Union
 
 from .._schema import SchemaDict
@@ -28,11 +31,11 @@ class FormatLoaderMap:
     given format.
 
     :param m: A dict that maps formats to loaders.
-
     """
 
     def __init__(self, m: Optional[Mapping[str, Loader]] = None) -> None:
-        "Constructor method."
+        """Constructor method.
+        """
         self._map: Dict[str, Loader] = {}
         if m is not None:
             for fmt, loader in m.items():

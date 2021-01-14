@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Loader base class."
+
+
 from abc import ABC, abstractmethod
 import os
 from typing import Any, Dict, Union
@@ -23,11 +26,12 @@ from .._schema import SchemaDict
 
 
 class Loader(ABC):
-    "Base class of all loaders."
+    """Base class of all loaders.
+    """
 
     @abstractmethod
     def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> Any:
-        """Loads from a give path or a dict of path configurations. This must be overridden when inherited.
+        """Loads from a given path or a dict of path configurations. This must be overridden when inherited.
 
         :param path: The path or path configurations of the files to be loaded.
         :param options: Options passed to the loader.
@@ -40,7 +44,7 @@ class Loader(ABC):
 
         :param path: The path of the file to be loaded.
         :raises TypeError: ``path`` is not a path object.
-        :return: No return unless the path is invalid, in which case see TypeError.
+        :return: No return unless the ``path`` is invalid, in which case see :class:`TypeError`.
         """
         if not isinstance(path, (str, os.PathLike)):
             # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
