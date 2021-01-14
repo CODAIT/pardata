@@ -30,7 +30,7 @@ class CSVPandasLoader(Loader):
     """CSV to Pandas dataframe loader.
     """
 
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> str:
+    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> pd.DataFrame:
         """The type hint says Dict, because this loader will be handling those situations in the future, perhaps via a
         ``IteratingLoader`` class.
 
@@ -43,6 +43,7 @@ class CSVPandasLoader(Loader):
                  If the value is set to anything "truthy" in Python, the first row of the CSV will be read as data.
                - ``encoding`` key specifies the encoding of the CSV file. Defaults to UTF-8.
         :raises TypeError: ``path`` is not a path object.
+        :return: Data loaded into a :class:`pandas.DataFrame`.
         """
 
         super().load(path, options)

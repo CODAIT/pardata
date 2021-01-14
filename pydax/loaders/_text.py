@@ -36,6 +36,7 @@ class PlainTextLoader(Loader):
         :param options:
                - ``encoding`` key specifies the encoding of the plain text.
         :raises TypeError: ``path`` is not a path object.
+        :return: Data loaded into a ``str``.
         """
 
         super().load(path, options)

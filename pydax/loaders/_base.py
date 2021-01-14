@@ -44,7 +44,7 @@ class Loader(ABC):
 
         :param path: The path of the file to be loaded.
         :raises TypeError: ``path`` is not a path object.
-        :return: No return unless the ``path`` is invalid, in which case see ``TypeError``.
+        :return: No return unless the ``path`` is invalid, in which case see :class:`TypeError`.
         """
         if not isinstance(path, (str, os.PathLike)):
             # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))

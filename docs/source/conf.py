@@ -53,12 +53,16 @@ release = version
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
     'sphinx_rtd_theme'
     ]
 
+autodoc_inherit_docstrings = True  # If no class summary, inherit base class summary
 autosummary_generate = True  # Automate sphinx.ext.autosummary to run when html is generated
 autosummary_imported_members = True  # Imported members should be documented
-autodoc_inherit_docstrings = True  # If no class summary, inherit base class summary
+intersphinx_mapping = {
+    'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
+    'python': ('https://docs.python.org/3', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
