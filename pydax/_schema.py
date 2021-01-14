@@ -44,10 +44,6 @@ class Schema(ABC):
     def __init__(self, url_or_path: Union[_typing.PathLike, str], *,
                  tls_verification: Union[bool, _typing.PathLike] = True) -> None:
         """Constructor method.
-
-        Example:
-
-        >>> schema = Schema('./tests/schemata/datasets.yaml')
         """
         self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path,
                                                                                     tls_verification=tls_verification))
@@ -71,7 +67,7 @@ class Schema(ABC):
 
         Example:
 
-        >>> schema = Schema('./tests/schemata/datasets.yaml')
+        >>> schema = DatasetSchema('./tests/schemata/datasets.yaml')
         >>> schema.export_schema('datasets', 'noaa_jfk', '1.1.4')
         {'name': 'NOAA Weather Data – JFK Airport'...}
         """
@@ -84,11 +80,9 @@ class Schema(ABC):
     def retrieved_url_or_path(self) -> Union[_typing.PathLike, str]:
         """The URL or path from which the schema was retrieved.
 
-        :return: The URL or path from which the schema was retrieved.
-
         Example:
 
-        >>> schema = Schema('./tests/schemata/datasets.yaml')
+        >>> schema = DatasetSchema('./tests/schemata/datasets.yaml')
         >>> schema.retrieved_url_or_path
         './tests/schemata/datasets.yaml'
         """
@@ -123,15 +117,19 @@ class SchemaManager():
     """Stores all loaded schemata in :attr:`schemata`.
 
     :param kwargs: Schema name and schema instance key-value pairs
+
+    Example:
+
+    >>> dataset_schema = DatasetSchema('./tests/schemata/datasets.yaml')
+    >>> schema_manager = SchemaManager(datasets=dataset_schema)
+    >>> licenses_schema = LicenseSchema('./tests/schemata/licenses.yaml')
+    >>> schema_manager.add_schema('licenses', licenses_schema)
+    >>> schema_manager.schemata
+    {'datasets':..., 'licenses':...}
     """
 
     def __init__(self, **kwargs: Schema) -> None:
         """Constructor method
-
-        Example:
-
-        >>> dataset_schema = Schema('./tests/schemata/datasets.yaml')
-        >>> schema_manager = SchemaManager(datasets=dataset_schema)
         """
         self.schemata: Dict[str, Schema] = {}
         for name, val in kwargs.items():
@@ -143,13 +141,6 @@ class SchemaManager():
 
         :param name: Schema name
         :param val: Schema instance
-
-        Example:
-
-        >>> dataset_schema = Schema('./tests/schemata/datasets.yaml')
-        >>> schema_manager = SchemaManager(datasets=dataset_schema)
-        >>> licenses_schema = Schema('./tests/schemata/licenses.yaml')
-        >>> schema_manager.add_schema('licenses', licenses_schema)
         """
         if not isinstance(val, Schema):
             raise TypeError('val must be a Schema instance.')
