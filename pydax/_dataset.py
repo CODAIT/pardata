@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"Download and load a dataset"
+"Dataset downloading and loading functionality."
 
 
 from enum import IntFlag
@@ -45,7 +45,7 @@ class Dataset:
     :param mode: Mode with which to treat a dataset. Available options are:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
         :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`.
-    :raises ValueError: An invalid `mode` was specified for handling the dataset.
+    :raises ValueError: An invalid ``mode`` was specified for handling the dataset.
 
     Example:
 
@@ -170,7 +170,7 @@ class Dataset:
         """Load data files to RAM. It adds a directory read lock during execution.
 
         :param subdatasets: The subdatasets to load. ``None`` means all subdatasets.
-        :param format_loader_map: The :class:`FormatLoaderMap` object that determines which loader to use.
+        :param format_loader_map: The :class:`.loaders.FormatLoaderMap` object that determines which loader to use.
         :raises FileNotFoundError: The dataset files are not found on the disk. Usually this is because
             :func:`~Dataset.download` has never been called.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
@@ -199,7 +199,7 @@ class Dataset:
         """Clear the data directory. It adds a directory write lock before deletion during execution if the data
         directory exists.
 
-        :param force: If True, delete the directory even if directory locks are present.
+        :param force: If ``True``, delete the directory even if directory locks are present.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
         """
 
@@ -225,8 +225,8 @@ class Dataset:
     def is_downloaded(self) -> bool:
         """Check to see if dataset was downloaded. We determine this by comparing the extracted file tree with the file
         list :meth:`._file_list_file` (their existence, types, and sizes). In this way, if the extraction of the archive
-        failed, this should return False and the user would not be misled. For performance reasons, we do not examine
-        the content of the extracted files.
+        failed, this should return ``False`` and the user would not be misled. For performance reasons, we do not
+        examine the content of the extracted files.
 
         :return: ``True`` if the dataset has been downloaded and ``False`` otherwise.
         """

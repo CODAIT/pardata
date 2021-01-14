@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-"""High-level functions. They are tailored for new users to quickly get started with PyDAX for common tasks."""
+"High-level functions tailored for new users to quickly get started with PyDAX for common tasks."
+
 
 # We don't use __all__ in this file because having every exposed function shown in __init__.py is more clear.
 
@@ -64,7 +65,7 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
     :param LICENSE_SCHEMA_URL: The default license schema file URL.
     :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
         the current working directory, but will be converted to the absolute path immediately in this function.
-        Defaults to: ~/.pydax/data
+        Defaults to: :file:`~/.pydax/data`.
     """
     global _global_config, _schemata
 
@@ -87,7 +88,7 @@ init(update_only=False)
 def list_all_datasets() -> Dict[str, Tuple]:
     """Show all available pydax datasets and their versions.
 
-    :return: Mapping of available datasets and their versions
+    :return: Mapping of available datasets and their versions.
 
     Example:
 
@@ -160,18 +161,18 @@ def load_dataset(name: str, *,
                  version: str = 'latest',
                  download: bool = True,
                  subdatasets: Union[Iterable[str], None] = None) -> Dict[str, Any]:
-    """High level function that wraps :class:`Dataset` class's load and download functionality. Downloads to and loads
-    from directory: `DATADIR/name/version` where ``DATADIR`` is in ``pydax.get_config().DATADIR``. ``DATADIR`` can
-    be changed by calling :func:`pydax.init()`.
+    """High level function that wraps :class:`dataset.Dataset` class's load and download functionality. Downloads to
+    and loads from directory: :file:`DATADIR/name/version` where ``DATADIR`` is in ``pydax.get_config().DATADIR``.
+    ``DATADIR`` can be changed by calling :func:`init`.
 
     :param name: Name of the dataset you want to load from PyDAX's available datasets. You can get a list of these
-        datasets by calling :func:`pydax.list_all_datasets`.
+        datasets by calling :func:`list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
-        available versions for a dataset by calling :func:`pydax.list_all_datasets`.
+        available versions for a dataset by calling :func:`list_all_datasets`.
     :param download: Whether or not the dataset should be downloaded before loading.
     :param subdatasets: An iterable containing the subdatasets to load. ``None`` means all subdatasets.
     :raises FileNotFoundError: The dataset files were not previously downloaded or can't be found, and ``download`` is
-        False.
+        ``False``.
     :return: Dictionary that holds all subdatasets.
 
     Example:
@@ -204,9 +205,9 @@ def get_dataset_metadata(name: str, *, version: str = 'latest') -> SchemaDict:
     """Return a dataset's metadata either in human-readable form or as a copy of its schema.
 
     :param name: Name of the dataset you want get the metadata of. You can get a list of these
-        datasets by calling :func:`pydax.list_all_datasets`.
+        datasets by calling :func:`list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
-        available versions for a dataset by calling :func:`pydax.list_all_datasets`.
+        available versions for a dataset by calling :func:`list_all_datasets`.
     :return: A dataset's metadata.
 
     Example:
@@ -263,9 +264,9 @@ def describe_dataset(name: str, *, version: str = 'latest') -> str:
 
 
 def export_schemata() -> SchemaManager:
-    """Return a copy of the :class:`SchemaManager`` object managed by high-level functions.
+    """Return a copy of the :class:`schema.SchemaManager` object managed by high-level functions.
 
-    :return: A copy of the :class:`SchemaManager` object
+    :return: A copy of the :class:`schema.SchemaManager` object
 
     Example:
 
@@ -278,14 +279,14 @@ def export_schemata() -> SchemaManager:
 
 
 def load_schemata(*, force_reload: bool = False, tls_verification: Union[bool, _typing.PathLike] = True) -> None:
-    """Loads a :class:`SchemaManager` object that stores all schemata. To export the loaded :class:`SchemaManager`
-    object, please use :func:`.export_schemata`.
+    """Loads a :class:`schema.SchemaManager` object that stores all schemata. To export the loaded
+    :class:`schema.SchemaManager` object, please use :func:`export_schemata`.
 
-    :param force_reload: If ``True``, force reloading even if the provided URLs by :func:`pydax.init` are the same as
+    :param force_reload: If ``True``, force reloading even if the provided URLs by :func:`init` are the same as
          provided last time. Otherwise, only those that are different from previous given ones are reloaded.
-    :param tls_verification: Same as ``tls_verification`` in :class:`pydax.Schema`.
-    :raises ValueError: See :class:`pydax.Schema`.
-    :raises InsecureConnectionError: See :class:`pydax.Schema`.
+    :param tls_verification: Same as ``tls_verification`` in :class:`schema.Schema`.
+    :raises ValueError: See :class:`schema.Schema`.
+    :raises InsecureConnectionError: See :class:`schema.Schema`.
 
     Example:
     >>> load_schemata()

@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Text file loaders."
+
+
 from ._text import PlainTextLoader
 
 __all__ = ('PlainTextLoader',)

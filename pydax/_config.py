@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"Module for defining and modifying global configs"
+"Module for defining and modifying global configs."
 
 
 import os

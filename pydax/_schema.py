@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"Parse and load the retrieved schema files."
+"Schema parsing and loading functionality."
 
 
 from abc import ABC
@@ -34,10 +34,10 @@ class Schema(ABC):
     """Abstract class that provides functionality to load and export schemata.
 
     :param url_or_path: URL or path to a schema file.
-    :param tls_verification: When set to True, verify the remote link is https and whether the TLS certificate is valid.
-        When set to a path to a file, use this file as a CA bundle file. When set to False, allow http links and do not
-        verify any TLS certificates. Ignored if ``url_or_path`` is a local path.
-    :raises ValueError: An error occurred when parsing `url_or_path` as either a URL or path.
+    :param tls_verification: When set to ``True``, verify the remote link is https and whether the TLS certificate is
+        valid. When set to a path to a file, use this file as a CA bundle file. When set to ``False``, allow http links
+        and do not verify any TLS certificates. Ignored if ``url_or_path`` is a local path.
+    :raises ValueError: An error occurred when parsing ``url_or_path`` as either a URL or path.
     :raises InsecureConnectionError: The connection is insecure. See ``tls_verification`` for more details.
     """
 
@@ -54,8 +54,8 @@ class Schema(ABC):
     def _load_retrieved_schema(self, schema: str) -> SchemaDict:
         """Safely loads retrieved schema file.
 
-        :param schema: Retrieved schema object
-        :return: Nested dictionary representation of a schema
+        :param schema: Retrieved schema object.
+        :return: Nested dictionary representation of a schema.
         """
         return yaml.safe_load(schema)
 
@@ -63,7 +63,7 @@ class Schema(ABC):
         """Returns a copy of a loaded schema. Should be used for debug purposes only.
 
         :param keys: The sequence of keys that leads to the portion of the schema to be exported.
-        :return: Copy of the schema dictionary
+        :return: Copy of the schema dictionary.
 
         Example:
 
@@ -116,7 +116,7 @@ class LicenseSchema(Schema):
 class SchemaManager():
     """Stores all loaded schemata in :attr:`schemata`.
 
-    :param kwargs: Schema name and schema instance key-value pairs
+    :param kwargs: Schema name and schema instance key-value pairs.
 
     Example:
 
@@ -139,8 +139,8 @@ class SchemaManager():
         """Store schema instance in a dictionary. If a schema with the same name as ``name`` is already stored, it is
         overridden.
 
-        :param name: Schema name
-        :param val: Schema instance
+        :param name: Schema name.
+        :param val: Schema instance.
         """
         if not isinstance(val, Schema):
             raise TypeError('val must be a Schema instance.')

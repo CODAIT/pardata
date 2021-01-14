@@ -16,6 +16,7 @@
 
 "Tabular data loaders."
 
+
 from typing import Dict, Union
 
 import pandas as pd  # type: ignore[import]
@@ -26,6 +27,8 @@ from ._base import Loader
 
 
 class CSVPandasLoader(Loader):
+    """CSV to Pandas dataframe loader.
+    """
 
     def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> str:
         """The type hint says Dict, because this loader will be handling those situations in the future, perhaps via a

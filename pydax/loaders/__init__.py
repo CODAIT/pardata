@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"Module on loaders."
+"Loaders subpackage."
 
 
 from . import table, text

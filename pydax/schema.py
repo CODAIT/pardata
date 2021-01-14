@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Schema parsing and loading functionality."
+
+
 from ._schema import DatasetSchema, FormatSchema, LicenseSchema, Schema, SchemaDict, SchemaManager
 
 __all__ = ('DatasetSchema',

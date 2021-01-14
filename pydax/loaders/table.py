@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+"Tabular data loaders."
+
+
 from ._table import CSVPandasLoader
 
 __all__ = ('CSVPandasLoader',)
