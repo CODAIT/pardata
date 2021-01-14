@@ -46,6 +46,22 @@ class Dataset:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
         :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`.
     :raises ValueError: An invalid `mode` was specified for handling the dataset.
+
+    Example:
+
+    >>> import pydax
+    >>> from pydax import schema
+    >>> dataset_schema = schema.DatasetSchema('./tests/schemata/datasets.yaml')
+    >>> jfk_schema_dict = dataset_schema.export_schema('datasets', 'noaa_jfk', '1.1.4')
+    >>> jfk_data_dir = pydax.get_config().DATADIR / 'jfk' / '1.1.4'
+    >>> jfk_dataset = Dataset(schema=jfk_schema_dict, data_dir=jfk_data_dir)
+    >>> jfk_dataset.download()
+    >>> data = jfk_dataset.load()
+    >>> data['jfk_weather_cleaned'].shape
+    (75119, 16)
+    >>> jfk_dataset.delete()
+    >>> jfk_dataset.is_downloaded()
+    False
     """
 
     class InitializationMode(IntFlag):

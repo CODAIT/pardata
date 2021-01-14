@@ -64,6 +64,12 @@ class Schema(ABC):
 
         :param keys: The sequence of keys that leads to the portion of the schema to be exported.
         :return: Copy of the schema dictionary
+
+        Example:
+
+        >>> schema = DatasetSchema('./tests/schemata/datasets.yaml')
+        >>> schema.export_schema('datasets', 'noaa_jfk', '1.1.4')
+        {'name': 'NOAA Weather Data – JFK Airport'...}
         """
         schema: SchemaDict = self._schema
         for k in keys:
@@ -72,7 +78,14 @@ class Schema(ABC):
 
     @property
     def retrieved_url_or_path(self) -> Union[_typing.PathLike, str]:
-        "The URL or path from which the schema was retrieved."
+        """The URL or path from which the schema was retrieved.
+
+        Example:
+
+        >>> schema = DatasetSchema('./tests/schemata/datasets.yaml')
+        >>> schema.retrieved_url_or_path
+        './tests/schemata/datasets.yaml'
+        """
         return self._retrieved_url_or_path
 
 
@@ -104,6 +117,15 @@ class SchemaManager():
     """Stores all loaded schemata in :attr:`schemata`.
 
     :param kwargs: Schema name and schema instance key-value pairs
+
+    Example:
+
+    >>> dataset_schema = DatasetSchema('./tests/schemata/datasets.yaml')
+    >>> schema_manager = SchemaManager(datasets=dataset_schema)
+    >>> licenses_schema = LicenseSchema('./tests/schemata/licenses.yaml')
+    >>> schema_manager.add_schema('licenses', licenses_schema)
+    >>> schema_manager.schemata
+    {'datasets':..., 'licenses':...}
     """
 
     def __init__(self, **kwargs: Schema) -> None:
