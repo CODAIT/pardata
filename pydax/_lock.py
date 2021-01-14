@@ -27,6 +27,10 @@ from typing import Iterator
 from . import _typing
 
 
+class DirectoryLockAcquisitionError(RuntimeError):
+    "Raised when failed to acquire a lock."
+
+
 class DirectoryLock:
     """Read/write lock for a directory.
 
@@ -73,7 +77,7 @@ class DirectoryLock:
         return next(self._get_write_locks(), None) is not None
 
     def lock(self, *, write: bool) -> bool:
-        """Lock the directory (create the lock file in the directory).
+        """Lock the directory (create the lock file in the directory). If the directory does not exist, create it.
 
         :param write: Whether this is a write lock or a read lock. A write lock excludes others from both reading and
             writing, while a read lock only excludes writing. Multiple read locks can exist at the same time, but only
@@ -85,6 +89,10 @@ class DirectoryLock:
         lock_file = self._directory / f'{"write" if write else "read"}{self._lock_file_suffix}'
 
         with self._thread_lock:
+            if not self._directory.exists():
+                self._directory.mkdir(parents=True)
+            if not self._directory.is_dir():
+                raise NotADirectoryError(f'"{self._directory}" exists and is not a directory.')
             if write:  # write lock
                 if self._does_read_lock_exist() or self._does_write_lock_exist():
                     return False
@@ -128,8 +136,29 @@ class DirectoryLock:
            with some_lock.locking(write=True):
                # do the work ...
         """
-        yield self.lock(write=write)
-        self.unlock()
+        try:
+            yield self.lock(write=write)
+        finally:
+            self.unlock()
+
+    @contextmanager
+    def locking_with_exception(self, *, write: bool) -> Iterator[None]:
+        """Similar to :meth:`.locking`, but raises exceptions if the lock is failed to acquire.
+
+        :raises DirectoryLockAcquisitionError: Failed to acquire the directory lock.
+
+        Example:
+
+        .. code-block:: python
+
+           with some_lock.locking_with_exception(write=True):
+               # do the work ...
+        """
+        with self.locking(write=write) as lock:
+            if not lock:
+                raise DirectoryLockAcquisitionError(
+                    f'Failed to acquire directory {"write" if write else "read"} lock for "{self._directory}"')
+            yield
 
     def force_clear_all_locks(self) -> None:
         """Force clear all read locks. This is useful in situations such as those when system crashes and locks must be
