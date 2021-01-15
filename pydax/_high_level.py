@@ -234,6 +234,10 @@ def get_dataset_metadata(name: str, *, version: str = 'latest') -> SchemaDict:
 def describe_dataset(name: str, *, version: str = 'latest') -> str:
     """Describe a dataset's metadata in human language. Parameters mean the same as :func:`.get_dataset_metadata`.
 
+    :param name: Name of the dataset you want get the metadata of. You can get a list of these datasets by calling
+        :func:`list_all_datasets`.
+    :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
+        available versions for a dataset by calling :func:`list_all_datasets`.
     :return: The description.
 
     Example:
