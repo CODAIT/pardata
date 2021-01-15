@@ -23,7 +23,7 @@ from typing import Any, Dict, Union
 
 import yaml
 
-from . import _typing
+from . import typing as typing_
 from ._schema_retrieval import retrieve_schema_file
 
 
@@ -41,15 +41,15 @@ class Schema(ABC):
     :raises InsecureConnectionError: The connection is insecure. See ``tls_verification`` for more details.
     """
 
-    def __init__(self, url_or_path: Union[_typing.PathLike, str], *,
-                 tls_verification: Union[bool, _typing.PathLike] = True) -> None:
+    def __init__(self, url_or_path: Union[typing_.PathLike, str], *,
+                 tls_verification: Union[bool, typing_.PathLike] = True) -> None:
         """Constructor method.
         """
         self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path,
                                                                                     tls_verification=tls_verification))
 
         # The URL or path from which the schema was retrieved
-        self._retrieved_url_or_path: Union[_typing.PathLike, str] = url_or_path
+        self._retrieved_url_or_path: Union[typing_.PathLike, str] = url_or_path
 
     def _load_retrieved_schema(self, schema: str) -> SchemaDict:
         """Safely loads retrieved schema file.
@@ -77,7 +77,7 @@ class Schema(ABC):
         return deepcopy(schema)
 
     @property
-    def retrieved_url_or_path(self) -> Union[_typing.PathLike, str]:
+    def retrieved_url_or_path(self) -> Union[typing_.PathLike, str]:
         """The URL or path from which the schema was retrieved.
 
         Example:
