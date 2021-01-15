@@ -1,9 +1,5 @@
-PyDAX Documentation
-===================
-
-PyDAX is a simple Python API for downloading and loading datasets from IBM's `Data Asset Exchange`_.
-
-.. _Data Asset Exchange: https://developer.ibm.com/exchanges/data/
+.. include:: ../../README.rst
+   :start-after: readme-start
 
 .. toctree::
    :caption: User Guide

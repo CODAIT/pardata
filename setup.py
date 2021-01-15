@@ -14,17 +14,15 @@
 # limitations under the License.
 #
 
+import pathlib
 import setuptools
 
-
-with open('README.md') as f:
-    long_description = f.read()
 
 setuptools.setup(
     name="pydax",
     description="Access DAX datasets.",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description=pathlib.Path('README.rst').read_text(),
+    long_description_content_type="text/x-rst",
     keywords="machine-learning data-mining data-science",
     author="IBM Center for Open Source Data and AI Technologies (CODAIT)",
     license="Apache v2",
