@@ -139,7 +139,7 @@ what the user would actually experience and hopefully would give us more chances
 Continuous Integration (CI)
 ---------------------------
 
-We prefer keeping CI configuration files, namely :file:`.travis.yml` and :file:`.appveyor.yml` simple and unscrambled.
+We prefer keeping CI configuration files, namely :file:`.github/workflows/*` and :file:`.gitlab-ci.yml`, simple and unscrambled.
 Normally, only test environment, such as Python version, OS and tox environmental variables, or anything that is
 specific to the CI system, such as failure notification. Complicated test dependencies and other test dealings should go
 to :file:`tox.ini` and their respective test files in :file:`tests/`.
