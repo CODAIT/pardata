@@ -4,3 +4,4 @@
 *.ipynb binary
 *.key binary
 *.pem binary
+*.svg binary
