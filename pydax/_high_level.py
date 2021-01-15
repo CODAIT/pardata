@@ -28,7 +28,7 @@ from packaging.version import parse as version_parser
 
 from ._config import Config
 from ._dataset import Dataset
-from . import _typing
+from . import typing as typing_
 from ._schema import Schema, SchemaDict, SchemaManager
 
 # Global configurations --------------------------------------------------
@@ -278,7 +278,7 @@ def export_schemata() -> SchemaManager:
     return deepcopy(_get_schemata())
 
 
-def load_schemata(*, force_reload: bool = False, tls_verification: Union[bool, _typing.PathLike] = True) -> None:
+def load_schemata(*, force_reload: bool = False, tls_verification: Union[bool, typing_.PathLike] = True) -> None:
     """Loads a :class:`schema.SchemaManager` object that stores all schemata. To export the loaded
     :class:`schema.SchemaManager` object, please use :func:`export_schemata`.
 

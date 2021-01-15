@@ -17,8 +17,6 @@
 "Our generic custom type annotation utilities."
 
 
-import os
-from typing import Union
+from ._typing import PathLike
 
-
-PathLike = Union[str, os.PathLike]
+__all__ = ('PathLike',)

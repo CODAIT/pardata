@@ -21,7 +21,7 @@ from abc import ABC, abstractmethod
 import os
 from typing import Any, Dict, Union
 
-from .. import _typing
+from .. import typing as typing_
 from .._schema import SchemaDict
 
 
@@ -30,7 +30,7 @@ class Loader(ABC):
     """
 
     @abstractmethod
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> Any:
+    def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> Any:
         """Loads from a given path or a dict of path configurations. This must be overridden when inherited.
 
         :param path: The path or path configurations of the files to be loaded.
@@ -39,7 +39,7 @@ class Loader(ABC):
         """
         self.check_path(path)
 
-    def check_path(self, path: Union[_typing.PathLike, Dict[str, str]]) -> None:
+    def check_path(self, path: Union[typing_.PathLike, Dict[str, str]]) -> None:
         """Check if the given path is a valid path to the file to be loaded. Raise an error if it is not.
 
         :param path: The path of the file to be loaded.
@@ -47,5 +47,5 @@ class Loader(ABC):
         :return: No return unless the ``path`` is invalid, in which case see :class:`TypeError`.
         """
         if not isinstance(path, (str, os.PathLike)):
-            # In Python 3.8, this can be done with isinstance(path, typing.get_args(_typing.PathLike))
+            # In Python 3.8, this can be done with isinstance(path, typing.get_args(typing_.PathLike))
             raise TypeError(f'Unsupported path type "{type(path)}".')
