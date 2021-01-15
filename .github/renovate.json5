@@ -22,7 +22,7 @@
     },
 
     "labels": [
-        "dependency-update"
+        "dependency update"
     ],
 
     "dependencyDashboard": true,
