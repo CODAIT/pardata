@@ -25,7 +25,7 @@ import threading
 from uuid import uuid4
 from typing import Iterator
 
-from . import _typing
+from . import typing as typing_
 
 
 class DirectoryLockAcquisitionError(RuntimeError):
@@ -44,7 +44,7 @@ class DirectoryLock:
     :param directory: The directory where lock files would be put.
     """
 
-    def __init__(self, directory: _typing.PathLike):
+    def __init__(self, directory: typing_.PathLike):
         self._uuid: str = str(uuid4())
         self._directory: pathlib.Path = pathlib.Path(directory)
         self._thread_lock: threading.Lock = threading.Lock()

@@ -28,7 +28,7 @@ from typing import Any, Callable, Dict, Iterable, Optional
 
 import requests
 
-from . import _typing
+from . import typing as typing_
 from .loaders import FormatLoaderMap
 from .loaders._format_loader_map import load_data_files
 from .schema import SchemaDict
@@ -73,7 +73,7 @@ class Dataset:
         DOWNLOAD_AND_LOAD = 3
 
     def __init__(self, schema: SchemaDict,
-                 data_dir: _typing.PathLike,  *,
+                 data_dir: typing_.PathLike,  *,
                  mode: InitializationMode = InitializationMode.LAZY) -> None:
         """Constructor method.
         """

@@ -20,7 +20,7 @@
 import pathlib
 from typing import cast, Dict, Union
 
-from .. import _typing
+from .. import typing as typing_
 from ..schema import SchemaDict
 from ._base import Loader
 
@@ -29,7 +29,7 @@ class PlainTextLoader(Loader):
     """Plain text to string loader.
     """
 
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> str:
+    def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> str:
         """The type hint says Dict, because this loader will be handling those situations in the future.
 
         :param path: The path to the plain text file.
@@ -43,5 +43,5 @@ class PlainTextLoader(Loader):
 
         encoding = options.get('encoding', 'utf-8')
         # We can remove usage of cast once Dict[str, str] handling is added
-        path = cast(_typing.PathLike, path)
+        path = cast(typing_.PathLike, path)
         return pathlib.Path(path).read_text(encoding=encoding)

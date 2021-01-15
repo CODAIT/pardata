@@ -26,14 +26,14 @@ from urllib.request import urlopen
 import requests
 import requests.exceptions
 
-from . import _typing
+from . import typing as typing_
 from .exceptions import InsecureConnectionError
 
 
-# Semantically, _typing.PathLike doesn't cover strings that represent URLs
-def retrieve_schema_file(url_or_path: Union[_typing.PathLike, str], *,
+# Semantically, typing_.PathLike doesn't cover strings that represent URLs
+def retrieve_schema_file(url_or_path: Union[typing_.PathLike, str], *,
                          encoding: str = 'utf-8',
-                         tls_verification: Union[bool, _typing.PathLike] = True) -> str:
+                         tls_verification: Union[bool, typing_.PathLike] = True) -> str:
     """Retrieve a single schema file.
 
     :param url_or_path: URL or path to the schema file.

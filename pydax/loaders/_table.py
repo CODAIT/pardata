@@ -21,7 +21,7 @@ from typing import Dict, Union
 
 import pandas as pd  # type: ignore[import]
 
-from .. import _typing
+from .. import typing as typing_
 from ..schema import SchemaDict
 from ._base import Loader
 
@@ -30,7 +30,7 @@ class CSVPandasLoader(Loader):
     """CSV to Pandas dataframe loader.
     """
 
-    def load(self, path: Union[_typing.PathLike, Dict[str, str]], options: SchemaDict) -> pd.DataFrame:
+    def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> pd.DataFrame:
         """The type hint says Dict, because this loader will be handling those situations in the future, perhaps via a
         ``IteratingLoader`` class.
 
