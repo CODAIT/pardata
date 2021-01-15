@@ -7,7 +7,7 @@
 ![Docs](https://github.com/codait/pydax/workflows/Docs/badge.svg)
 ![Development Environment](https://github.com/codait/pydax/workflows/Development%20Environment/badge.svg)
 
-PyDAX is a Python API that offers users a simple and quick way to download and load any dataset with an associated PyDAX schema in just a few lines of code.
+PyDAX is a Python API that enables easy, pragmatic, and elegant programmatical downloading and loading of datasets.
 
 ## Install the Package & its Dependencies
 
@@ -23,7 +23,7 @@ Alternatively, if you have downloaded the source, switch to the source directory
 pip install -U .
 ```
 
-## Simple Example
+## Quick Start
 
 Import the package and load a dataset. PyDAX will download [WikiText-103](https://developer.ibm.com/exchanges/data/all/wikitext-103/) dataset (version `1.0.1`) if it's not already downloaded, and then load it.
 ```python
