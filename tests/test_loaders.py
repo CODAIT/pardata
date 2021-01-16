@@ -141,6 +141,7 @@ class TestTableLoaders:
         data = dataset.data['jfk_weather_cleaned']
         assert isinstance(data, pd.DataFrame)
         assert data.shape == (75119, 16)
+        dataset.delete()
 
     Column = namedtuple('Column', ('name', 'dtype', 'check'))
 
@@ -261,9 +262,11 @@ class TestTableLoaders:
         "Test CSVPandasLoader header options"
 
         noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = True
+        noaa_dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         with pytest.raises(ValueError) as exinfo:  # Pandas should error from trying to read string as another dtype
-            Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+            noaa_dataset.load()
         assert('could not convert string to float' in str(exinfo.value))
+        noaa_dataset.delete()
 
         false_test_cases = [False, '', None]  # These should all be treated as False
         for case in false_test_cases:

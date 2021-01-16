@@ -119,17 +119,32 @@ class Dataset:
     @property
     def _file_list_file(self) -> pathlib.Path:
         "Path to the file that stores the list of files in the downloaded dataset."
-        return self._pydax_dir / 'files.list'
+        # We use self._pydax_dir_ instead of self._pydax_dir because we don't want to have the directory created if it
+        # hasn't been yet when is_downloaded is called
+        return self._pydax_dir_ / 'files.list'
 
-    def download(self) -> None:
+    def download(self,
+                 force_check: bool = True) -> None:
         """Downloads, extracts, and removes dataset archive. It adds a directory write lock during execution.
 
-        :raises NotADirectoryError: :attr:`Dataset._data_dir` (passed in via ``data_dir`` in the constructor
-                                    :class:`Dataset`) points to an existing file that is not a directory.
+        :param force_check: Force a check that the data files were not previously downloaded to
+            :attr:`Dataset._data_dir` (passed in via ``data_dir`` in the constructor :class:`Dataset`) by running
+            :meth:`.is_downloaded`.
+        :raises RuntimeError: The dataset was previously downloaded as indicated by :meth:`.is_downloaded`
+            returning ``True``.
+        :raises NotADirectory: :attr:`Dataset._data_dir` (passed in via ``data_dir`` in the constructor
+            :class:`Dataset`) points to an existing file that is not a directory.
+        :param force_check: Force a check that the data files were not previously downloaded to
         :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
         :raises tarfile.ReadError: The tar archive was unable to be read.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
         """
+
+        if force_check and self.is_downloaded():
+            raise RuntimeError(f'{self.__class__.__name__}.download() was previously called. To overwrite existing '
+                               f'data files, rerun {self.__class__.__name__}.download() with ``force_check`` set to '
+                               f'``False``.')
+
         download_url = self._schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
 
@@ -141,9 +156,9 @@ class Dataset:
             computed_hash = hashlib.sha512(archive_fp.read_bytes()).hexdigest()
             actual_hash = self._schema['sha512sum']
             if not actual_hash == computed_hash:
-                raise OSError(f'{archive_fp} has a SHA512 checksum of: ({computed_hash}) \
-                                which is different from the expected SHA512 checksum of: ({actual_hash}) \
-                                the file may by corrupted.')
+                raise OSError(f'{archive_fp} has a SHA512 checksum of: ({computed_hash}) '
+                              f'which is different from the expected SHA512 checksum of: ({actual_hash}) '
+                              f'the file may by corrupted.')
 
             # Supports tar archives only for now
             try:
@@ -166,18 +181,30 @@ class Dataset:
 
     def load(self,
              subdatasets: Optional[Iterable[str]] = None,
-             format_loader_map: Optional[FormatLoaderMap] = None) -> Dict[str, Any]:
+             format_loader_map: Optional[FormatLoaderMap] = None,
+             force_check: bool = True) -> Dict[str, Any]:
         """Load data files to RAM. It adds a directory read lock during execution.
 
         :param subdatasets: The subdatasets to load. ``None`` means all subdatasets.
         :param format_loader_map: The :class:`.loaders.FormatLoaderMap` object that determines which loader to use.
-        :raises FileNotFoundError: The dataset files are not found on the disk. Usually this is because
-            :func:`~Dataset.download` has never been called.
+        :param force_check: Force a check that the data files were previously downloaded to :attr:`Dataset._data_dir`
+            (passed in via ``data_dir`` in the constructor :class:`Dataset`) before loading them by running
+            :meth:`.is_downloaded`.
+        :raises RuntimeError: The dataset was not previously downloaded as indicated by :meth:`.is_downloaded`
+            returning ``False``.
+        :raises FileNotFoundError: The dataset files for a particular subdataset are not found on the disk. Either this
+            is because :func:`~Dataset.download` was never called, or the dataset was only partially downloaded.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
         :return: Loaded data objects. Same as :attr:`.data`.
         """
+
         if subdatasets is None:
             subdatasets = self._schema['subdatasets'].keys()
+
+        if force_check and not self.is_downloaded():
+            raise RuntimeError(f'Failed to locate downloaded data files. Either {self.__class__.__name__}.download() '
+                               f'was not run or the data files were moved from {self.__class__.__name__}._data_dir '
+                               f'(passed in via data_dir in the constructor {self.__class__.__name__}).')
 
         with self._lock.locking_with_exception(write=False):
             self._data = {}
@@ -223,12 +250,18 @@ class Dataset:
         return self._data
 
     def is_downloaded(self) -> bool:
-        """Check to see if dataset was downloaded. We determine this by comparing the extracted file tree with the file
+        """Check to see if the dataset was downloaded. We determine this by comparing the extracted file tree with the file
         list :meth:`._file_list_file` (their existence, types, and sizes). In this way, if the extraction of the archive
         failed, this should return ``False`` and the user would not be misled. For performance reasons, we do not
         examine the content of the extracted files.
 
         :return: ``True`` if the dataset has been downloaded and ``False`` otherwise.
+
+        .. warning::
+
+            :meth:`.is_downloaded` will search for the dataset files in :attr:`Dataset._data_dir` (passed in via
+            ``data_dir`` in the constructor :class:`Dataset`). If after downloading, you move the data files to a
+            different directory, this method may produce unexpected behavior.
         """
 
         # The method to detect whether the dataset has been downloaded can certainly be improved by balancing how much

@@ -193,10 +193,10 @@ def load_dataset(name: str, *,
         dataset.download()
     try:
         return dataset.load(subdatasets=subdatasets)
-    except FileNotFoundError as e:
-        raise FileNotFoundError('Failed to load the dataset because some files are not found. '
-                                'Did you forget to download the dataset (by specifying `download=True`)?'
-                                f'\nCaused by:\n{e}')
+    except RuntimeError as e:
+        raise RuntimeError('Failed to load the dataset because some files are not found. '
+                           'Did you forget to download the dataset (by specifying `download=True`)?'
+                           f'\nCaused by:\n{e}')
 
 
 @_handle_name_param
