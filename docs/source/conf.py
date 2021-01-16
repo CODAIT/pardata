@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Copyright 2020 IBM Corp. All Rights Reserved.
 #
@@ -20,9 +21,6 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import os
-import sys
-
 import sphinx_rtd_theme  # noqa: F401
 
 from pydax import __version__ as pydax_version
@@ -34,13 +32,13 @@ from pydax import __version__ as pydax_version
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 
-sys.path.insert(0, os.path.abspath('../..'))  # Source code dir relative to this file
+# sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'PyDAX'
-copyright = '2020--2021, International Business Machines Corp. (IBM)'
+copyright = '2020–2021, International Business Machines Corp. (IBM)'
 version = pydax_version
 release = version
 
@@ -58,11 +56,13 @@ extensions = [
     ]
 
 autodoc_inherit_docstrings = True  # If no class summary, inherit base class summary
+autodoc_typehints = 'description'  # Put parameter types to the description section to unclog prototypes
 autosummary_generate = True  # Automate sphinx.ext.autosummary to run when html is generated
 autosummary_imported_members = True  # Imported members should be documented
 intersphinx_mapping = {
     'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
-    'python': ('https://docs.python.org/3', None)}
+    'python': ('https://docs.python.org/3', None)
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

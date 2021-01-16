@@ -124,8 +124,8 @@ class Dataset:
     def download(self) -> None:
         """Downloads, extracts, and removes dataset archive. It adds a directory write lock during execution.
 
-        :raises NotADirectory: :attr:`Dataset._data_dir` (passed in via :meth:`.__init__()`) points to an
-                               existing file that is not a directory.
+        :raises NotADirectoryError: :attr:`Dataset._data_dir` (passed in via ``data_dir`` in the constructor
+                                    :class:`Dataset`) points to an existing file that is not a directory.
         :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
         :raises tarfile.ReadError: The tar archive was unable to be read.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
