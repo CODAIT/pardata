@@ -132,7 +132,7 @@
        <g id="id5">
         <rect class="BoundingBox" stroke="none" fill="none" x="3856" y="3174" width="5081" height="2223"/>
         <path fill="rgb(191,33,47)" stroke="none" d="M 6396,5396 L 3856,5396 3856,3174 8936,3174 8936,5396 6396,5396 Z"/>
-        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="3883" y="4150"><tspan fill="rgb(0,0,0)" stroke="none">Write complicated</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="4846" y="4861"><tspan fill="rgb(0,0,0)" stroke="none">documents</tspan></tspan></tspan></text>
+        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="4235" y="4150"><tspan fill="rgb(0,0,0)" stroke="none">Write extensive</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="4847" y="4861"><tspan fill="rgb(0,0,0)" stroke="none">documents</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="com.sun.star.drawing.LineShape">
@@ -146,7 +146,7 @@
        <g id="id7">
         <rect class="BoundingBox" stroke="none" fill="none" x="11476" y="3174" width="5081" height="2223"/>
         <path fill="rgb(191,33,47)" stroke="none" d="M 14016,5396 L 11476,5396 11476,3174 16556,3174 16556,5396 14016,5396 Z"/>
-        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="11618" y="3795"><tspan fill="rgb(0,0,0)" stroke="none">Force the user to</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="12503" y="4506"><tspan fill="rgb(0,0,0)" stroke="none">go through</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="11480" y="5217"><tspan fill="rgb(0,0,0)" stroke="none">complicated steps</tspan></tspan></tspan></text>
+        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="11618" y="3795"><tspan fill="rgb(0,0,0)" stroke="none">Force the user to</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="12503" y="4506"><tspan fill="rgb(0,0,0)" stroke="none">go through</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="11639" y="5217"><tspan fill="rgb(0,0,0)" stroke="none">convoluted steps</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="com.sun.star.drawing.LineShape">
