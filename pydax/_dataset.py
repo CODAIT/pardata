@@ -64,6 +64,10 @@ class Dataset:
     False
     """
 
+    # Note: we use a convention for attribute pairs that return the same pathlib.Path where a trailing "_" indicates
+    # the path should be used for reading data (e.g. checking the path exists) while no trailing "_" indicates the path
+    # is for writing data (e.g. creating the file)
+
     class InitializationMode(IntFlag):
         """Enum class that acts as `mode` for :class:`Dataset`.
         """
@@ -95,7 +99,7 @@ class Dataset:
 
     @property
     def _data_dir(self) -> pathlib.Path:
-        "Directory that stores datasets. Create it if it does not exist."
+        "Same as :attr:`_data_dir_`, but create it if it does not exist."
         if not self._data_dir_.exists():
             self._data_dir_.mkdir(parents=True)
         elif not self._data_dir_.is_dir():  # self._data_dir_ exists and is not a directory
@@ -109,7 +113,7 @@ class Dataset:
 
     @property
     def _pydax_dir(self) -> pathlib.Path:
-        "Same as :attr:`_pydax_dir`, but create it if it does not exist."
+        "Same as :attr:`_pydax_dir_`, but create it if it does not exist."
         if not self._pydax_dir_.exists():
             self._pydax_dir_.mkdir(parents=True)
         elif not self._pydax_dir_.is_dir():  # pydax_dir exists and is not a directory
@@ -117,11 +121,14 @@ class Dataset:
         return self._pydax_dir_
 
     @property
-    def _file_list_file(self) -> pathlib.Path:
+    def _file_list_file_(self) -> pathlib.Path:
         "Path to the file that stores the list of files in the downloaded dataset."
-        # We use self._pydax_dir_ instead of self._pydax_dir because we don't want to have the directory created if it
-        # hasn't been yet when is_downloaded is called
         return self._pydax_dir_ / 'files.list'
+
+    @property
+    def _file_list_file(self) -> pathlib.Path:
+        "Same as :attr:`_file_list_file_`, but create the parent directory if it does not exist."
+        return self._pydax_dir / 'files.list'
 
     def download(self,
                  force_check: bool = True) -> None:
@@ -269,11 +276,11 @@ class Dataset:
         # number of files, etc. The method used here should be able to strike a good balance for most cases and should
         # be good enough for the first release.
 
-        if not self._file_list_file.exists():
+        if not self._file_list_file_.exists():
             # File not found, may not have finished downloading at all and we treat it as so. We can't control users'
             # own tweaking with the directory.
             return False
-        with open(self._file_list_file, mode='r') as file_list:
+        with open(self._file_list_file_, mode='r') as file_list:
             for name, info in json.load(file_list).items():
                 path = self._data_dir / name
                 if not path.exists():

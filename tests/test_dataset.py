@@ -313,47 +313,51 @@ class TestDataset:
     def test_directory_write_lock_present(self, downloaded_gmb_dataset):
         "Test various functions when a write directory lock is present."
 
-        lock_file = downloaded_gmb_dataset._pydax_dir / 'write.ding-dong.lock'
+        lock_file = downloaded_gmb_dataset._pydax_dir_ / 'write.ding-dong.lock'
         lock_file.touch()
 
-        f_stat = downloaded_gmb_dataset._file_list_file.stat()
+        f_stat = downloaded_gmb_dataset._file_list_file_.stat()
         self._test_lock_exception(
             lambda: downloaded_gmb_dataset.download(force_check=False),
             write=True,
-            directory=downloaded_gmb_dataset._pydax_dir)
-        assert f_stat == downloaded_gmb_dataset._file_list_file.stat()  # _file_list_file wasn't overwritten
+            directory=downloaded_gmb_dataset._pydax_dir_)
+        assert f_stat == downloaded_gmb_dataset._file_list_file_.stat()  # _file_list_file_ wasn't overwritten
 
         self._test_lock_exception(
-            lambda: downloaded_gmb_dataset.load(), write=False, directory=downloaded_gmb_dataset._pydax_dir)
+            lambda: downloaded_gmb_dataset.load(), write=False, directory=downloaded_gmb_dataset._pydax_dir_)
         with pytest.raises(RuntimeError) as e:
             downloaded_gmb_dataset.data
         assert str(e.value) == ('Data has not been downloaded and/or loaded yet. Call Dataset.download() to download '
                                 'data, call Dataset.load() to load data.')
 
         self._test_lock_exception(
-            lambda: downloaded_gmb_dataset.delete(), write=True, directory=downloaded_gmb_dataset._pydax_dir)
-        assert downloaded_gmb_dataset._file_list_file.exists()  # Files are still there
+            lambda: downloaded_gmb_dataset.delete(), write=True, directory=downloaded_gmb_dataset._pydax_dir_)
+        assert downloaded_gmb_dataset._file_list_file_.exists()  # Files are still there
         downloaded_gmb_dataset.delete(force=True)
+        # We purposefully use _file_list_file instead of _file_list_file_ to create the parent directory so that
+        # TemporaryDirectory doesn't complain during test cleanup of downloaded_gmb_dataset (Python < 3.8)
         assert not downloaded_gmb_dataset._file_list_file.exists()
 
     def test_directory_read_lock_present(self, downloaded_gmb_dataset):
         "Test various functions when a directory read lock is present."
 
-        lock_file = downloaded_gmb_dataset._pydax_dir / 'read.king-kong.lock'
+        lock_file = downloaded_gmb_dataset._pydax_dir_ / 'read.king-kong.lock'
         lock_file.touch()
 
-        f_stat = downloaded_gmb_dataset._file_list_file.stat()
+        f_stat = downloaded_gmb_dataset._file_list_file_.stat()
         self._test_lock_exception(
             lambda: downloaded_gmb_dataset.download(force_check=False),
             write=True,
-            directory=downloaded_gmb_dataset._pydax_dir)
-        assert f_stat == downloaded_gmb_dataset._file_list_file.stat()  # _file_list_file wasn't overwritten
+            directory=downloaded_gmb_dataset._pydax_dir_)
+        assert f_stat == downloaded_gmb_dataset._file_list_file_.stat()  # _file_list_file_ wasn't overwritten
 
         downloaded_gmb_dataset.load()  # No exception raised
         assert downloaded_gmb_dataset.data is not None
 
         self._test_lock_exception(
-            lambda: downloaded_gmb_dataset.delete(), write=True, directory=downloaded_gmb_dataset._pydax_dir)
-        assert downloaded_gmb_dataset._file_list_file.exists()  # Files are still there
+            lambda: downloaded_gmb_dataset.delete(), write=True, directory=downloaded_gmb_dataset._pydax_dir_)
+        assert downloaded_gmb_dataset._file_list_file_.exists()  # Files are still there
         downloaded_gmb_dataset.delete(force=True)
+        # We purposefully use _file_list_file instead of _file_list_file_ to create the parent directory so that
+        # TemporaryDirectory doesn't complain during test cleanup of downloaded_gmb_dataset (Python < 3.8)
         assert not downloaded_gmb_dataset._file_list_file.exists()
