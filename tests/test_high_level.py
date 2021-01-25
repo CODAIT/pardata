@@ -188,9 +188,9 @@ class TestLoadDataset:
         "Test loading before ``Dataset.download()`` has been called."
 
         init(DATADIR=tmp_path)
-        with pytest.raises(FileNotFoundError) as e:
+        with pytest.raises(RuntimeError) as e:
             load_dataset('wikitext103', version='1.0.1', download=False)
-        assert 'Failed to load the dataset because some files are not found.' in str(e.value)
+        assert 'Did you forget to download the dataset (by specifying `download=True`)?' in str(e.value)
 
 
 def test_get_dataset_metadata():
