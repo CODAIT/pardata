@@ -95,9 +95,9 @@ class TestDataset:
 
         # Force check previously downloaded dataset should error
         with pytest.raises(RuntimeError) as e:
-            gmb_dataset.download(force_check=True)
+            gmb_dataset.download(check=True)
         assert str(e.value) == ('Dataset.download() was previously called. To overwrite existing data files, rerun '
-                                'Dataset.download() with ``force_check`` set to ``False``.')
+                                'Dataset.download() with ``check`` set to ``False``.')
 
     def test_invalid_sha512(self, tmp_path, gmb_schema):
         "Test if Dataset class catches an invalid hash."
@@ -175,7 +175,7 @@ class TestDataset:
         dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
 
         with pytest.raises(FileNotFoundError) as e:
-            dataset.load(force_check=False)
+            dataset.load(check=False)
         assert ('Failed to load subdataset "gmb_subset_full" because some files are not found. '
                 'Did you forget to call Dataset.download()?\nCaused by:\n') in str(e.value)
 
@@ -188,10 +188,8 @@ class TestDataset:
 
         # Force check undownloaded dataset should error
         with pytest.raises(RuntimeError) as e:
-            dataset.load(force_check=True)
-        assert str(e.value) == ('Failed to locate downloaded data files. Either Dataset.download() was not run or the '
-                                'data files were moved from Dataset._data_dir (passed in via data_dir in the '
-                                'constructor Dataset).')
+            dataset.load(check=True)
+        assert str(e.value) == (f'Downloaded data files are not present in {dataset._data_dir_} or are corrupted.')
 
     def test_unloaded_access_to_data(self, tmp_path, gmb_schema):
         "Test access to ``Dataset.data`` when no data has been loaded."
@@ -318,7 +316,7 @@ class TestDataset:
 
         f_stat = downloaded_gmb_dataset._file_list_file_.stat()
         self._test_lock_exception(
-            lambda: downloaded_gmb_dataset.download(force_check=False),
+            lambda: downloaded_gmb_dataset.download(check=False),
             write=True,
             directory=downloaded_gmb_dataset._pydax_dir_)
         assert f_stat == downloaded_gmb_dataset._file_list_file_.stat()  # _file_list_file_ wasn't overwritten
@@ -346,7 +344,7 @@ class TestDataset:
 
         f_stat = downloaded_gmb_dataset._file_list_file_.stat()
         self._test_lock_exception(
-            lambda: downloaded_gmb_dataset.download(force_check=False),
+            lambda: downloaded_gmb_dataset.download(check=False),
             write=True,
             directory=downloaded_gmb_dataset._pydax_dir_)
         assert f_stat == downloaded_gmb_dataset._file_list_file_.stat()  # _file_list_file_ wasn't overwritten
