@@ -46,8 +46,10 @@ standard for exchanging data assets. It enables:
 
       >>> import pydax
       >>> pydax.list_all_datasets()
-      {'claim_sentences_search': ('1.0.2',), ..., 'wikitext103': ('1.0.1',)}
-      >>> wikitext103_data = load_dataset('wikitext103')
+      {'claim_sentences_search': ('1.0.2',),
+       ..., 'wikitext103': ('1.0.1',)}
+      >>> pydax.load_dataset('wikitext103')
+      {...}  # Content of the dataset
 
 Install the Package & its Dependencies
 --------------------------------------
