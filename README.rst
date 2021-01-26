@@ -34,10 +34,25 @@ PyDAX (Under Development)
    :target: https://github.com/CODAIT/pydax/commit/master
    :alt: Development Environment
 
-PyDAX is a Python API that enables easy, pragmatic, and elegant programmatical downloading and loading of datasets.
+PyDAX is a Python API that enables data consumers and distributors to easily use and share datasets, and establishes a
+standard for exchanging data assets. It enables:
+
+- a data scientist to have a simpler and more unified way to begin working with a wide range of datasets, and
+- a data distributor to have a consistent, safe, and open source way to share my datasets with interested communities.
+
+Quick Example:
+
+.. code-block:: python
+
+   >>> import pydax
+   >>> pydax.list_all_datasets()
+   {'claim_sentences_search': ('1.0.2',), ..., 'wikitext103': ('1.0.1',)}
+   >>> wikitext103_data = load_dataset('wikitext103')
 
 Install the Package & its Dependencies
 --------------------------------------
+
+.. TODO: Prior to the first release, replace this section with installing from pypi
 
 To install the latest version of PyDAX, run
 
