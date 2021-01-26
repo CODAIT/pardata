@@ -40,14 +40,14 @@ standard for exchanging data assets. It enables:
 - a data scientist to have a simpler and more unified way to begin working with a wide range of datasets, and
 - a data distributor to have a consistent, safe, and open source way to share my datasets with interested communities.
 
-Quick Example:
+.. sidebar:: Quick Example
 
-.. code-block:: python
+   .. code-block:: python
 
-   >>> import pydax
-   >>> pydax.list_all_datasets()
-   {'claim_sentences_search': ('1.0.2',), ..., 'wikitext103': ('1.0.1',)}
-   >>> wikitext103_data = load_dataset('wikitext103')
+      >>> import pydax
+      >>> pydax.list_all_datasets()
+      {'claim_sentences_search': ('1.0.2',), ..., 'wikitext103': ('1.0.1',)}
+      >>> wikitext103_data = load_dataset('wikitext103')
 
 Install the Package & its Dependencies
 --------------------------------------
