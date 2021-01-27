@@ -60,7 +60,7 @@ autodoc_typehints = 'description'  # Put parameter types to the description sect
 autosummary_generate = True  # Automate sphinx.ext.autosummary to run when html is generated
 autosummary_imported_members = True  # Imported members should be documented
 intersphinx_mapping = {
-    'pandas': ('http://pandas.pydata.org/pandas-docs/stable/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
     'python': ('https://docs.python.org/3', None)
 }
 
@@ -91,3 +91,6 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# CSS files
+html_css_files = ['css/custom.css']
