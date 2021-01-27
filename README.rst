@@ -38,7 +38,7 @@ PyDAX is a Python API that enables data consumers and distributors to easily use
 standard for exchanging data assets. It enables:
 
 - a data scientist to have a simpler and more unified way to begin working with a wide range of datasets, and
-- a data distributor to have a consistent, safe, and open source way to share my datasets with interested communities.
+- a data distributor to have a consistent, safe, and open source way to share datasets with interested communities.
 
 .. sidebar:: Quick Example
 
