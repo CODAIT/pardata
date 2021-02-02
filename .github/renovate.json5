@@ -33,10 +33,10 @@
 
     "packageRules": [
         {
-            "packagePatterns": [
+            "matchPackagePatterns": [
                 "*"
             ],
-            "updateTypes": [
+            "matchUpdateTypes": [
                 "patch"
             ],
             // Group all minor version bump together
