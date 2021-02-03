@@ -18,6 +18,10 @@ PyDAX (Under Development)
    :target: https://pypi.python.org/pypi/pydax
    :alt: PyPI - Implementation
 
+.. image:: https://badges.gitter.im/codait/pydax.svg
+   :target: https://gitter.im/codait/pydax
+   :alt: Gitter
+
 .. image:: https://github.com/codait/pydax/workflows/Runtime%20Tests/badge.svg
    :target: https://github.com/CODAIT/pydax/commit/master
    :alt: Runtime Tests
