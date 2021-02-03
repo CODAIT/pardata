@@ -18,6 +18,10 @@ PyDAX (Under Development)
    :target: https://pypi.python.org/pypi/pydax
    :alt: PyPI - Implementation
 
+.. image:: https://badges.gitter.im/codait/pydax.svg
+   :target: https://gitter.im/codait/pydax
+   :alt: Gitter
+
 .. image:: https://github.com/codait/pydax/workflows/Runtime%20Tests/badge.svg
    :target: https://github.com/CODAIT/pydax/commit/master
    :alt: Runtime Tests
@@ -116,3 +120,7 @@ Notebooks
 For a more extensive look at PyDAX functionality, check out these notebooks:
 
 * `Early PyDAX Features Walkthrough <https://github.com/CODAIT/pydax/blob/master/docs/notebooks/pydax-mvp-demo.ipynb>`__
+
+.. image:: https://badges.gitter.im/CODAIT/pydax-ci-cd-status.svg
+   :alt: Join the chat at https://gitter.im/CODAIT/pydax-ci-cd-status
+   :target: https://gitter.im/CODAIT/pydax-ci-cd-status?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
