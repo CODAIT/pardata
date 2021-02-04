@@ -67,11 +67,7 @@ class CSVPandasLoader(Loader):
             header = 'infer'
 
         return pd.read_csv(path, dtype=dtypes,
-                           # The following line after "if" is for circumventing
-                           # https://github.com/pandas-dev/pandas/issues/38489
-                           # TODO: Remove the if-else part of the following line once pandas has released version >1.1.5
-                           # The bug above has been fixed.
-                           parse_dates=parse_dates if len(parse_dates) > 0 else False,
+                           parse_dates=parse_dates,
                            header=header, names=names,
                            encoding=options.get('encoding', 'utf-8'),
                            delimiter=options.get('delimiter', ','))

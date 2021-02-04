@@ -32,7 +32,7 @@ setuptools.setup(
     install_requires=[
         "dataclasses; python_version < '3.7.0'",  # backported dataclasses
         "packaging >= 20.4",
-        "pandas >= 1.1.0",
+        "pandas >= 1.2.0",
         "pydantic >= 1.7.2",
         "PyYAML >= 5.3.1",
         "requests >= 2.24.0"],
