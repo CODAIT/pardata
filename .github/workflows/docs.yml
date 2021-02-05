@@ -57,7 +57,7 @@ jobs:
         env:
           room-id: ${{ secrets.GITTER_ROOM_ID }}
           token: ${{ secrets.GITTER_TOKEN }}
-          text: succeeded
+          text: doc build succeeded
 
       - name: Notify Gitter failure
         run: |
@@ -67,4 +67,4 @@ jobs:
         env:
           room-id: ${{ secrets.GITTER_ROOM_ID }}
           token: ${{ secrets.GITTER_TOKEN }}
-          text: failed
+          text: doc build failed
