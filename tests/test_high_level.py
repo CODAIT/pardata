@@ -167,7 +167,7 @@ class TestLoadDataset:
         wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=True, subdatasets=subdatasets)
         assert list(wikitext103_data.keys()) == subdatasets
 
-    def test_default_schemata_name(self, tmp_path, gmb_schema):
+    def test_default_dataset_schema_name(self, tmp_path, gmb_schema):
         "Test the default schemata name."
 
         init(DATADIR=tmp_path)
