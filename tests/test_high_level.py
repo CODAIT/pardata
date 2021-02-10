@@ -167,11 +167,21 @@ class TestLoadDataset:
         wikitext103_data = load_dataset('wikitext103', version='1.0.1', download=True, subdatasets=subdatasets)
         assert list(wikitext103_data.keys()) == subdatasets
 
+    def test_default_schemata_name(self, tmp_path, gmb_schema):
+        "Test the default schemata name."
+
+        init(DATADIR=tmp_path)
+        data_dir = tmp_path / 'default' / 'gmb' / '1.0.2'
+        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        _get_schemata().schemata['datasets']._schema.pop('name')  # Remove the "name" key
+        gmb_data = load_dataset('gmb', version='1.0.2', download=False)
+        assert gmb.data == gmb_data
+
     def test_download_false(self, tmp_path, gmb_schema):
         "Test to see the function loads properly when download=False and dataset was previously downloaded."
 
         init(DATADIR=tmp_path)
-        data_dir = tmp_path / 'gmb' / '1.0.2'
+        data_dir = tmp_path / 'my-datasets' / 'gmb' / '1.0.2'
         gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         gmb_data = load_dataset('gmb', version='1.0.2', download=False)
         assert gmb.data == gmb_data
