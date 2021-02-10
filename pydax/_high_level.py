@@ -187,9 +187,9 @@ def load_dataset(name: str, *,
 
     schemata = export_schemata().schemata['datasets']
     schema = schemata.export_schema('datasets', name, version)
-    schema_name = schemata.export_schema().get('name', 'default')
+    schemata_name = schemata.export_schema().get('name', 'default')
 
-    data_dir = get_config().DATADIR / schema_name / name / version
+    data_dir = get_config().DATADIR / schemata_name / name / version
     dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
     if download and not dataset.is_downloaded():
         dataset.download()

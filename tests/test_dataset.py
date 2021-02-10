@@ -257,7 +257,8 @@ class TestDataset:
     def test_is_downloaded(self, tmp_path, gmb_schema):
         "Test is_downloaded method."
 
-        data_dir = tmp_path / 'gmb' / '1.0.2'
+        data_dir = tmp_path / 'non-existing-dir'
+        assert not data_dir.exists()  # Sanity check: data_dir must not exist
         gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
         assert gmb.is_downloaded() is False
 

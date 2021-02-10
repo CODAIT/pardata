@@ -181,7 +181,7 @@ class TestLoadDataset:
         "Test to see the function loads properly when download=False and dataset was previously downloaded."
 
         init(DATADIR=tmp_path)
-        data_dir = tmp_path / 'my-datasets' / 'gmb' / '1.0.2'
+        data_dir = tmp_path / 'dax' / 'gmb' / '1.0.2'
         gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         gmb_data = load_dataset('gmb', version='1.0.2', download=False)
         assert gmb.data == gmb_data
