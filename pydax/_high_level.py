@@ -161,9 +161,9 @@ def load_dataset(name: str, *,
                  version: str = 'latest',
                  download: bool = True,
                  subdatasets: Union[Iterable[str], None] = None) -> Dict[str, Any]:
-    """High level function that wraps :class:`dataset.Dataset` class's load and download functionality. Downloads to
-    and loads from directory: :file:`DATADIR/name/version` where ``DATADIR`` is in ``pydax.get_config().DATADIR``.
-    ``DATADIR`` can be changed by calling :func:`init`.
+    """High level function that wraps :class:`dataset.Dataset` class's load and download functionality. Downloads to and
+    loads from directory: :file:`DATADIR/schema_name/name/version` where ``DATADIR`` is in
+    ``pydax.get_config().DATADIR``. ``DATADIR`` can be changed by calling :func:`init`.
 
     :param name: Name of the dataset you want to load from PyDAX's available datasets. You can get a list of these
         datasets by calling :func:`list_all_datasets`.
@@ -185,9 +185,11 @@ def load_dataset(name: str, *,
     2 2010-01-01 03:00:00               5.0                33.0
     """
 
-    schema = export_schemata().schemata['datasets'].export_schema('datasets', name, version)
+    schemata = export_schemata().schemata['datasets']
+    schema = schemata.export_schema('datasets', name, version)
+    dataset_schema_name = schemata.export_schema().get('name', 'default')
 
-    data_dir = get_config().DATADIR / name / version
+    data_dir = get_config().DATADIR / dataset_schema_name / name / version
     dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
     if download and not dataset.is_downloaded():
         dataset.download()
