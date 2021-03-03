@@ -38,6 +38,8 @@ PyDAX (Under Development)
    :target: https://github.com/CODAIT/pydax/commit/master
    :alt: Development Environment
 
+🚧**Caution: PyDAX is still under development. Do NOT use it in production.**🚧
+
 PyDAX is a Python API that enables data consumers and distributors to easily use and share datasets, and establishes a
 standard for exchanging data assets. It enables:
 
@@ -58,13 +60,11 @@ standard for exchanging data assets. It enables:
 Install the Package & its Dependencies
 --------------------------------------
 
-.. TODO: Prior to the first release, replace this section with installing from pypi
-
 To install the latest version of PyDAX, run
 
 .. code-block:: console
 
-   $ pip install -U git+https://github.com/codait/pydax
+   $ pip install pydax
 
 Alternatively, if you have downloaded the source, switch to the source directory (same directory as this README file,
 ``cd /path/to/pydax-source``) and run
@@ -113,6 +113,13 @@ dataset (version ``1.0.2``) in :file:`new/dir/to/dowload/load/from/gmb/1.0.2/`.
 .. code-block:: python
 
    gmb_data = load_dataset('gmb', version='1.0.2', download=False)  # assuming GMB dataset was already downloaded
+
+Create a Dataset Schema File
+----------------------------
+
+The information of a dataset is stored in a schema file. To create a schema file for your dataset, check out the
+examples in our `default repository <https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__. (Details of
+the format of the schema file are to be documented.)
 
 Notebooks
 ---------
