@@ -38,7 +38,7 @@ PyDAX (Under Development)
    :target: https://github.com/CODAIT/pydax/commit/master
    :alt: Development Environment
 
-🚧**Caution: PyDAX is still under development. Do NOT use it in production.**🚧
+🚧**Caution: PyDAX is in BETA phase and still under development. Do NOT use it in production.**🚧
 
 PyDAX is a Python API that enables data consumers and distributors to easily use and share datasets, and establishes a
 standard for exchanging data assets. It enables:
