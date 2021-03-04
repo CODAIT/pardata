@@ -37,7 +37,7 @@ setuptools.setup(
         "PyYAML >= 5.3.1",
         "requests >= 2.24.0"],
     classifiers=[
-        "Development Status :: 3 - Beta",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
