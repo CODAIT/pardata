@@ -110,6 +110,15 @@ To run document generation tests, run:
 
    $ tox -e docs
 
+Make a New Release
+------------------
+
+To make a new release:
+
+- Tag the commit following `PEP 0440 <https://www.python.org/dev/peps/pep-0440>`__, e.g., ``1.0``, ``0.1b0``.
+- Run ``python setup.py bdist bdist_wheel``.
+- Run ``twine upload dist/*``.
+
 Where to Expose a Symbol (Function, Class, etc.)?
 -------------------------------------------------
 
