@@ -200,7 +200,8 @@ class TestLoadDataset:
         init(DATADIR=tmp_path)
         with pytest.raises(RuntimeError) as e:
             load_dataset('wikitext103', version='1.0.1', download=False)
-        assert 'Did you forget to download the dataset (by specifying `download=True`)?' in str(e.value)
+        assert ('Did you forget to download the dataset '
+                '(by calling this function with `download=True` for at least once)?') in str(e.value)
 
 
 def test_get_dataset_metadata():
