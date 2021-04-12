@@ -169,10 +169,13 @@ def load_dataset(name: str, *,
         datasets by calling :func:`list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
         available versions for a dataset by calling :func:`list_all_datasets`.
-    :param download: Whether or not the dataset should be downloaded before loading.
+    :param download: Whether or not the dataset should be downloaded before loading. This is useful in avoiding
+        redownloading a large dataset once it has been downloaded once. If the dataset has never been downloaded before,
+        this function raises a :class:`RuntimeError`.
     :param subdatasets: An iterable containing the subdatasets to load. ``None`` means all subdatasets.
-    :raises FileNotFoundError: The dataset files were not previously downloaded or can't be found, and ``download`` is
-        ``False``.
+    :raises RuntimeError: The dataset files can't be found or are corrupted. One possible cause for this is that the
+        dataset files have never been downloaded but ``download`` is ``False``. See :meth:`Dataset.load` for more
+        details.
     :return: Dictionary that holds all subdatasets.
 
     Example:
@@ -196,9 +199,10 @@ def load_dataset(name: str, *,
     try:
         return dataset.load(subdatasets=subdatasets)
     except RuntimeError as e:
-        raise RuntimeError('Failed to load the dataset because some files are not found. '
-                           'Did you forget to download the dataset (by specifying `download=True`)?'
-                           f'\nCaused by:\n{e}')
+        raise RuntimeError(
+            'Failed to load the dataset. This may be caused by missing dataset files or file corruption.\n'
+            'Did you forget to download the dataset (by calling this function with `download=True` for at least once)?'
+            f'\nCaused by:\n{e}')
 
 
 @_handle_name_param
