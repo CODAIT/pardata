@@ -20,11 +20,13 @@ import re
 import pytest
 import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype, is_float_dtype, is_integer_dtype, is_string_dtype
+from PIL import Image, ImageChops
 
 from pydax.dataset import Dataset
 from pydax.loaders import Loader
 from pydax.loaders import FormatLoaderMap
 from pydax.loaders._format_loader_map import load_data_files
+from pydax.loaders.image import ImagePillowLoader
 from pydax.loaders.text import PlainTextLoader
 from pydax.loaders.table import CSVPandasLoader
 
@@ -98,6 +100,26 @@ class TestFormatLoaderMap:
             load_data_files(0x348f, tmp_path)
 
         assert str(e.value) == 'Parameter "fmt" must be a string or a dict, but it is of type "<class \'int\'>".'
+
+
+class TestImageLoaders:
+
+    def test_image_pillow_loader(self, saturn_image):
+        "Test the normal functionality of ImagePillowLoader."
+
+        local = Image.open(saturn_image)
+        loaded = ImagePillowLoader().load(saturn_image, {})
+
+        assert ImageChops.difference(local, loaded).getbbox() is None
+
+    def test_image_pillow_loader_no_path(self):
+        "Test ImagePillowLoader when fed in with non-path."
+
+        integer = 1
+        with pytest.raises(TypeError) as e:
+            ImagePillowLoader().load(integer, {})
+
+        assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 
 
 class TestTextLoaders:
