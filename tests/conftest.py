@@ -27,6 +27,7 @@ from urllib.request import urlretrieve
 import uuid
 
 import certifi
+from PIL import Image
 import pytest
 
 from pydax import init
@@ -337,3 +338,19 @@ def downloaded_gmb_dataset(gmb_schema) -> Dataset:
 def downloaded_noaa_jfk_dataset(noaa_jfk_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(noaa_jfk_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+# Assets -------------------------------------------------
+
+@pytest.fixture(scope='session')
+def asset_dir() -> Path:
+    "Path to the asset directory."
+
+    return Path.cwd() / 'tests' / 'assets'
+
+
+@pytest.fixture
+def saturn_image(asset_dir) -> Image:
+    "Path to the saturn.jpg."
+
+    return asset_dir / 'saturn.jpg'
