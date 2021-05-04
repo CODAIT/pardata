@@ -27,7 +27,6 @@ from urllib.request import urlretrieve
 import uuid
 
 import certifi
-from PIL import Image
 import pytest
 
 from pydax import init
@@ -350,7 +349,14 @@ def asset_dir() -> Path:
 
 
 @pytest.fixture
-def saturn_image(asset_dir) -> Image:
+def saturn_image(asset_dir) -> Path:
     "Path to the saturn.jpg."
 
     return asset_dir / 'saturn.jpg'
+
+
+@pytest.fixture
+def bell_sound(asset_dir) -> Path:
+    "Path to the service-bell.wav."
+
+    return asset_dir / 'service-bell.wav'
