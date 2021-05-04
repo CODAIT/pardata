@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"Text file loaders."
+"Image file loaders."
 
 
 from typing import cast, Dict, Union
@@ -26,8 +26,8 @@ from ..schema import SchemaDict
 from ._base import Loader
 
 
-class ImagePillowLoader(Loader):
-    """Image to :class:`PIL.Image` object loader.
+class PillowLoader(Loader):
+    """Image file to :class:`PIL.Image` object loader.
     """
 
     def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> Image:

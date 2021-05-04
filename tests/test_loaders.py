@@ -28,7 +28,7 @@ from pydax.loaders import Loader
 from pydax.loaders import FormatLoaderMap
 from pydax.loaders._format_loader_map import load_data_files
 from pydax.loaders.audio import WaveLoader
-from pydax.loaders.image import ImagePillowLoader
+from pydax.loaders.image import PillowLoader
 from pydax.loaders.text import PlainTextLoader
 from pydax.loaders.table import CSVPandasLoader
 
@@ -129,19 +129,19 @@ class TestAudioLoaders:
 class TestImageLoaders:
 
     def test_image_pillow_loader(self, saturn_image):
-        "Test the normal functionality of ImagePillowLoader."
+        "Test the normal functionality of PillowLoader."
 
         local = Image.open(saturn_image)
-        loaded = ImagePillowLoader().load(saturn_image, {})
+        loaded = PillowLoader().load(saturn_image, {})
 
         assert ImageChops.difference(local, loaded).getbbox() is None
 
     def test_image_pillow_loader_no_path(self):
-        "Test ImagePillowLoader when fed in with non-path."
+        "Test PillowLoader when fed in with non-path."
 
         integer = 1
         with pytest.raises(TypeError) as e:
-            ImagePillowLoader().load(integer, {})
+            PillowLoader().load(integer, {})
 
         assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 

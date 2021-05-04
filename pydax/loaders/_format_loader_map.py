@@ -23,7 +23,7 @@ from .._schema import SchemaDict
 
 from ._base import Loader
 from .audio import WaveLoader
-from .image import ImagePillowLoader
+from .image import PillowLoader
 from .text import PlainTextLoader
 from .table import CSVPandasLoader
 
@@ -73,7 +73,7 @@ class FormatLoaderMap:
 _default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
     'txt': PlainTextLoader(),
     'csv': CSVPandasLoader(),
-    'image': ImagePillowLoader(),
+    'image': PillowLoader(),
     'audio': WaveLoader(),
 })
 

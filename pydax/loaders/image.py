@@ -17,6 +17,6 @@
 "Image loaders."
 
 
-from ._image import ImagePillowLoader
+from ._image import PillowLoader
 
-__all__ = ('ImagePillowLoader',)
+__all__ = ('PillowLoader',)
