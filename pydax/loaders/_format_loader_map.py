@@ -22,6 +22,7 @@ from typing import Any, Dict, Mapping, Optional, Union
 from .._schema import SchemaDict
 
 from ._base import Loader
+from .audio import WaveLoader
 from .image import ImagePillowLoader
 from .text import PlainTextLoader
 from .table import CSVPandasLoader
@@ -73,6 +74,7 @@ _default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
     'txt': PlainTextLoader(),
     'csv': CSVPandasLoader(),
     'image': ImagePillowLoader(),
+    'audio': WaveLoader(),
 })
 
 

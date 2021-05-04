@@ -21,11 +21,13 @@ import pytest
 import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype, is_float_dtype, is_integer_dtype, is_string_dtype
 from PIL import Image, ImageChops
+import wave
 
 from pydax.dataset import Dataset
 from pydax.loaders import Loader
 from pydax.loaders import FormatLoaderMap
 from pydax.loaders._format_loader_map import load_data_files
+from pydax.loaders.audio import WaveLoader
 from pydax.loaders.image import ImagePillowLoader
 from pydax.loaders.text import PlainTextLoader
 from pydax.loaders.table import CSVPandasLoader
@@ -100,6 +102,28 @@ class TestFormatLoaderMap:
             load_data_files(0x348f, tmp_path)
 
         assert str(e.value) == 'Parameter "fmt" must be a string or a dict, but it is of type "<class \'int\'>".'
+
+
+class TestAudioLoaders:
+
+    def test_wave_loader(self, bell_sound):
+        "Test the normal functionality of WaveLoader."
+
+        with wave.open(str(bell_sound), 'rb') as local:
+            local_content = local.readframes(local.getnframes())
+        with WaveLoader().load(bell_sound, {}) as loaded:
+            loaded_content = loaded.readframes(loaded.getnframes())
+
+        assert local_content == loaded_content
+
+    def test_wave_loader_no_path(self):
+        "Test WaveLoader when fed in with non-path."
+
+        integer = 1
+        with pytest.raises(TypeError) as e:
+            WaveLoader().load(integer, {})
+
+        assert str(e.value) == f'Unsupported path type "{type(integer)}".'
 
 
 class TestImageLoaders:
