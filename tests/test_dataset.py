@@ -81,9 +81,11 @@ class TestDataset:
         #   "[WinError 183] Cannot create a file when that file already exists: 'D:\\\\a\\\\pydax\\\\pydax\\\\setup.py'"
         assert str(pathlib.Path.cwd() / "setup.py").replace('\\', '\\\\') in str(e.value)
 
-    def test_dataset_download(self, tmp_path, gmb_schema):
+    @pytest.mark.parametrize('schema', ('gmb_schema', 'gmb_schema_zip'))
+    def test_dataset_download(self, tmp_path, schema, request):
         "Test Dataset class downloads a dataset properly."
 
+        gmb_schema = request.getfixturevalue(schema)
         data_dir = tmp_path / 'gmb'
         gmb_dataset = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert len(list(data_dir.iterdir())) == 2  # 'groningen_meaning_bank_modified' and '.pydax.dataset'
@@ -108,14 +110,14 @@ class TestDataset:
             Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'the file may by corrupted' in str(e.value)
 
-    def test_invalid_tarball(self, tmp_path, gmb_schema, schema_file_https_url, schema_file_relative_dir):
-        "Test if Dataset class catches an invalid tar file."
+    def test_invalid_archive(self, tmp_path, gmb_schema, schema_file_https_url, schema_file_relative_dir):
+        "Test if Dataset class catches an invalid archive file."
 
         fake_schema = gmb_schema
         fake_schema['download_url'] = schema_file_https_url + '/datasets.yaml'
         fake_schema['sha512sum'] = hashlib.sha512((schema_file_relative_dir / 'datasets.yaml').read_bytes()).hexdigest()
 
-        with pytest.raises(tarfile.ReadError) as e:
+        with pytest.raises(RuntimeError) as e:
             Dataset(fake_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'Failed to unarchive' in str(e.value)
 

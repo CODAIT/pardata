@@ -24,6 +24,7 @@ import os
 import pathlib
 import shutil
 import tarfile
+import zipfile
 from typing import Any, Callable, Dict, Iterable, Optional
 
 import requests
@@ -131,6 +132,45 @@ class Dataset:
         "Same as :attr:`_file_list_file_`, but create the parent directory if it does not exist."
         return self._pydax_dir / 'files.list'
 
+    def _extract_as_tar(self, archive_fp: typing_.PathLike) -> None:
+        """Extract ``archive_fp`` as tar. Raise the :exception:`tar.ReadError` object raised by :meth:`tarfile.open` if
+        it fails.
+        """
+
+        with tarfile.open(archive_fp) as tar:
+            members = {}
+            for member in tar.getmembers():
+                members[member.name] = {'type': int(member.type)}
+                if member.isreg():  # For regular files, we also save its size
+                    members[member.name]['size'] = member.size
+            with open(self._file_list_file, mode='w') as f:
+                # We do not specify 'utf-8' here to match the default encoding used by the OS, which also likely
+                # uses this encoding for accessing the filesystem.
+                json.dump(members, f, indent=2)
+            tar.extractall(path=self._data_dir)
+
+    def _extract_as_zip(self, archive_fp: typing_.PathLike) -> None:
+        """Extract ``archive_fp`` as tar. Raise the :exception:`zipfile.BadZipFile` object raised by
+        :meth:`zipfile.open` if it fails.
+        """
+
+        with zipfile.ZipFile(archive_fp) as z:
+            members = {}
+            for member in z.infolist():
+                # Unlike tar, we only have dir and reg types in zip.
+                if member.is_dir():
+                    members[member.filename] = {'type': int(tarfile.DIRTYPE)}
+                else:
+                    members[member.filename] = {
+                        'type': int(tarfile.REGTYPE),
+                        'size': member.file_size
+                    }
+            with open(self._file_list_file, mode='w') as f:
+                # We do not specify 'utf-8' here to match the default encoding used by the OS, which also likely
+                # uses this encoding for accessing the filesystem.
+                json.dump(members, f, indent=2)
+            z.extractall(path=self._data_dir)
+
     def download(self,
                  check: bool = True) -> None:
         """Downloads, extracts, and removes dataset archive. It adds a directory write lock during execution.
@@ -145,7 +185,7 @@ class Dataset:
         :raises NotADirectoryError: :attr:`Dataset._data_dir` (passed in via ``data_dir`` in the constructor
             :class:`Dataset`) points to an existing file that is not a directory.
         :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
-        :raises tarfile.ReadError: The tar archive was unable to be read.
+        :raises RuntimeError: The archive could not be extracted.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
         """
 
@@ -169,23 +209,15 @@ class Dataset:
                               f'which is different from the expected SHA512 checksum of: ({actual_hash}) '
                               f'the file may by corrupted.')
 
-            # Supports tar archives only for now
+            # Try tar first, then zip
             try:
-                tar = tarfile.open(archive_fp)
-            except tarfile.ReadError as e:
-                raise tarfile.ReadError(f'Failed to unarchive "{archive_fp}"\ncaused by:\n{e}')
-            with tar:
-                members = {}
-                for member in tar.getmembers():
-                    members[member.name] = {'type': int(member.type)}
-                    if member.isreg():  # For regular files, we also save its size
-                        members[member.name]['size'] = member.size
-                with open(self._file_list_file, mode='w') as f:
-                    # We do not specify 'utf-8' here to match the default encoding used by the OS, which also likely
-                    # uses this encoding for accessing the filesystem.
-                    json.dump(members, f, indent=2)
-                tar.extractall(path=self._data_dir)
-
+                self._extract_as_tar(archive_fp)
+            except tarfile.ReadError as e_tar:
+                try:
+                    self._extract_as_zip(archive_fp)
+                except zipfile.BadZipFile as e_zip:
+                    raise RuntimeError((f'Failed to unarchive "{archive_fp}" as neither a tarball nor a zip archive. '
+                                        f'Caused by:\nAs a tarball:\n{e_tar}\nAs a zip archive:\n{e_zip}'))
             os.remove(archive_fp)
 
     def load(self,

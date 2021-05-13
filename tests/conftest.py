@@ -19,7 +19,10 @@ import hashlib
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import os
 from pathlib import Path
+import requests
+import shutil
 from ssl import PROTOCOL_TLS_SERVER, SSLContext
+import tarfile
 from tempfile import TemporaryDirectory
 import threading
 from typing import Callable
@@ -177,6 +180,19 @@ def dataset_dir() -> Path:
     return d
 
 
+def _make_zip_copy(tar_path: Path, zip_path: Path):
+    "Convert a tarball to a zip file."
+
+    with TemporaryDirectory() as tmpdir:
+        with tarfile.open(tar_path) as f:
+            f.extractall(tmpdir)
+        shutil.make_archive(base_name=zip_path.with_suffix(''), format='zip', root_dir=tmpdir)
+
+    # Calculate sha512sum of the zip archive
+    zip_path.with_name(zip_path.name + '.sha512sum').write_text(
+        hashlib.sha512(zip_path.read_bytes()).hexdigest())
+
+
 @pytest.fixture(scope='session')
 def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
     """Utility function for downloading datasets to ``tests/datasets/{name}-{version}`` for testing purpose. These files
@@ -200,6 +216,10 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
 
         # We use urllib instead of requests to avoid running the same code path with our downloading implementation
         urlretrieve(schema['download_url'], filename=local_destination)
+
+        # Create a zip copy if the file size is smaller than 10M
+        if local_destination.stat().st_size < 10_000_000:
+            _make_zip_copy(local_destination, local_destination.parent / (local_destination.name + '.zip'))
 
     return _download_dataset_impl
 
@@ -258,6 +278,16 @@ def _gmb_schema(schema_localized_url):
 @pytest.fixture
 def gmb_schema(_gmb_schema):
     return copy.deepcopy(_gmb_schema)
+
+
+@pytest.fixture
+def gmb_schema_zip(gmb_schema):
+    "Same as ``gmb_schema``, but in zip format."
+
+    # TODO: put this process to a generic utility function
+    gmb_schema['download_url'] += '.zip'
+    gmb_schema['sha512sum'] = requests.get(gmb_schema['download_url'] + '.sha512sum').text.strip()
+    return gmb_schema
 
 
 @pytest.fixture(scope='session')
