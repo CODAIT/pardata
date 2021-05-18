@@ -27,22 +27,3 @@ from ._high_level import (describe_dataset,
                           load_dataset,
                           load_schemata)
 from ._version import version as __version__
-
-__all__ = (
-           # modules & subpackages
-           'dataset',
-           'exceptions',
-           'loaders',
-           'schema',
-           # high-level functions
-           'describe_dataset',
-           'export_schemata',
-           'get_config',
-           'get_dataset_metadata',
-           'init',
-           'list_all_datasets',
-           'load_dataset',
-           'load_schemata',
-           # _version
-           '__version__'
-)

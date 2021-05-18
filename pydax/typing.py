@@ -18,5 +18,3 @@
 
 
 from ._typing import PathLike
-
-__all__ = ('PathLike',)

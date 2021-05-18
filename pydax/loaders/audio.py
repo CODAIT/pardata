@@ -18,5 +18,3 @@
 
 
 from ._audio import WaveLoader
-
-__all__ = ('WaveLoader',)
