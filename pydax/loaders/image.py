@@ -18,5 +18,3 @@
 
 
 from ._image import PillowLoader
-
-__all__ = ('PillowLoader',)

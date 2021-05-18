@@ -18,5 +18,3 @@
 
 
 from ._text import PlainTextLoader
-
-__all__ = ('PlainTextLoader',)

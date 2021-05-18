@@ -18,10 +18,3 @@
 
 
 from ._schema import DatasetSchema, FormatSchema, LicenseSchema, Schema, SchemaDict, SchemaManager
-
-__all__ = ('DatasetSchema',
-           'FormatSchema',
-           'LicenseSchema',
-           'Schema',
-           'SchemaDict',
-           'SchemaManager')

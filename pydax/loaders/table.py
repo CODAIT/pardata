@@ -18,5 +18,3 @@
 
 
 from ._table import CSVPandasLoader
-
-__all__ = ('CSVPandasLoader',)
