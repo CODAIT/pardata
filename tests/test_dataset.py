@@ -21,6 +21,7 @@ from json import JSONDecodeError
 import os
 import pathlib
 import tarfile
+import wave
 
 import pandas as pd
 import pytest
@@ -153,6 +154,17 @@ class TestDataset:
         }))
         cleaned_data = data['jfk_weather_cleaned']
         assert isinstance(cleaned_data, str)
+
+    def test_load_regex(self, downloaded_tensorflow_speech_commands_dataset):
+        "Test loading data with regular expression path type."
+
+        data = downloaded_tensorflow_speech_commands_dataset.load()
+        house_data = data['house']
+        assert len(house_data) == 1750
+        for k, v in house_data.items():
+            assert k.endswith('.wav')
+            assert isinstance(v, wave.Wave_read)
+            v.close()
 
     def test_constructor_download_and_load(self, tmp_path, wikitext103_schema):
         "Test the full power of Dataset.__init__() (mode being ``InitializationMode.DOWNLOAD_AND_LOAD``)."

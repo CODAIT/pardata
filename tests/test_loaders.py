@@ -76,7 +76,9 @@ class TestBaseLoader:
 
 
 class TestFormatLoaderMap:
-    "Test loaders._format_loader.*"
+    """Test loaders._format_loader.*. Various path types (regex and plain) are tested in test_datasets.py, since it is
+    easier and more natural to test there, and the test have already covered sufficiently for path types.
+    """
 
     def test_register_non_loader(self):
         "Test when it registers a non-Loader instance."
@@ -91,7 +93,7 @@ class TestFormatLoaderMap:
         "Test loading a non-existing format."
 
         with pytest.raises(RuntimeError) as e:
-            load_data_files('nonsense', tmp_path)
+            load_data_files('nonsense', tmp_path, tmp_path)
 
         assert str(e.value) == 'The format loader map does not specify a loader for format "nonsense".'
 
@@ -99,9 +101,25 @@ class TestFormatLoaderMap:
         "Test loading a non-existing format."
 
         with pytest.raises(TypeError) as e:
-            load_data_files(0x348f, tmp_path)
+            load_data_files(0x348f, tmp_path, tmp_path)
 
         assert str(e.value) == 'Parameter "fmt" must be a string or a dict, but it is of type "<class \'int\'>".'
+
+    def test_load_unknown_type_of_path(self, tmp_path):
+        "Test loading an unknown type of the parameter ``path``."
+
+        with pytest.raises(TypeError) as e:
+            load_data_files('wav', tmp_path, 12)
+
+        assert str(e.value) == f'Unsupported type of the "path" parameter: {type(12)}.'
+
+    def test_load_unknown_path_type(self, tmp_path):
+        "Test loading an unknown ``path[type]``."
+
+        with pytest.raises(ValueError) as e:
+            load_data_files('image', tmp_path, {'type': 'nonsense'})
+
+        assert str(e.value) == 'Unknown type of path "nonsense".'
 
 
 class TestAudioLoaders:

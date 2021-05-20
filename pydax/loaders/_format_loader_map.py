@@ -17,9 +17,13 @@
 "Format to loader map."
 
 
+import os
+from pathlib import Path
+import re
 from typing import Any, Dict, Mapping, Optional, Union
 
 from .._schema import SchemaDict
+from .._typing import PathLike
 
 from ._base import Loader
 from .audio import WaveLoader
@@ -74,18 +78,22 @@ _default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
     'txt': PlainTextLoader(),
     'csv': CSVPandasLoader(),
     'image': PillowLoader(),
-    'audio': WaveLoader(),
+    'wav': WaveLoader(),
 })
 
 
-def load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str]], *,
+def load_data_files(fmt: Union[str, SchemaDict], data_dir: PathLike, path: Union[str, SchemaDict], *,
                     format_loader_map: FormatLoaderMap = None) -> Any:
     """Load data files.
 
     :param fmt: The format.
-    :param path: Path to the file(s).
+    :param data_dir: The path to the directory that holds the data files.
+    :param path: If it is a :class:`str`, it is the path to the file. If it is a :class:`dict`, it consists of two keys:
+        ``type`` and ``value``. If ``type`` is ``"regex"``, ``value`` is the regular expression of the paths of the
+        files.
     :param format_loader_map: The format loader map to use.
-    :raises TypeError: ``fmt`` is neither a string nor a dict.
+    :raises TypeError: ``fmt`` or ``path`` is neither a string nor a :class:`SchemaDict`.
+    :raises ValueError: If ``path`` is a :class:`SchemaDict`, but ``path[type]`` is not ``"regex"``.
     :return: Loaded data file objects.
     """
 
@@ -98,7 +106,7 @@ def load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str]
         fmt_id: str = fmt
         fmt_options: SchemaDict = {}
     elif isinstance(fmt, Dict):
-        # In Python 3.8, this can be done with isinstance(fmt, typing.get_args(SchemaDict))
+        # In Python 3.8+, this can be done with isinstance(fmt, typing.get_args(SchemaDict))
         fmt_id = fmt['id']
         fmt_options = fmt.get('options', {})
     else:
@@ -107,4 +115,25 @@ def load_data_files(fmt: Union[str, SchemaDict], path: Union[str, Dict[str, str]
     if fmt_id not in format_loader_map:
         raise RuntimeError(f'The format loader map does not specify a loader for format "{fmt_id}".')
 
-    return format_loader_map[fmt_id].load(path, fmt_options)
+    data_dir = Path(data_dir)
+    loader = format_loader_map[fmt_id]
+    if isinstance(path, str):
+        return loader.load(data_dir / path, fmt_options)
+    elif isinstance(path, Dict):
+        # In Python 3.8+, this can be done with isinstance(fmt, typing.get_args(SchemaDict))
+        path_type = path['type']
+
+        if path_type == 'regex':
+            loaded_data = {}
+            path_value = path['value']
+            # We don't use pathlib to operate the string here because of Windows compatibility and character escaping.
+            path_pattern = re.compile(re.escape(str(data_dir) + os.path.sep) +
+                                      path_value.replace('/', re.escape(os.path.sep)))
+            for f in data_dir.rglob('*'):
+                if path_pattern.fullmatch(str(f)):
+                    loaded_data[str(f)] = loader.load(data_dir / f, fmt_options)
+            return loaded_data
+        else:
+            raise ValueError(f'Unknown type of path "{path_type}".')
+    else:
+        raise TypeError(f'Unsupported type of the "path" parameter: {type(path)}.')

@@ -105,7 +105,7 @@ class TestListAllDatasets:
         "Test to make sure test_list_all_datasets function returns available dataset names."
 
         datasets = list_all_datasets()
-        assert frozenset(datasets.keys()) == frozenset(['gmb', 'noaa_jfk', 'wikitext103'])
+        assert frozenset(datasets.keys()) == frozenset(['gmb', 'noaa_jfk', 'tensorflow_speech_commands', 'wikitext103'])
 
 
 class TestLoadDataset:

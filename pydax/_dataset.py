@@ -252,7 +252,8 @@ class Dataset:
                 subdataset_schema = self._schema['subdatasets'][subdataset]
                 try:
                     self._data[subdataset] = load_data_files(fmt=subdataset_schema['format'],
-                                                             path=self._data_dir / subdataset_schema['path'],
+                                                             data_dir=self._data_dir,
+                                                             path=subdataset_schema['path'],
                                                              format_loader_map=format_loader_map)
                 except FileNotFoundError as e:
                     self._data = None
