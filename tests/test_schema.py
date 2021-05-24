@@ -48,7 +48,7 @@ class TestSchema:
         assert loaded_schemata.schemata['licenses'] \
             .export_schema()['licenses']['cdla_sharing']['commercial_use'] is True
         assert loaded_schemata.schemata['formats'] \
-            .export_schema('formats', 'csv', 'name') == 'Comma-Separated Values'
+            .export_schema('formats', 'table/csv', 'name') == 'Comma-Separated Values'
         assert loaded_schemata.schemata['datasets'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
             loaded_schemata.schemata['datasets'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
 

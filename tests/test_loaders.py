@@ -109,7 +109,7 @@ class TestFormatLoaderMap:
         "Test loading an unknown type of the parameter ``path``."
 
         with pytest.raises(TypeError) as e:
-            load_data_files('wav', tmp_path, 12)
+            load_data_files('audio/wav', tmp_path, 12)
 
         assert str(e.value) == f'Unsupported type of the "path" parameter: {type(12)}.'
 
@@ -117,7 +117,7 @@ class TestFormatLoaderMap:
         "Test loading an unknown ``path[type]``."
 
         with pytest.raises(ValueError) as e:
-            load_data_files('image', tmp_path, {'type': 'nonsense'})
+            load_data_files('image/png', tmp_path, {'type': 'nonsense'})
 
         assert str(e.value) == 'Unknown type of path "nonsense".'
 
