@@ -150,7 +150,7 @@ class TestDataset:
 
         # Load CSV using the plain text loader
         data = downloaded_noaa_jfk_dataset.load(format_loader_map=FormatLoaderMap({
-            'csv': PlainTextLoader()
+            'table/csv': PlainTextLoader()
         }))
         cleaned_data = data['jfk_weather_cleaned']
         assert isinstance(cleaned_data, str)

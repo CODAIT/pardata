@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ datasets:
         gmb_subset_full:
           name: GMB Subset Full
           description: A full version of the raw dataset. Used to train MAX model – Named Entity Tagger.
-          format: txt
+          format: text/plain
           path: groningen_meaning_bank_modified/gmb_subset_full.txt
   wikitext103:
     "1.0.1":
@@ -48,17 +48,17 @@ datasets:
         train:
           name: Train Tokens
           description: Tokens in the training subset
-          format: txt
+          format: text/plain
           path: wikitext-103/wiki.train.tokens
         valid:
           name: Validation Tokens
           description: Tokens in the validation subset
-          format: txt
+          format: text/plain
           path: wikitext-103/wiki.valid.tokens
         test:
           name: Test Tokens
           description: Tokens in the testing subset
-          format: txt
+          format: text/plain
           path: wikitext-103/wiki.test.tokens
   noaa_jfk:
     "1.1.4":
@@ -75,7 +75,7 @@ datasets:
           name: Cleaned JFK Weather Data
           description: Cleaned version of the JFK weather data.
           format:
-            id: csv
+            id: table/csv
             options:
               encoding: 'UTF-8'
               delimiter: ','
@@ -101,7 +101,7 @@ datasets:
           name: house
           description: house folder
           format:
-            id: wav
+            id: audio/wav
           path:
             type: regex
             value: "TensorFlow-Speech-Commands/house/.*\\.wav"

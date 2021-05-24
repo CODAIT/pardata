@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -75,10 +75,11 @@ class FormatLoaderMap:
 
 
 _default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
-    'txt': PlainTextLoader(),
-    'csv': CSVPandasLoader(),
-    'image': PillowLoader(),
-    'wav': WaveLoader(),
+    'text/plain': PlainTextLoader(),
+    'table/csv': CSVPandasLoader(),
+    'image/jpeg': PillowLoader(),
+    'image/png': PillowLoader(),
+    'audio/wav': WaveLoader(),
 })
 
 

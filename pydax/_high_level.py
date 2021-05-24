@@ -227,7 +227,7 @@ def get_dataset_metadata(name: str, *, version: str = 'latest') -> SchemaDict:
     >>> pprint.pprint(metadata['subdatasets'])
     {'gmb_subset_full': {'description': 'A full version of the raw dataset. Used '
                                         'to train MAX model – Named Entity Tagger.',
-                         'format': 'txt',
+                         'format': 'text/plain',
                          'name': 'GMB Subset Full',
                          'path': 'groningen_meaning_bank_modified/gmb_subset_full.txt'}}
     """
