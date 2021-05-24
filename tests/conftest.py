@@ -301,6 +301,16 @@ def noaa_jfk_schema(_noaa_jfk_schema):
 
 
 @pytest.fixture(scope='session')
+def _tensorflow_speech_commands_schema(schema_localized_url):
+    return schema_localized_url('tensorflow_speech_commands', '1.0.1')
+
+
+@pytest.fixture
+def tensorflow_speech_commands_schema(_tensorflow_speech_commands_schema):
+    return copy.deepcopy(_tensorflow_speech_commands_schema)
+
+
+@pytest.fixture(scope='session')
 def _wikitext103_schema(schema_localized_url):
     return schema_localized_url('wikitext103', '1.0.1')
 
@@ -352,12 +362,6 @@ def schema_file_https_url(local_https_server_root_url) -> str:
 
 
 @pytest.fixture
-def downloaded_wikitext103_dataset(wikitext103_schema) -> Dataset:
-    with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
-
-
-@pytest.fixture
 def downloaded_gmb_dataset(gmb_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(gmb_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
@@ -367,6 +371,19 @@ def downloaded_gmb_dataset(gmb_schema) -> Dataset:
 def downloaded_noaa_jfk_dataset(noaa_jfk_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
         yield Dataset(noaa_jfk_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+@pytest.fixture
+def downloaded_tensorflow_speech_commands_dataset(tensorflow_speech_commands_schema) -> Dataset:
+    with TemporaryDirectory() as tmp_data_dir:
+        yield Dataset(tensorflow_speech_commands_schema, data_dir=tmp_data_dir,
+                      mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+
+
+@pytest.fixture
+def downloaded_wikitext103_dataset(wikitext103_schema) -> Dataset:
+    with TemporaryDirectory() as tmp_data_dir:
+        yield Dataset(wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
 
 
 # Assets -------------------------------------------------
