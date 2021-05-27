@@ -19,11 +19,11 @@
 
 from . import dataset, exceptions, loaders, schema
 from ._high_level import (describe_dataset,
-                          export_schemata,
+                          export_schema_collections,
                           get_config,
                           get_dataset_metadata,
                           init,
                           list_all_datasets,
                           load_dataset,
-                          load_schemata)
+                          load_schema_collections)
 from ._version import version as __version__

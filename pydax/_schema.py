@@ -30,8 +30,8 @@ from ._schema_retrieval import retrieve_schema_file
 SchemaDict = Dict[str, Any]
 
 
-class Schema(ABC):
-    """Abstract class that provides functionality to load and export schemata.
+class SchemaCollection(ABC):
+    """Abstract class that provides functionality to load and export a schema collection.
 
     :param url_or_path: URL or path to a schema file.
     :param tls_verification: When set to ``True``, verify the remote link is https and whether the TLS certificate is
@@ -45,33 +45,34 @@ class Schema(ABC):
                  tls_verification: Union[bool, typing_.PathLike] = True) -> None:
         """Constructor method.
         """
-        self._schema: SchemaDict = self._load_retrieved_schema(retrieve_schema_file(url_or_path,
-                                                                                    tls_verification=tls_verification))
+        self._schema_collection: SchemaDict = self._load_retrieved_schema_file(
+                                                   retrieve_schema_file(url_or_path,
+                                                                        tls_verification=tls_verification))
 
         # The URL or path from which the schema was retrieved
         self._retrieved_url_or_path: Union[typing_.PathLike, str] = url_or_path
 
-    def _load_retrieved_schema(self, schema: str) -> SchemaDict:
+    def _load_retrieved_schema_file(self, schema_file_content: str) -> SchemaDict:
         """Safely loads retrieved schema file.
 
-        :param schema: Retrieved schema object.
+        :param schema: Retrieved schema file content.
         :return: Nested dictionary representation of a schema.
         """
-        return yaml.safe_load(schema)
+        return yaml.safe_load(schema_file_content)
 
     def export_schema(self, *keys: str) -> SchemaDict:
-        """Returns a copy of a loaded schema. Should be used for debug purposes only.
+        """Returns a copy of a loaded schema collection. Should be used for debug purposes only.
 
-        :param keys: The sequence of keys that leads to the portion of the schema to be exported.
+        :param keys: The sequence of keys that leads to the portion of the schemata to be exported.
         :return: Copy of the schema dictionary.
 
         Example:
 
-        >>> schema = DatasetSchema('./tests/schemata/datasets.yaml')
-        >>> schema.export_schema('datasets', 'noaa_jfk', '1.1.4')
+        >>> schema_collection = DatasetSchemaCollection('./tests/schemata/datasets.yaml')
+        >>> schema_collection.export_schema('datasets', 'noaa_jfk', '1.1.4')
         {'name': 'NOAA Weather Data – JFK Airport'...}
         """
-        schema: SchemaDict = self._schema
+        schema: SchemaDict = self._schema_collection
         for k in keys:
             schema = schema[k]
         return deepcopy(schema)
@@ -82,66 +83,66 @@ class Schema(ABC):
 
         Example:
 
-        >>> schema = DatasetSchema('./tests/schemata/datasets.yaml')
-        >>> schema.retrieved_url_or_path
+        >>> schema_collection = DatasetSchemaCollection('./tests/schemata/datasets.yaml')
+        >>> schema_collection.retrieved_url_or_path
         './tests/schemata/datasets.yaml'
         """
         return self._retrieved_url_or_path
 
 
-class DatasetSchema(Schema):
-    """Dataset schema class that inherits functionality from :class:`Schema`.
+class DatasetSchemaCollection(SchemaCollection):
+    """Dataset schema class that inherits functionality from :class:`SchemaCollection`.
     """
 
     # We have this class here because we reserve the potential to put specific dataset schema code here
     pass
 
 
-class FormatSchema(Schema):
-    """Format schema class that inherits functionality from :class:`Schema`.
+class FormatSchemaCollection(SchemaCollection):
+    """Format schema class that inherits functionality from :class:`SchemaCollection`.
     """
 
     # We have this class here because we reserve the potential to put specific format schema code here
     pass
 
 
-class LicenseSchema(Schema):
-    """License schema class that inherits functionality from :class:`Schema`.
+class LicenseSchemaCollection(SchemaCollection):
+    """License schema class that inherits functionality from :class:`SchemaCollection`.
     """
 
     # We have this class here because we reserve the potential to put specific license schema code here
     pass
 
 
-class SchemaManager():
-    """Stores all loaded schemata in :attr:`schemata`.
+class SchemaCollectionManager():
+    """Stores all loaded schema collections in :attr:`schema_collections`.
 
     :param kwargs: Schema name and schema instance key-value pairs.
 
     Example:
 
-    >>> dataset_schema = DatasetSchema('./tests/schemata/datasets.yaml')
-    >>> schema_manager = SchemaManager(datasets=dataset_schema)
-    >>> licenses_schema = LicenseSchema('./tests/schemata/licenses.yaml')
-    >>> schema_manager.add_schema('licenses', licenses_schema)
-    >>> schema_manager.schemata
+    >>> dataset_schemata = DatasetSchemaCollection('./tests/schemata/datasets.yaml')
+    >>> schema_collection_manager = SchemaCollectionManager(datasets=dataset_schemata)
+    >>> license_schemata = LicenseSchemaCollection('./tests/schemata/licenses.yaml')
+    >>> schema_collection_manager.add_schema_collection('licenses', license_schemata)
+    >>> schema_collection_manager.schema_collections
     {'datasets':..., 'licenses':...}
     """
 
-    def __init__(self, **kwargs: Schema) -> None:
+    def __init__(self, **kwargs: SchemaCollection) -> None:
         """Constructor method
         """
-        self.schemata: Dict[str, Schema] = {}
+        self.schema_collections: Dict[str, SchemaCollection] = {}
         for name, val in kwargs.items():
-            self.add_schema(name, val)
+            self.add_schema_collection(name, val)
 
-    def add_schema(self, name: str, val: Schema) -> None:
-        """Store schema instance in a dictionary. If a schema with the same name as ``name`` is already stored, it is
-        overridden.
+    def add_schema_collection(self, name: str, val: SchemaCollection) -> None:
+        """Store :class:`SchemaCollection` instances in a dictionary. If a schema with the same name as ``name`` is
+        already stored, it is overridden.
 
-        :param name: Schema name.
-        :param val: Schema instance.
+        :param name: Schema collection name.
+        :param val: :class:`SchemaCollection` instance.
         """
-        if not isinstance(val, Schema):
-            raise TypeError('val must be a Schema instance.')
-        self.schemata[name] = val
+        if not isinstance(val, SchemaCollection):
+            raise TypeError('val must be a SchemaCollection instance.')
+        self.schema_collections[name] = val

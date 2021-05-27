@@ -30,9 +30,9 @@ class TestConfig:
     def test_default_schema_url_https(self):
         "Test the default schema URLs are https-schemed."
 
-        assert urlparse(Config.DATASET_SCHEMA_URL).scheme == 'https'
-        assert urlparse(Config.FORMAT_SCHEMA_URL).scheme == 'https'
-        assert urlparse(Config.LICENSE_SCHEMA_URL).scheme == 'https'
+        assert urlparse(Config.DATASET_SCHEMATA_URL).scheme == 'https'
+        assert urlparse(Config.FORMAT_SCHEMATA_URL).scheme == 'https'
+        assert urlparse(Config.LICENSE_SCHEMATA_URL).scheme == 'https'
 
     @pytest.mark.xfail(reason="default remote might be down but it's not this library's issue",
                        raises=requests.exceptions.ConnectionError)
@@ -49,6 +49,6 @@ class TestConfig:
 
         # This test is in `test_config.py` not in `test_schema_retrieval.py` because this test is more about the content
         # of the default schema URLs than the retrieving functionality.
-        assert len(retrieve_schema_file(Config.DATASET_SCHEMA_URL)) > 0
-        assert len(retrieve_schema_file(Config.FORMAT_SCHEMA_URL)) > 0
-        assert len(retrieve_schema_file(Config.LICENSE_SCHEMA_URL)) > 0
+        assert len(retrieve_schema_file(Config.DATASET_SCHEMATA_URL)) > 0
+        assert len(retrieve_schema_file(Config.FORMAT_SCHEMATA_URL)) > 0
+        assert len(retrieve_schema_file(Config.LICENSE_SCHEMATA_URL)) > 0

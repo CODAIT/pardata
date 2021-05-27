@@ -17,4 +17,5 @@
 "Schema parsing and loading functionality."
 
 
-from ._schema import DatasetSchema, FormatSchema, LicenseSchema, Schema, SchemaDict, SchemaManager
+from ._schema import (DatasetSchemaCollection, FormatSchemaCollection, LicenseSchemaCollection, SchemaCollection,
+                      SchemaDict, SchemaCollectionManager)

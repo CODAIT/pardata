@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,48 +19,52 @@ import datetime
 
 import pytest
 
-from pydax.schema import Schema, SchemaManager
+from pydax.schema import SchemaCollection, SchemaCollectionManager
 
 
-class TestBaseSchema:
-    "Test Schema ABC."
+class TestBaseSchemaCollection:
+    "Test SchemaCollection ABC."
 
     def test_abstract(self):
-        "Test Schema is an abstract class."
+        "Test whether SchemaCollection is an abstract class."
 
-        assert Schema.__bases__ == (abc.ABC,)
+        assert SchemaCollection.__bases__ == (abc.ABC,)
 
     def test_retrieved_url_or_path(self, schema_file_relative_dir):
         "Test whether retrieved_url_or_path gives the correct value."
 
         url_or_path = schema_file_relative_dir / 'datasets.yaml'
-        assert Schema(url_or_path).retrieved_url_or_path == url_or_path
+        assert SchemaCollection(url_or_path).retrieved_url_or_path == url_or_path
 
 
-class TestSchema:
-    "Test the functionality of the schema classes."
+class TestSchemaCollection:
+    "Test the functionality of the SchemaCollection's child classes."
 
-    def test_loading_schemata(self, loaded_schemata):
+    def test_loading_schema_collection(self, loaded_schema_collections):
         "Test basic functioning of loading and parsing the schema files."
 
-        assert loaded_schemata.schemata['datasets'] \
+        assert loaded_schema_collections.schema_collections['datasets'] \
             .export_schema()['datasets']['gmb']['1.0.2']['published'] == datetime.date(2019, 12, 19)
-        assert loaded_schemata.schemata['licenses'] \
+        assert loaded_schema_collections.schema_collections['licenses'] \
             .export_schema()['licenses']['cdla_sharing']['commercial_use'] is True
-        assert loaded_schemata.schemata['formats'] \
+        assert loaded_schema_collections.schema_collections['formats'] \
             .export_schema('formats', 'table/csv', 'name') == 'Comma-Separated Values'
-        assert loaded_schemata.schemata['datasets'].export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
-            loaded_schemata.schemata['datasets'].export_schema('datasets', 'gmb', '1.0.2', 'homepage')
+        assert loaded_schema_collections.schema_collections['datasets'] \
+            .export_schema()['datasets']['gmb']['1.0.2']['homepage'] == \
+            loaded_schema_collections.schema_collections['datasets'] \
+            .export_schema('datasets', 'gmb', '1.0.2', 'homepage')
 
 
-class TestSchemaManager:
-    "Test the functionality of the SchemaManager class."
+class TestSchemaCollectionManager:
+    "Test the functionality of the SchemaCollectionManager class."
 
-    def test_schema_manager_value(self):
-        "Test SchemaManager to make sure it raises an exception when it recieves a non-Schema object"
+    def test_schema_collection_manager_value(self):
+        """Test SchemaCollectionManager to make sure it raises an exception when it recieves a non-SchemaCollection
+        object.
+        """
 
         with pytest.raises(TypeError) as e:
-            SchemaManager(dataset_schema='ibm',
-                          format_schema='1',
-                          license_schema='3.3')
-        assert str(e.value) == 'val must be a Schema instance.'
+            SchemaCollectionManager(datasets='ibm',
+                                    formats='1',
+                                    licenses='3.3')
+        assert str(e.value) == 'val must be a SchemaCollection instance.'
