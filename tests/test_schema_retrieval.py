@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 import pytest
 
-from pydax import export_schemata, init, load_schemata
-from pydax.schema import Schema
+from pydax import export_schema_collections, init, load_schema_collections
+from pydax.schema import SchemaCollection
 from pydax.exceptions import InsecureConnectionError
 from pydax._schema_retrieval import retrieve_schema_file
 
@@ -83,7 +83,7 @@ class TestSecureSchemaRetrieval:
         # both. This is not an issue for the purpose of this test.
         return str(request.getfixturevalue('schema_file_' + request.param)) + '/datasets.yaml'
 
-    @pytest.mark.parametrize('caller', (retrieve_schema_file, Schema))
+    @pytest.mark.parametrize('caller', (retrieve_schema_file, SchemaCollection))
     def test_insecure_connections_fail(self, remote_dataset_schema_url, untrust_self_signed_cert, caller):
         "Test insecure connections that should fail."
         with pytest.raises(InsecureConnectionError) as e:
@@ -100,30 +100,34 @@ class TestSecureSchemaRetrieval:
     def test_secure_connections_succeed_schema(self,
                                                dataset_schema_url_or_path,
                                                schema_file_relative_dir):
-        "Test secure connections that should succeed for ``Schema()``."
-        assert Schema(dataset_schema_url_or_path, tls_verification=True).retrieved_url_or_path == \
+        "Test secure connections that should succeed for ``SchemaCollection()``."
+        assert SchemaCollection(dataset_schema_url_or_path, tls_verification=True).retrieved_url_or_path == \
             dataset_schema_url_or_path
 
-    def test_insecure_connections_load_schemata(self, remote_dataset_schema_url, untrust_self_signed_cert):
-        "Test insecure connections that should fail when ``tls_verification=True`` for ``load_schemata``."
-        init(update_only=True, DATASET_SCHEMA_URL=remote_dataset_schema_url)
+    def test_insecure_connections_load_schema_collections(self, remote_dataset_schema_url, untrust_self_signed_cert):
+        """Test insecure connections that should fail when ``tls_verification=True`` for
+        :func:`pydax.load_schema_collections``.
+        """
+        init(update_only=True, DATASET_SCHEMATA_URL=remote_dataset_schema_url)
         with pytest.raises(InsecureConnectionError) as e:
-            load_schemata(force_reload=True, tls_verification=True)
+            load_schema_collections(force_reload=True, tls_verification=True)
         assert remote_dataset_schema_url in str(e.value)
 
         # Insecure load succeeds, no exception raised
-        load_schemata(force_reload=True, tls_verification=False)
-        assert export_schemata().schemata['datasets'].retrieved_url_or_path == remote_dataset_schema_url
+        load_schema_collections(force_reload=True, tls_verification=False)
+        assert (export_schema_collections().schema_collections['datasets'].retrieved_url_or_path ==
+                remote_dataset_schema_url)
 
-    def test_secure_connections_succeed_load_schemata(self, dataset_schema_url_or_path):
-        "Test secure connections that should succeed for :func:`pydax.load_schemata`."
+    def test_secure_connections_succeed_load_schema_collections(self, dataset_schema_url_or_path):
+        "Test secure connections that should succeed for :func:`pydax.load_schema_collections`."
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
-        init(update_only=True, DATASET_SCHEMA_URL=dataset_schema_url_or_path)
-        load_schemata(force_reload=True, tls_verification=True)
-        assert export_schemata().schemata['datasets'].retrieved_url_or_path == dataset_schema_url_or_path
+        init(update_only=True, DATASET_SCHEMATA_URL=dataset_schema_url_or_path)
+        load_schema_collections(force_reload=True, tls_verification=True)
+        assert (export_schema_collections().schema_collections['datasets'].retrieved_url_or_path ==
+                dataset_schema_url_or_path)
 
-    @pytest.mark.parametrize('caller', (retrieve_schema_file, Schema.__init__, load_schemata))
+    @pytest.mark.parametrize('caller', (retrieve_schema_file, SchemaCollection.__init__, load_schema_collections))
     def test_default_tls_verification(self, caller):
         "Ensure that ``tls_verification=True`` by default."
         assert caller.__kwdefaults__['tls_verification'] is True

@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import certifi
 import pytest
 
 from pydax import init
-from pydax._high_level import _get_schemata
+from pydax._high_level import _get_schema_collections
 from pydax.dataset import Dataset
-from pydax.schema import Schema, SchemaDict, SchemaManager
+from pydax.schema import SchemaCollection, SchemaDict, SchemaCollectionManager
 
 # Basic utilities --------------------------------
 
@@ -150,12 +150,12 @@ def pydax_initialization(schema_file_https_url, schema_localized_url):
     (default schema files and this library). It also replaces all download URLs with localized URLs."""
 
     init(update_only=False,
-         DATASET_SCHEMA_URL=f'{schema_file_https_url}/datasets.yaml',
-         FORMAT_SCHEMA_URL=f'{schema_file_https_url}/formats.yaml',
-         LICENSE_SCHEMA_URL=f'{schema_file_https_url}/licenses.yaml')
+         DATASET_SCHEMATA_URL=f'{schema_file_https_url}/datasets.yaml',
+         FORMAT_SCHEMATA_URL=f'{schema_file_https_url}/formats.yaml',
+         LICENSE_SCHEMATA_URL=f'{schema_file_https_url}/licenses.yaml')
 
     # Use local dataset locations by default in our tests
-    datasets = _get_schemata().schemata['datasets']._schema['datasets']
+    datasets = _get_schema_collections().schema_collections['datasets']._schema_collection['datasets']
     for name, versions in datasets.items():
         for version in versions:
             datasets[name][version] = schema_localized_url(name, version)
@@ -194,7 +194,7 @@ def _make_zip_copy(tar_path: Path, zip_path: Path):
 
 
 @pytest.fixture(scope='session')
-def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
+def _download_dataset(dataset_dir, _loaded_schema_collections) -> Callable[[str], None]:
     """Utility function for downloading datasets to ``tests/datasets/{name}-{version}`` for testing purpose. These files
     will not be deleted after the test session terminates, and they are cached for future test sessions. Accordingly, if
     ``tests/datasets/{name}-{version}`` is already present, this fixture does nothing.
@@ -207,7 +207,7 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
         # file to be archived in a different compression format.
         local_destination = dataset_dir / f'{name}-{version}'
 
-        schema = _loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
+        schema = _loaded_schema_collections.schema_collections['datasets'].export_schema('datasets', name, version)
 
         if local_destination.exists() and \
            hashlib.sha512(local_destination.read_bytes()).hexdigest() == schema['sha512sum']:
@@ -227,14 +227,15 @@ def _download_dataset(dataset_dir, _loaded_schemata) -> Callable[[str], None]:
 
 
 @pytest.fixture(scope='session')
-def schema_localized_url(_loaded_schemata, _download_dataset, dataset_base_url) -> Callable[[str, str], SchemaDict]:
+def schema_localized_url(_loaded_schema_collections,
+                         _download_dataset, dataset_base_url) -> Callable[[str, str], SchemaDict]:
     "Utility function fixture for generating schema fixtures with its downloading URL modified to the local HTTPS URL."
     # We use _loaded_schemata instead of loaded_schemata to avoid scope mismatch error (a session-scoped fixture can't
     # call a function-scoped fixture)
 
     def _schema_localized_url_impl(name, version):
         _download_dataset(name, version)
-        schema = _loaded_schemata.schemata['datasets'].export_schema('datasets', name, version)
+        schema = _loaded_schema_collections.schema_collections['datasets'].export_schema('datasets', name, version)
         schema['download_url'] = str(f'{dataset_base_url}/{name}-{version}')
         return schema
 
@@ -242,26 +243,26 @@ def schema_localized_url(_loaded_schemata, _download_dataset, dataset_base_url) 
 
 
 @pytest.fixture(scope='session')
-def _loaded_schemata(schema_file_relative_dir) -> SchemaManager:
-    """A loaded ``SchemaManager`` object, but this should never be modified. This object manages ``Schema`` objects
-    corresponding to ``tests/{datasets,formats,licenses}.yaml``. Note that these are not necessarily the same as the
-    ones used in other schema fixtures, so please do not assume that it is equal to other schema fixtures. One purpose
-    of this fixture is to reduce repeated call in the test to the same function when ``loaded_schemata`` is used. The
-    other purpose is to provide other session-scoped fixtures access to the loaded schemata, because session-scoped
-    fixtures can't load function-scoped fixtures.
+def _loaded_schema_collections(schema_file_relative_dir) -> SchemaCollectionManager:
+    """A loaded ``SchemaCollectionManager`` object, but this should never be modified. This object manages ``Schema``
+    objects corresponding to ``tests/{datasets,formats,licenses}.yaml``. Note that these are not necessarily the same as
+    the ones used in other schema fixtures, so please do not assume that it is equal to other schema fixtures. One
+    purpose of this fixture is to reduce repeated call in the test to the same function when ``loaded_schemata`` is
+    used. The other purpose is to provide other session-scoped fixtures access to the loaded schemata, because
+    session-scoped fixtures can't load function-scoped fixtures.
     """
 
-    return SchemaManager(datasets=Schema(schema_file_relative_dir / 'datasets.yaml'),
-                         formats=Schema(schema_file_relative_dir / 'formats.yaml'),
-                         licenses=Schema(schema_file_relative_dir / 'licenses.yaml'))
+    return SchemaCollectionManager(datasets=SchemaCollection(schema_file_relative_dir / 'datasets.yaml'),
+                                   formats=SchemaCollection(schema_file_relative_dir / 'formats.yaml'),
+                                   licenses=SchemaCollection(schema_file_relative_dir / 'licenses.yaml'))
 
 
 @pytest.fixture
-def loaded_schemata(_loaded_schemata) -> SchemaManager:
-    """A copy of _loaded_schemata. Tests outside this file should always use this one so as to avoid mistakenly
-    modifying the content."""
+def loaded_schema_collections(_loaded_schema_collections) -> SchemaCollectionManager:
+    """A copy of _loaded_schema_collections. Tests outside this file should always use this one so as to avoid
+    mistakenly modifying the content."""
 
-    return copy.deepcopy(_loaded_schemata)
+    return copy.deepcopy(_loaded_schema_collections)
 
 
 # Every _*_schema fixture also implies that a session wide test dataset file is downloaded. They should only be read

@@ -52,9 +52,8 @@ class Dataset:
 
     >>> from tempfile import TemporaryDirectory
     >>> import pydax
-    >>> from pydax import schema
-    >>> dataset_schema = schema.DatasetSchema('./tests/schemata/datasets.yaml')
-    >>> jfk_schema_dict = dataset_schema.export_schema('datasets', 'noaa_jfk', '1.1.4')
+    >>> dataset_schemata = pydax.schema.DatasetSchemaCollection('./tests/schemata/datasets.yaml')
+    >>> jfk_schema_dict = dataset_schemata.export_schema('datasets', 'noaa_jfk', '1.1.4')
     >>> jfk_data_dir = TemporaryDirectory()
     >>> jfk_dataset = Dataset(schema=jfk_schema_dict, data_dir=jfk_data_dir.name)
     >>> jfk_dataset.download()
