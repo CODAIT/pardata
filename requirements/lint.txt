@@ -6,6 +6,6 @@ flake8-bugbear==21.4.3
 flake8-comprehensions==3.5.0
 flake8-executable==2.1.1
 mccabe==0.6.1
-mypy==0.812
+mypy==0.902
 rstcheck==3.3.1
 yamllint==1.26.1
