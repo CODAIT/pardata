@@ -9,3 +9,6 @@ mccabe==0.6.1
 mypy==0.812
 rstcheck==3.3.1
 yamllint==1.26.1
+# Types package for mypy
+types-PyYAML==5.4.2
+types-requests==0.1.11
