@@ -97,7 +97,7 @@ To view your globally set configs for PyDAX, such as your default data directory
 .. code-block:: python
 
    >>> pydax.get_config()
-   Config(DATADIR=PosixPath('dir/to/dowload/load/from'), ..., DATASET_SCHEMATA_URL='file/to/load/datasets/from')
+   Config(DATADIR=PosixPath('dir/to/dowload/load/from'), ..., DATASET_SCHEMA_FILE_URL='file/to/load/datasets/from')
 
 By default, :func:`pydax.load_dataset` downloads to and loads from
 :file:`~/.pydax/data/<dataset-name>/<dataset-version>/`. To change the default data directory, use :func:`pydax.init`.

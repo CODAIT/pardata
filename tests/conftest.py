@@ -151,9 +151,9 @@ def pydax_initialization(schema_file_https_url, schema_localized_url):
     (default schema files and this library). It also replaces all download URLs with localized URLs."""
 
     init(update_only=False,
-         DATASET_SCHEMATA_URL=f'{schema_file_https_url}/datasets.yaml',
-         FORMAT_SCHEMATA_URL=f'{schema_file_https_url}/formats.yaml',
-         LICENSE_SCHEMATA_URL=f'{schema_file_https_url}/licenses.yaml')
+         DATASET_SCHEMA_FILE_URL=f'{schema_file_https_url}/datasets.yaml',
+         FORMAT_SCHEMA_FILE_URL=f'{schema_file_https_url}/formats.yaml',
+         LICENSE_SCHEMA_FILE_URL=f'{schema_file_https_url}/licenses.yaml')
 
     # Use local dataset locations by default in our tests
     datasets = _get_schema_collections().schema_collections['datasets']._schema_collection['datasets']
