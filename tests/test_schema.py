@@ -54,6 +54,19 @@ class TestSchemaCollection:
             loaded_schema_collections.schema_collections['datasets'] \
             .export_schema('datasets', 'gmb', '1.0.2', 'homepage')
 
+    def test_getting_license_name(self, loaded_schema_collections):
+        "Test getting the name of a license."
+        # customized
+        assert (loaded_schema_collections.schema_collections['licenses'].get_license_name('cdla_sharing') ==
+                'Community Data License Agreement – Sharing, Version 1.0 (CDLA-Sharing-1.0)')
+        # SPDX token
+        assert (loaded_schema_collections.schema_collections['licenses'].get_license_name('CDLA-Sharing-1.0') ==
+                'Community Data License Agreement Sharing 1.0')
+        # Unknown
+        with pytest.raises(ValueError) as e:
+            loaded_schema_collections.schema_collections['licenses'].get_license_name('nonsense')
+        assert str(e.value) == 'Unknown license nonsense'
+
 
 class TestSchemaCollectionManager:
     "Test the functionality of the SchemaCollectionManager class."

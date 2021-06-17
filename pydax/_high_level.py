@@ -19,6 +19,7 @@
 
 # We don't use __all__ in this file because having every exposed function shown in __init__.py is more clear.
 
+from collections import namedtuple
 from copy import deepcopy
 import dataclasses
 import functools
@@ -29,7 +30,8 @@ from packaging.version import parse as version_parser
 from ._config import Config
 from ._dataset import Dataset
 from . import typing as typing_
-from ._schema import SchemaCollection, SchemaDict, SchemaCollectionManager
+from ._schema import (DatasetSchemaCollection, FormatSchemaCollection, LicenseSchemaCollection,
+                      SchemaDict, SchemaCollectionManager)
 
 # Global configurations --------------------------------------------------
 
@@ -259,13 +261,13 @@ def describe_dataset(name: str, *, version: str = 'latest') -> str:
 
     schema_manager = export_schema_collections()
     dataset_schema = schema_manager.schema_collections['datasets'].export_schema('datasets', name, version)
-    license_schema = schema_manager.schema_collections['licenses'].export_schema('licenses')
+    license_schema_collection = cast(LicenseSchemaCollection, schema_manager.schema_collections['licenses'])
     return dedent(f'''
             Dataset name: {dataset_schema["name"]}
             Description: {dataset_schema["description"]}
             Size: {dataset_schema["estimated_size"]}
             Published date: {dataset_schema["published"]}
-            License: {license_schema[dataset_schema["license"]]["name"]}
+            License: {license_schema_collection.get_license_name(dataset_schema["license"])}
             Available subdatasets: {", ".join(dataset_schema["subdatasets"].keys())}
     ''').strip()
 
@@ -307,10 +309,11 @@ def load_schema_collections(*,
     {'datasets': ..., 'formats': ..., 'licenses':...}
     """
 
-    urls = {
-        'datasets': get_config().DATASET_SCHEMATA_URL,
-        'formats': get_config().FORMAT_SCHEMATA_URL,
-        'licenses': get_config().LICENSE_SCHEMATA_URL
+    SchemaCollectionInfo = namedtuple('SchemaCollectionInfo', ['url', 'type_'])
+    infos = {
+        'datasets': SchemaCollectionInfo(url=get_config().DATASET_SCHEMATA_URL, type_=DatasetSchemaCollection),
+        'formats': SchemaCollectionInfo(url=get_config().FORMAT_SCHEMATA_URL, type_=FormatSchemaCollection),
+        'licenses': SchemaCollectionInfo(url=get_config().LICENSE_SCHEMATA_URL, type_=LicenseSchemaCollection),
     }
 
     global _schema_collection_manager
@@ -318,12 +321,13 @@ def load_schema_collections(*,
         # Force reload or clean slate, create a new SchemaCollectionManager object
 
         _schema_collection_manager = SchemaCollectionManager(**{
-            name: SchemaCollection(url, tls_verification=tls_verification) for name, url in urls.items()})
+            name: info.type_(info.url, tls_verification=tls_verification) for name, info in infos.items()})
     else:
         for name, schema in _schema_collection_manager.schema_collections.items():
-            if schema.retrieved_url_or_path != urls[name]:
+            info = infos[name]
+            if schema.retrieved_url_or_path != info.url:
                 _schema_collection_manager.add_schema_collection(
-                    name, SchemaCollection(urls[name], tls_verification=tls_verification))
+                    name, info.type_(info.url, tls_verification=tls_verification))
 
 
 def _get_schema_collections() -> SchemaCollectionManager:

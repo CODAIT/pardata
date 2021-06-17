@@ -67,7 +67,7 @@ datasets:
       homepage: https://developer.ibm.com/exchanges/data/all/jfk-weather-data/
       download_url: https://dax-cdn.cdn.appdomain.cloud/dax-noaa-weather-data-jfk-airport/1.1.4/noaa-weather-data-jfk-airport.tar.gz
       sha512sum: e3f27a8fcc0db5289df356e3f48aef6df56236798d5b3ae3889d358489ec6609d2d797e4c4932b86016d2ce4a379ac0a0749b6fb2c293ebae4e585ea1c8422ac
-      license: cdla_sharing
+      license: CDLA-Sharing-1.0
       estimated_size: 3.2M
       description: "The NOAA JFK dataset contains 114,546 hourly observations of various local climatological variables (including visibility, temperature, wind speed and direction, humidity, dew point, and pressure). The data was collected by a NOAA weather station located at the John F. Kennedy International Airport in Queens, New York."
       subdatasets:

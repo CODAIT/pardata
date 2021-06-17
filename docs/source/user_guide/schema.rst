@@ -1,9 +1,9 @@
 Schema File Format
 ==================
 
-A schema is a tree-like data structure that describes a dataset or formats. It contains information such as the download
-URL, license, format descriptions of a dataset. We usually represent them in the yaml format, or as a Python ``dict`` in
-a Python program.
+A schema is a tree-like data structure that describes a dataset or a format, or a license. It contains information such
+as the download URL, license, format descriptions of a dataset. We usually represent them in the yaml format, or as a
+Python ``dict`` in a Python program.
 
 .. code-block:: yaml
 
@@ -12,7 +12,7 @@ a Python program.
    homepage: <homepage URL>
    download_url: <download URL>
    sha512sum: <sha512sum of the dataset file (can be generated using "sha512sum data-file.tar.gz")>
-   license: <SPDX license token>
+   license: <SPDX license token or custom license symbol>
    estimated_size: <estimated size>
    description: <description>
    subdatasets:
