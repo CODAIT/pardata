@@ -1,8 +1,8 @@
 Installation Guide
 ------------------
 
-How to install ``pydax``:
+To install ``pydax``:
 
 .. code-block:: console
 
-   pip install git+https://github.com/codait/pydax
+   pip install pydax
