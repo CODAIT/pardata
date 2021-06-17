@@ -108,7 +108,7 @@ class TestSecureSchemaRetrieval:
         """Test insecure connections that should fail when ``tls_verification=True`` for
         :func:`pydax.load_schema_collections``.
         """
-        init(update_only=True, DATASET_SCHEMATA_URL=remote_dataset_schema_url)
+        init(update_only=True, DATASET_SCHEMA_FILE_URL=remote_dataset_schema_url)
         with pytest.raises(InsecureConnectionError) as e:
             load_schema_collections(force_reload=True, tls_verification=True)
         assert remote_dataset_schema_url in str(e.value)
@@ -122,7 +122,7 @@ class TestSecureSchemaRetrieval:
         "Test secure connections that should succeed for :func:`pydax.load_schema_collections`."
         # We use '/' instead of os.path.sep because URLs only accept / not \ as separators, but Windows path accepts
         # both. This is not an issue for the purpose of this test.
-        init(update_only=True, DATASET_SCHEMATA_URL=dataset_schema_url_or_path)
+        init(update_only=True, DATASET_SCHEMA_FILE_URL=dataset_schema_url_or_path)
         load_schema_collections(force_reload=True, tls_verification=True)
         assert (export_schema_collections().schema_collections['datasets'].retrieved_url_or_path ==
                 dataset_schema_url_or_path)

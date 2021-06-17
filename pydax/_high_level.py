@@ -46,7 +46,7 @@ def get_config() -> Config:
     Example:
 
     >>> get_config()
-    Config(DATASET_SCHEMATA_URL=..., FORMAT_SCHEMATA_URL=..., LICENSE_SCHEMATA_URL=..., DATADIR=...)
+    Config(DATASET_SCHEMA_FILE_URL=..., FORMAT_SCHEMA_FILE_URL=..., LICENSE_SCHEMA_FILE_URL=..., DATADIR=...)
     """
     return _global_config
 
@@ -62,9 +62,9 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
     :param update_only: If ``True``, only update in the global configs what config is specified; reuse schemata loaded
         by high-level functions if URLs do not change. Otherwise, reset everything to default in global configs except
         those specified as keyword arguments; clear all schemata loaded by high-level functions.
-    :param DATASET_SCHEMATA_URL: The default dataset schema file URL.
-    :param FORMAT_SCHEMATA_URL: The default format schema file URL.
-    :param LICENSE_SCHEMATA_URL: The default license schema file URL.
+    :param DATASET_SCHEMA_FILE_URL: The default dataset schema file URL.
+    :param FORMAT_SCHEMA_FILE_URL: The default format schema file URL.
+    :param LICENSE_SCHEMA_FILE_URL: The default license schema file URL.
     :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
         the current working directory, but will be converted to the absolute path immediately in this function.
         Defaults to: :file:`~/.pydax/data`.
@@ -311,9 +311,9 @@ def load_schema_collections(*,
 
     SchemaCollectionInfo = namedtuple('SchemaCollectionInfo', ['url', 'type_'])
     infos = {
-        'datasets': SchemaCollectionInfo(url=get_config().DATASET_SCHEMATA_URL, type_=DatasetSchemaCollection),
-        'formats': SchemaCollectionInfo(url=get_config().FORMAT_SCHEMATA_URL, type_=FormatSchemaCollection),
-        'licenses': SchemaCollectionInfo(url=get_config().LICENSE_SCHEMATA_URL, type_=LicenseSchemaCollection),
+        'datasets': SchemaCollectionInfo(url=get_config().DATASET_SCHEMA_FILE_URL, type_=DatasetSchemaCollection),
+        'formats': SchemaCollectionInfo(url=get_config().FORMAT_SCHEMA_FILE_URL, type_=FormatSchemaCollection),
+        'licenses': SchemaCollectionInfo(url=get_config().LICENSE_SCHEMA_FILE_URL, type_=LicenseSchemaCollection),
     }
 
     global _schema_collection_manager

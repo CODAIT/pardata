@@ -85,9 +85,9 @@ class TestInit:
         assert dataclasses.asdict(get_config()) == dataclasses.asdict(Config())
 
         new_urls = {
-            'DATASET_SCHEMATA_URL': 'some/local/file',
-            'FORMAT_SCHEMATA_URL': 'file://c:/some/other/local/file',
-            'LICENSE_SCHEMATA_URL': 'http://some/remote/file'
+            'DATASET_SCHEMA_FILE_URL': 'some/local/file',
+            'FORMAT_SCHEMA_FILE_URL': 'file://c:/some/other/local/file',
+            'LICENSE_SCHEMA_FILE_URL': 'http://some/remote/file'
         }
         init(update_only=True, **new_urls)
 
@@ -245,9 +245,9 @@ class TestSchemataFunctions:
         "Test high-level load_schema_collections function."
 
         init(update_only=False,
-             DATASET_SCHEMATA_URL=loaded_schema_collections.schema_collections['datasets'].retrieved_url_or_path,
-             FORMAT_SCHEMATA_URL=loaded_schema_collections.schema_collections['formats'].retrieved_url_or_path,
-             LICENSE_SCHEMATA_URL=loaded_schema_collections.schema_collections['licenses'].retrieved_url_or_path)
+             DATASET_SCHEMA_FILE_URL=loaded_schema_collections.schema_collections['datasets'].retrieved_url_or_path,
+             FORMAT_SCHEMA_FILE_URL=loaded_schema_collections.schema_collections['formats'].retrieved_url_or_path,
+             LICENSE_SCHEMA_FILE_URL=loaded_schema_collections.schema_collections['licenses'].retrieved_url_or_path)
         load_schema_collections(force_reload=True)
         for name in ('datasets', 'formats', 'licenses'):
             assert (_get_schema_collections().schema_collections[name].retrieved_url_or_path ==
@@ -255,7 +255,7 @@ class TestSchemataFunctions:
 
         init(update_only=True,
              # Different from the previous relative path used in loaded_schemata
-             DATASET_SCHEMATA_URL=schema_file_absolute_dir / 'datasets.yaml')
+             DATASET_SCHEMA_FILE_URL=schema_file_absolute_dir / 'datasets.yaml')
         load_schema_collections(force_reload=False)
         for name in ('formats', 'licenses'):
             assert (_get_schema_collections().schema_collections[name].retrieved_url_or_path ==
@@ -275,13 +275,13 @@ class TestSchemataFunctions:
 
         # Different from https url used by pydax_initialization autouse fixture
         new_urls = {
-            'DATASET_SCHEMATA_URL': schema_file_absolute_dir / 'datasets.yaml',
-            'LICENSE_SCHEMATA_URL': schema_file_absolute_dir / 'licenses.yaml'
+            'DATASET_SCHEMA_FILE_URL': schema_file_absolute_dir / 'datasets.yaml',
+            'LICENSE_SCHEMA_FILE_URL': schema_file_absolute_dir / 'licenses.yaml'
         }
         init(update_only=True, **new_urls)
         assert (export_schema_collections().schema_collections['formats'].retrieved_url_or_path ==
                 f'{schema_file_https_url}/formats.yaml')
         assert (export_schema_collections().schema_collections['datasets'].retrieved_url_or_path ==
-                new_urls['DATASET_SCHEMATA_URL'])
+                new_urls['DATASET_SCHEMA_FILE_URL'])
         assert (export_schema_collections().schema_collections['licenses'].retrieved_url_or_path ==
-                new_urls['LICENSE_SCHEMATA_URL'])
+                new_urls['LICENSE_SCHEMA_FILE_URL'])
