@@ -35,7 +35,8 @@ import pytest
 from pydax import init
 from pydax._high_level import _get_schema_collections
 from pydax.dataset import Dataset
-from pydax.schema import SchemaCollection, SchemaDict, SchemaCollectionManager
+from pydax.schema import (DatasetSchemaCollection, FormatSchemaCollection, LicenseSchemaCollection,
+                          SchemaDict, SchemaCollectionManager)
 
 # Basic utilities --------------------------------
 
@@ -252,9 +253,9 @@ def _loaded_schema_collections(schema_file_relative_dir) -> SchemaCollectionMana
     session-scoped fixtures can't load function-scoped fixtures.
     """
 
-    return SchemaCollectionManager(datasets=SchemaCollection(schema_file_relative_dir / 'datasets.yaml'),
-                                   formats=SchemaCollection(schema_file_relative_dir / 'formats.yaml'),
-                                   licenses=SchemaCollection(schema_file_relative_dir / 'licenses.yaml'))
+    return SchemaCollectionManager(datasets=DatasetSchemaCollection(schema_file_relative_dir / 'datasets.yaml'),
+                                   formats=FormatSchemaCollection(schema_file_relative_dir / 'formats.yaml'),
+                                   licenses=LicenseSchemaCollection(schema_file_relative_dir / 'licenses.yaml'))
 
 
 @pytest.fixture

@@ -21,6 +21,7 @@ from abc import ABC
 from copy import deepcopy
 from typing import Any, Dict, Union
 
+import requests
 import yaml
 
 from . import typing as typing_
@@ -108,10 +109,34 @@ class FormatSchemaCollection(SchemaCollection):
 
 class LicenseSchemaCollection(SchemaCollection):
     """License schema class that inherits functionality from :class:`SchemaCollection`.
+
+    :param spdx_json_url: URL to the spdx json license file.
     """
 
-    # We have this class here because we reserve the potential to put specific license schema code here
-    pass
+    def __init__(self, *args: Any, spdx_json_url: str = 'https://spdx.org/licenses/licenses.json', **kwargs: Any):
+        "Constructor Method."
+
+        super().__init__(*args, **kwargs)
+        self.spdx_license_json: dict = requests.get(spdx_json_url, stream=True).json()
+
+    def get_license_name(self, identifier: str) -> str:
+        """Get the name of the license from its identifier. If not found in the license schema file, turn to SPDX
+        license database instead.
+
+        :param identifier: The identifier of the license.
+        :return: Name of the license.
+        """
+
+        if identifier in self._schema_collection['licenses']:
+            return self._schema_collection['licenses'][identifier]['name']
+        else:  # look up spdx database
+            # This is not efficient, but it's OK for now -- the database is not very large
+            spdx_licenses = self.spdx_license_json['licenses']
+            for license in spdx_licenses:
+                if license['licenseId'] == identifier:
+                    return license['name']
+
+            raise ValueError(f'Unknown license {identifier}')
 
 
 class SchemaCollectionManager():
