@@ -33,6 +33,13 @@ Loaders
    pydax.loaders.table
    pydax.loaders.text
 
+.. toctree::
+   :caption: Schema File Format References
+   :glob:
+   :maxdepth: 1
+
+   schema
+
 
 .. toctree::
    :caption: Miscellaneous

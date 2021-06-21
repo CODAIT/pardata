@@ -11,12 +11,16 @@ Python ``dict`` in a Python program.
    published: <published date>
    homepage: <homepage URL>
    download_url: <download URL>
-   sha512sum: <sha512sum of the dataset file (can be generated using "sha512sum data-file.tar.gz")>
+   sha512sum: <sha512sum of the dataset file>
    license: <SPDX license token or custom license symbol>
    estimated_size: <estimated size>
    description: <description>
    subdatasets:
-     <description of the content of the dataset archive>
+     <subdataset1_id>:
+       <Dictionary that describes the subdataset>
+     <subdataset2_id>:
+       <Dictionary that describes the subdataset>
+     ...
 
 Below is an example schema that describes the
 `IBM Debater® Thematic Clustering of Sentences <https://developer.ibm.com/exchanges/data/all/thematic-clustering-of-sentences/>`_
@@ -60,11 +64,13 @@ reasons. It is typically structured as
          <the schema of dataset1_id version1>
        <version2>:
          <the schema of dataset1_id version2>
+       ...
      <dataset2_id>:
        <version1>:
          <the schema of dataset2_id version1>
        <version2>:
          <the schema of dataset2_id version2>
+       ...
 
-Check out the `default PyDAX repository <https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__ for a live
-example.
+Check out :doc:`../schema` for a complete reference and `default PyDAX repository
+<https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__ for a live example.
