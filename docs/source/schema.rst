@@ -1,6 +1,8 @@
 Schema File Format References
 =============================
 
+For an introduction of the schema file format, check out :doc:`user_guide/schema`.
+
 Top-Level Keys
 --------------
 
@@ -71,9 +73,9 @@ Each schema follows the following structure:
    description: <description>
    subdatasets:
      <subdataset1_id>:
-       <Dictionary that describes the subdataset>
+       <Subdataset Dict: Dictionary that describes subdataset1_id>
      <subdataset2_id>:
-       <Dictionary that describes the subdataset>
+       <Subdataset Dict: Dictionary that describes subdataset2_id>
      ...
 
 .. object:: name
@@ -112,3 +114,50 @@ Each schema follows the following structure:
 
    A dictionary that divides the datasets into multiple subdatasets and describes them. The keys of the dictionary
    are subdataset identifiers and values are dictionaries that describe the subdataset.
+
+Subdataset Dict
+---------------
+
+A subdataset dict describes a subdataset, which is a logical subdivision of the dataset.
+
+.. object:: name
+
+   Name of the subdataset.
+
+.. object:: description
+
+   Description of the subdataset.
+
+.. object:: format
+
+   A dictionary that describes the format of the subdataset.
+
+   .. object:: id
+
+      Identifier of the format specified in ``FORMAT_SCHEMA_FILE_URL``.
+
+   .. object:: path
+
+      Path to the file of this subdataset. It can also be a dictionary to specify a regular expression. For example,
+      ::
+
+          path:
+            type: regex
+            value: "TensorFlow-Speech-Commands/house/.*\\.wav"
+
+   .. object:: options
+
+      A dictionary that specifies the options for a particular format. The specification varies by format.
+
+      - ``audio/wav``: No options.
+      - ``image/jpeg``: No options.
+      - ``image/png``: No options.
+      - ``table/csv``
+
+        + ``columns``: A dictionary in which keys are the names of the columns and values are the type of the entries in
+          the columns. If it is not specified, then pandas defaults are used.
+        + ``delimiter``: The delimiter of the CSV files. Default: ``,``
+        + ``encoding``: Encoding of the CSV files. Default: ``UTF-8``
+
+      - ``text/plain``
+        + ``encoding``: Encoding of the text files. Default: ``UTF-8``

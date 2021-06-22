@@ -117,9 +117,9 @@ dataset (version ``1.0.2``) in :file:`new/dir/to/dowload/load/from/gmb/1.0.2/`.
 Create a Dataset Schema File
 ----------------------------
 
-The information of a dataset is stored in a schema file. To create a schema file for your dataset, check out the
-examples in our `default repository <https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__. (Details of
-the format of the schema file are to be documented.)
+The information of a dataset is stored in a schema file. To create a schema file for your dataset, check out the `user
+guide <https://pydax.readthedocs.io/en/latest/user_guide/schema.html>`__ and examples in our `default repository
+<https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__.
 
 Notebooks
 ---------
