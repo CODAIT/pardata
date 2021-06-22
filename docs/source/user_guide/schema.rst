@@ -74,3 +74,5 @@ reasons. It is typically structured as
 
 Check out :doc:`../schema` for a complete reference and `default PyDAX repository
 <https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__ for a live example.
+
+For further details, check out :doc:`../schema`.
