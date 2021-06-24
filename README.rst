@@ -3,8 +3,8 @@
 
 .. readme-start
 
-PyDAX (Under Development)
-=========================
+PyDAX
+=====
 
 .. image:: https://img.shields.io/pypi/v/pydax.svg
    :target: https://pypi.python.org/pypi/pydax
@@ -37,8 +37,6 @@ PyDAX (Under Development)
 .. image:: https://github.com/codait/pydax/workflows/Development%20Environment/badge.svg
    :target: https://github.com/CODAIT/pydax/commit/master
    :alt: Development Environment
-
-**Caution: PyDAX is in BETA phase and still under development. Do NOT use it in production.**
 
 PyDAX is a Python API that enables data consumers and distributors to easily use and share datasets, and establishes a
 standard for exchanging data assets. It enables:
