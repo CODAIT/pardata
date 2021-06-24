@@ -230,7 +230,7 @@ def test_describe_dataset():
 
     # Instead of copying over the string for testing, we test a couple of important characteristics here
     gmb_lines = gmb_description.splitlines()
-    assert len(gmb_lines) == 6  # number of lines
+    assert len(gmb_lines) == 7  # number of lines
     assert all(line.strip() != '' for line in gmb_lines)  # no blank line
     assert all(line.strip() == line for line in gmb_lines)  # no trailing or leading whitespace
     assert all(':' in line for line in gmb_lines)  # no missing colons
