@@ -57,6 +57,7 @@ reasons. It is typically structured as
 .. code-block:: yaml
 
    api_name: com.ibm.pydax.v1
+   name: <Identifier of the schema file>
    last_updated: <ISO date string of last update>
    datasets:
      <dataset1_id>:
