@@ -252,6 +252,7 @@ def describe_dataset(name: str, *, version: str = 'latest') -> str:
 
     >>> print(describe_dataset('gmb'))
     Dataset name: Groningen Meaning Bank Modified
+    Homepage: https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/
     Description: A dataset of multi-sentence texts, ...
     Size: 10M
     Published date: 2019-12-19
@@ -264,6 +265,7 @@ def describe_dataset(name: str, *, version: str = 'latest') -> str:
     license_schema_collection = cast(LicenseSchemaCollection, schema_manager.schema_collections['licenses'])
     return dedent(f'''
             Dataset name: {dataset_schema["name"]}
+            Homepage: {dataset_schema["homepage"]}
             Description: {dataset_schema["description"]}
             Size: {dataset_schema["estimated_size"]}
             Published date: {dataset_schema["published"]}
