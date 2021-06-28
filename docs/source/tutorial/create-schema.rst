@@ -21,7 +21,7 @@ She wrote a README document: ::
 
    Dakota's height history. Heights are in centimeters.
 
-   To the extent possible under law, Dakota have dedicated all copyright and related and neighboring rights to this
+   To the extent possible under law, Dakota has dedicated all copyright and related and neighboring rights to this
    dataset worldwide. You should have received a copy of the CC0 Public Domain Dedication along with this software. If
    not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 

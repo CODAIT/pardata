@@ -8,15 +8,15 @@ To start using PyDAX, first import the package:
    >>> import pydax
 
 This implicitly calls ``pydax.init()`` and initializes PyDAX to be ready to retrieve datasets from the default
-repository. (We will learn about switching to a non-default repository in :doc:`create-schema`.) To see available
-datasets and their versions in this repository, run
+repository (Note: We will learn about switching to a non-default repository in :doc:`create-schema`). To see the available
+datasets and their versions included in this repository, run
 
 .. code-block:: python
 
    >>> pydax.list_all_datasets()
    {'claim_sentences_search': ('1.0.2',), ..., 'wikitext103': ('1.0.1',)}
 
-To look into some information about a particular dataset, use ``pydax.describe_dataset()``:
+To look up information about a particular dataset, use the function ``pydax.describe_dataset()`` as shown below:
 
 .. code-block:: python
 
@@ -29,7 +29,7 @@ To look into some information about a particular dataset, use ``pydax.describe_d
    Available subdatasets: full
 
 Use ``pydax.load_dataset()`` to load a dataset. It will first download the specified dataset with the specified version
-(default is the latest version) if it's not already downloaded, and then load it.
+(default is the latest version) if it's not already downloaded, and then load it in memory.
 
 .. code-block:: python
 
@@ -42,7 +42,7 @@ PyDAX will download the `IBM Debater® Wikipedia Category Stance
 ``wcs_data`` is a :class:`dict` that stores the loaded content of the dataset. It has one key ``'full'``, which is the
 identifier of a subdataset, i.e., a subdivision of the whole dataset. ``wikipedia_category_stance`` has only one
 subdataset because it's a small dataset, hence ``wcs_data`` has only one key. Because ``wikipedia_category_stance`` is
-in CSV format, PyDAX automatically loaded it to ``wcs_data['full']`` as a :class:`pandas.DataFrame` object, which is a
+in CSV format, PyDAX will automatically load the dataset to ``wcs_data['full']`` as a :class:`pandas.DataFrame` object, which is a
 convenient way to manipulate CSV files in Python:
 
 .. code-block:: python
