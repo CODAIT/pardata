@@ -33,9 +33,9 @@ She then packed the data file and the README to a tarball ``dakota-height-histor
    README
    height.csv
 
-She then uploaded the tarball to https://pydax.readthedocs.io/en/latest/_static/dakota-height-history.tar.gz. To ease
-the process for scientists to work with her height history, she decides to ask for your help with creating a PyDAX
-schema file for the tarball.
+She then uploaded the tarball to a `public server
+<https://pydax.readthedocs.io/en/latest/_static/dakota-height-history.tar.gz>`__. To ease the process for scientists to
+work with her height history, she decides to ask for your help with creating a PyDAX schema file for the tarball.
 
 To get started, create a yaml file ``dakota.yaml`` with the following header:
 
