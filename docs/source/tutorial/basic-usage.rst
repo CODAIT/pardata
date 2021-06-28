@@ -7,7 +7,7 @@ To start using PyDAX, first import the package:
 
    >>> import pydax
 
-This implicitly calls ``pydax.init()`` and initialize PyDAX to be ready to retrieve datasets from the default
+This implicitly calls ``pydax.init()`` and initializes PyDAX to be ready to retrieve datasets from the default
 repository. (We will learn about switching to a non-default repository in :doc:`create-schema`.) To see available
 datasets and their versions in this repository, run
 
@@ -66,4 +66,3 @@ To change this default data directory, use :func:`pydax.init`.
 .. code-block:: python
 
    pydax.init(DATADIR='new/dir/to/dowload/load/from')
-
