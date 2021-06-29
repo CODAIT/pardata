@@ -2,11 +2,10 @@
    :start-after: readme-start
 
 .. toctree::
-   :caption: User Guide
-   :glob:
+   :caption: Tutorial
    :maxdepth: 1
 
-   user_guide/*
+   tutorial/index
 
 API References
 --------------

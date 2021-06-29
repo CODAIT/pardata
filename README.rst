@@ -112,16 +112,5 @@ dataset (version ``1.0.2``) in :file:`new/dir/to/dowload/load/from/gmb/1.0.2/`.
 
    gmb_data = load_dataset('gmb', version='1.0.2', download=False)  # assuming GMB dataset was already downloaded
 
-Create a Dataset Schema File
-----------------------------
-
-The information of a dataset is stored in a schema file. To create a schema file for your dataset, check out the `user
-guide <https://pydax.readthedocs.io/en/latest/user_guide/schema.html>`__ and examples in our `default repository
-<https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__.
-
-Notebooks
----------
-
-For a more extensive look at PyDAX functionality, check out these notebooks:
-
-* `Early PyDAX Features Walkthrough <https://github.com/CODAIT/pydax/blob/master/docs/notebooks/pydax-mvp-demo.ipynb>`__
+To learn more about PyDAX, check out `the documentation <https://pydax.readthedocs.io>`__ and the
+`tutorial <https://pydax.readthedocs.io/tutorial/index.html>`__.

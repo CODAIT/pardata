@@ -1,7 +1,7 @@
 Schema File Format References
 =============================
 
-For an introduction of the schema file format, check out :doc:`user_guide/schema`.
+For an introduction of the schema file format, check out :doc:`tutorial/schema`.
 
 Top-Level Keys
 --------------
