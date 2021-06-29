@@ -113,4 +113,4 @@ dataset (version ``1.0.2``) in :file:`new/dir/to/dowload/load/from/gmb/1.0.2/`.
    gmb_data = load_dataset('gmb', version='1.0.2', download=False)  # assuming GMB dataset was already downloaded
 
 To learn more about PyDAX, check out `the documentation <https://pydax.readthedocs.io>`__ and the
-`tutorial <https://pydax.readthedocs.io/tutorial/index.html>`__.
+`tutorial <https://pydax.readthedocs.io#tutorial>`__.

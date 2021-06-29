@@ -1,14 +1,22 @@
 .. include:: ../../README.rst
    :start-after: readme-start
 
+
 .. toctree::
    :caption: Tutorial
+   :name: tutorial
    :maxdepth: 1
 
-   tutorial/index
+   tutorial/install
+   tutorial/basic-usage
+   tutorial/schema
+   tutorial/create-schema
 
 API References
---------------
+==============
+
+Top-Level
+---------
 
 .. autosummary::
    :caption: API References
@@ -21,7 +29,7 @@ API References
    pydax.schema
 
 Loaders
-~~~~~~~
+-------
 
 .. autosummary::
    :caption: API References (Loaders)
@@ -38,7 +46,6 @@ Loaders
    :maxdepth: 1
 
    schema
-
 
 .. toctree::
    :caption: Miscellaneous
