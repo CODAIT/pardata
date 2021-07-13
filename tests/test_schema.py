@@ -72,7 +72,7 @@ class TestSchemaCollectionManager:
     "Test the functionality of the SchemaCollectionManager class."
 
     def test_schema_collection_manager_value(self):
-        """Test SchemaCollectionManager to make sure it raises an exception when it recieves a non-SchemaCollection
+        """Test SchemaCollectionManager to make sure it raises an exception when it receives a non-SchemaCollection
         object.
         """
 
