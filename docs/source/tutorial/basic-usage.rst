@@ -65,4 +65,4 @@ To change this default data directory, use :func:`pydax.init`.
 
 .. code-block:: python
 
-   pydax.init(DATADIR='new/dir/to/dowload/load/from')
+   pydax.init(DATADIR='new/dir/to/download/load/from')

@@ -95,18 +95,18 @@ To view your globally set configs for PyDAX, such as your default data directory
 .. code-block:: python
 
    >>> pydax.get_config()
-   Config(DATADIR=PosixPath('dir/to/dowload/load/from'), ..., DATASET_SCHEMA_FILE_URL='file/to/load/datasets/from')
+   Config(DATADIR=PosixPath('dir/to/download/load/from'), ..., DATASET_SCHEMA_FILE_URL='file/to/load/datasets/from')
 
 By default, :func:`pydax.load_dataset` downloads to and loads from
 :file:`~/.pydax/data/<dataset-name>/<dataset-version>/`. To change the default data directory, use :func:`pydax.init`.
 
 .. code-block:: python
 
-   pydax.init(DATADIR='new/dir/to/dowload/load/from')
+   pydax.init(DATADIR='new/dir/to/download/load/from')
 
 Load a previously downloaded dataset using :func:`pydax.load_dataset`. With the new default data dir set, PyDAX now
 searches for the `Groningen Meaning Bank <https://developer.ibm.com/exchanges/data/all/groningen-meaning-bank/>`__
-dataset (version ``1.0.2``) in :file:`new/dir/to/dowload/load/from/gmb/1.0.2/`.
+dataset (version ``1.0.2``) in :file:`new/dir/to/download/load/from/gmb/1.0.2/`.
 
 .. code-block:: python
 
