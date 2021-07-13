@@ -51,9 +51,19 @@ class Dataset:
     Example:
 
     >>> from tempfile import TemporaryDirectory
+    >>> import pprint
     >>> import pydax
     >>> dataset_schemata = pydax.schema.DatasetSchemaCollection('./tests/schemata/datasets.yaml')
     >>> jfk_schema_dict = dataset_schemata.export_schema('datasets', 'noaa_jfk', '1.1.4')
+    >>> pprint.pprint(jfk_schema_dict)
+    {'description': ...
+     'download_url': '...noaa-weather-data-jfk-airport.tar.gz',
+     ...
+     'subdatasets': {'jfk_weather_cleaned': {...
+                                             'format': {'id': 'table/csv',
+                                                        ...}},
+                                             ...
+                                             'path': 'noaa-weather-data-jfk-airport/jfk_weather_cleaned.csv'}}}
     >>> jfk_data_dir = TemporaryDirectory()
     >>> jfk_dataset = Dataset(schema=jfk_schema_dict, data_dir=jfk_data_dir.name)
     >>> jfk_dataset.download()
