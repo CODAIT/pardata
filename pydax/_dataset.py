@@ -170,8 +170,9 @@ class Dataset:
                 json.dump(members, f, indent=2)
             z.extractall(path=self._data_dir)
 
-    def download(self,
-                 check: bool = True) -> None:
+    def download(self, *,
+                 check: bool = True,
+                 verify_checksum: bool = True) -> None:
         """Downloads, extracts, and removes dataset archive. It adds a directory write lock during execution.
 
         :param check: Check to make sure the data files are not already present in :attr:`._data_dir` (passed in via
@@ -179,11 +180,13 @@ class Dataset:
             raise an error if they are present and prevent a subsequent download. Set to ``False`` to remove this
             safeguard, and subsequent calls to :meth:`.download` will then overwrite data files if they were previously
             downloaded to :attr:`._data_dir`.
-        :raises RuntimeError: The dataset was previously downloaded as indicated by :meth:`.is_downloaded`
-            returning ``True``.
+        :param verify_checksum: If ``True``, verify sha512sum of the downloaded dataset.
+        :raises RuntimeError: ``check`` is ``True`` and the dataset was previously downloaded as indicated by
+            :meth:`.is_downloaded` returning ``True``.
         :raises NotADirectoryError: :attr:`Dataset._data_dir` (passed in via ``data_dir`` in the constructor
             :class:`Dataset`) points to an existing file that is not a directory.
-        :raises OSError: The SHA512 checksum of a downloaded dataset doesn't match the expected checksum.
+        :raises OSError: ``verify_checksum`` is ``True`` and the SHA512 checksum of a downloaded dataset doesn't match
+            the expected checksum.
         :raises RuntimeError: The archive could not be extracted.
         :raises exceptions.DirectoryLockAcquisitionError: Failed to acquire the directory lock.
         """
@@ -201,12 +204,13 @@ class Dataset:
             response = requests.get(download_url, stream=True)
             archive_fp.write_bytes(response.content)
 
-            computed_hash = hashlib.sha512(archive_fp.read_bytes()).hexdigest()
-            actual_hash = self._schema['sha512sum']
-            if not actual_hash == computed_hash:
-                raise OSError(f'{archive_fp} has a SHA512 checksum of: ({computed_hash}) '
-                              f'which is different from the expected SHA512 checksum of: ({actual_hash}) '
-                              f'the file may by corrupted.')
+            if verify_checksum:
+                computed_hash = hashlib.sha512(archive_fp.read_bytes()).hexdigest()
+                actual_hash = self._schema['sha512sum']
+                if not actual_hash == computed_hash:
+                    raise OSError(f'{archive_fp} has a SHA512 checksum of: ({computed_hash}) '
+                                  f'which is different from the expected SHA512 checksum of: ({actual_hash}) '
+                                  f'the file may by corrupted.')
 
             # Try tar first, then zip
             try:

@@ -108,8 +108,14 @@ class TestDataset:
         gmb_schema['sha512sum'] = 'invalid hash example'
 
         with pytest.raises(IOError) as e:
-            Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(gmb_schema, data_dir=tmp_path / 'a', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'the file may by corrupted' in str(e.value)
+
+        # If checksum verification is disabled, then it should succeed
+        gmb_dataset = Dataset(gmb_schema, data_dir=tmp_path / 'b')
+        gmb_dataset.download(verify_checksum=False)  # No exception raised
+        gmb_dataset.load()
+        assert gmb_dataset.data is not None
 
     def test_invalid_archive(self, tmp_path, gmb_schema, schema_file_https_url, schema_file_relative_dir):
         "Test if Dataset class catches an invalid archive file."
