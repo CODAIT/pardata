@@ -343,7 +343,7 @@ def _get_schema_collections() -> SchemaCollectionManager:
 
     load_schema_collections()
 
-    # The return value is guranteed to be SchemaCollectionManager instead of Optional[SchemaCollectionManager] after
+    # The return value is guaranteed to be SchemaCollectionManager instead of Optional[SchemaCollectionManager] after
     # load_schema_collections
     assert _schema_collection_manager is not None  # nosec: We use assertion for code clarity
 
