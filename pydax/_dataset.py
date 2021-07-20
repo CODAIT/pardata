@@ -39,10 +39,10 @@ from ._lock import DirectoryLock
 class Dataset:
     """Models a particular dataset version along with download & load functionality.
 
-    :param schema: Schema dict of a particular dataset version.
     :param data_dir: Directory to/from which the dataset should be downloaded/loaded from. The path can be either
         absolute or relative to the current working directory, but will be converted to the absolute path immediately
         upon initialization.
+    :param schema: Schema dict of a particular dataset.
     :param mode: Mode with which to treat a dataset. Available options are:
         :attr:`Dataset.InitializationMode.LAZY`, :attr:`Dataset.InitializationMode.DOWNLOAD_ONLY`,
         :attr:`Dataset.InitializationMode.LOAD_ONLY`, and :attr:`Dataset.InitializationMode.DOWNLOAD_AND_LOAD`.
@@ -87,8 +87,7 @@ class Dataset:
         LOAD_ONLY = 2
         DOWNLOAD_AND_LOAD = 3
 
-    def __init__(self, schema: SchemaDict,
-                 data_dir: typing_.PathLike,  *,
+    def __init__(self, data_dir: typing_.PathLike, *, schema: SchemaDict,
                  mode: InitializationMode = InitializationMode.LAZY) -> None:
         """Constructor method.
         """

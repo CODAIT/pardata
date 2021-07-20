@@ -39,17 +39,17 @@ class TestDataset:
         "Test if Dataset class catches an invalid mode."
 
         with pytest.raises(ValueError) as e:
-            Dataset(gmb_schema, data_dir=tmp_path, mode='DOWNLOAD_ONLY')
+            Dataset(schema=gmb_schema, data_dir=tmp_path, mode='DOWNLOAD_ONLY')
         assert str(e.value) == 'DOWNLOAD_ONLY not a valid mode'
 
     def test_data_dir(self, tmp_path, gmb_schema):
         "Test ``Dataset._data_dir``."
         # Automatic creation
-        dataset = Dataset(gmb_schema, data_dir=tmp_path / 'data_dir', mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=tmp_path / 'data_dir', mode=Dataset.InitializationMode.LAZY)
         assert dataset._data_dir == tmp_path / 'data_dir'
 
         # Non-directory present
-        dataset = Dataset(gmb_schema, data_dir='setup.py', mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir='setup.py', mode=Dataset.InitializationMode.LAZY)
         with pytest.raises(NotADirectoryError) as e:
             dataset._data_dir
         assert str(e.value) == f'"{pathlib.Path.cwd()/"setup.py"}" exists and is not a directory.'
@@ -58,7 +58,7 @@ class TestDataset:
         "Test ``Dataset._pydax_dir``."
         # Automatic creation
         pydax_dir = tmp_path / 'data_dir' / '.pydax.dataset'
-        dataset = Dataset(gmb_schema, data_dir=tmp_path / 'data_dir', mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=tmp_path / 'data_dir', mode=Dataset.InitializationMode.LAZY)
         assert dataset._pydax_dir == pydax_dir
         # Non-directory present
         pydax_dir.rmdir()
@@ -69,7 +69,7 @@ class TestDataset:
         assert str(e.value) == f'"{pydax_dir}" exists and is not a directory.'
 
         # Non-directory parent present
-        dataset = Dataset(gmb_schema, data_dir='setup.py', mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir='setup.py', mode=Dataset.InitializationMode.LAZY)
         # These are raised by pathlib.Path.mkdir
         # Also see https://bugs.python.org/issue42872
         ExceptionClass = FileExistsError if os.name == 'nt' else NotADirectoryError
@@ -88,7 +88,7 @@ class TestDataset:
 
         gmb_schema = request.getfixturevalue(schema)
         data_dir = tmp_path / 'gmb'
-        gmb_dataset = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        gmb_dataset = Dataset(schema=gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert len(list(data_dir.iterdir())) == 2  # 'groningen_meaning_bank_modified' and '.pydax.dataset'
         unarchived_data_dir = data_dir / 'groningen_meaning_bank_modified'
         unarchived_data_dir_files = ['gmb_subset_full.txt', 'LICENSE.txt', 'README.txt']
@@ -108,11 +108,11 @@ class TestDataset:
         gmb_schema['sha512sum'] = 'invalid hash example'
 
         with pytest.raises(IOError) as e:
-            Dataset(gmb_schema, data_dir=tmp_path / 'a', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(schema=gmb_schema, data_dir=tmp_path / 'a', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'the file may by corrupted' in str(e.value)
 
         # If checksum verification is disabled, then it should succeed
-        gmb_dataset = Dataset(gmb_schema, data_dir=tmp_path / 'b')
+        gmb_dataset = Dataset(schema=gmb_schema, data_dir=tmp_path / 'b')
         gmb_dataset.download(verify_checksum=False)  # No exception raised
         gmb_dataset.load()
         assert gmb_dataset.data is not None
@@ -125,7 +125,7 @@ class TestDataset:
         fake_schema['sha512sum'] = hashlib.sha512((schema_file_relative_dir / 'datasets.yaml').read_bytes()).hexdigest()
 
         with pytest.raises(RuntimeError) as e:
-            Dataset(fake_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(schema=fake_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert 'Failed to unarchive' in str(e.value)
 
     def test_load(self, downloaded_wikitext103_dataset):
@@ -175,7 +175,8 @@ class TestDataset:
     def test_constructor_download_and_load(self, tmp_path, wikitext103_schema):
         "Test the full power of Dataset.__init__() (mode being ``InitializationMode.DOWNLOAD_AND_LOAD``)."
 
-        dataset = Dataset(wikitext103_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        dataset = Dataset(schema=wikitext103_schema, data_dir=tmp_path,
+                          mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
 
         assert (hashlib.sha512(dataset.data['train'].encode()).hexdigest() ==
                 ('df7615f77cb9dd19975881f271e3e3525bee38c08a67fea36a51c96be69a3ecabc9e05c02cbaf'
@@ -192,7 +193,7 @@ class TestDataset:
     def test_loading_undownloaded(self, tmp_path, gmb_schema):
         "Test loading before ``Dataset.download()`` has been called."
 
-        dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
 
         with pytest.raises(FileNotFoundError) as e:
             dataset.load(check=False)
@@ -214,7 +215,7 @@ class TestDataset:
     def test_unloaded_access_to_data(self, tmp_path, gmb_schema):
         "Test access to ``Dataset.data`` when no data has been loaded."
 
-        dataset = Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
         with pytest.raises(RuntimeError) as e:
             dataset.data
         assert str(e.value) == ('Data has not been downloaded and/or loaded yet. Call Dataset.download() to download '
@@ -233,7 +234,7 @@ class TestDataset:
         # Note we don't use tmp_sub_dir fixture because we want data_dir to be non-existing at the beginning of the
         # test.
         data_dir = tmp_path / 'data-dir'
-        dataset = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
         assert not data_dir.exists()  # sanity check: data_dir doesn't exist
         dataset.delete()  # no exception should be raised here
         assert not data_dir.exists()  # sanity check: data_dir doesn't exist
@@ -253,7 +254,7 @@ class TestDataset:
         # Also see https://bugs.python.org/issue42872
         ExceptionClass = FileExistsError if os.name == 'nt' else NotADirectoryError
         with pytest.raises(ExceptionClass) as e:
-            Dataset(gmb_schema, data_dir='./setup.py', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(schema=gmb_schema, data_dir='./setup.py', mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         # This error message may be generated by pathlib.Path.mkdir() (as in DirectoryLock.lock()). We only make sure
         # the path is in the string.
         # On Windows, backslashes in the error message are doubled:
@@ -264,14 +265,14 @@ class TestDataset:
     def test_relative_data_dir(self, gmb_schema, chdir_tmp_path, tmp_sub_dir, tmp_relative_sub_dir):
         "Test when ``data_dir`` is relative."
 
-        dataset = Dataset(gmb_schema, data_dir=tmp_relative_sub_dir, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=tmp_relative_sub_dir, mode=Dataset.InitializationMode.LAZY)
         assert dataset._data_dir == tmp_sub_dir
         assert dataset._data_dir.is_absolute()
 
     def test_symlink_data_dir(self, tmp_symlink_dir, gmb_schema):
         "Test when ``data_dir`` is a symlink. The symlink should not be resolved."
 
-        dataset = Dataset(gmb_schema, data_dir=tmp_symlink_dir, mode=Dataset.InitializationMode.LAZY)
+        dataset = Dataset(schema=gmb_schema, data_dir=tmp_symlink_dir, mode=Dataset.InitializationMode.LAZY)
         assert dataset._data_dir == tmp_symlink_dir
 
     def test_is_downloaded(self, tmp_path, gmb_schema):
@@ -279,7 +280,7 @@ class TestDataset:
 
         data_dir = tmp_path / 'non-existing-dir'
         assert not data_dir.exists()  # Sanity check: data_dir must not exist
-        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
+        gmb = Dataset(schema=gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
         assert gmb.is_downloaded() is False
 
         gmb.download()
@@ -320,7 +321,7 @@ class TestDataset:
         "Test when ``pydax_dir`` (i.e., ``data_dir/.pydax.dataset``) exists and is not a dir."
         (tmp_path / '.pydax.dataset').touch()  # Occupy this path with a regular file
         with pytest.raises(NotADirectoryError) as e:
-            Dataset(gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+            Dataset(schema=gmb_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert str(e.value) == f"\"{tmp_path/'.pydax.dataset'}\" exists and is not a directory."
 
     def _test_lock_exception(self, func, *, write, directory):
