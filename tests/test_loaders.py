@@ -201,7 +201,7 @@ class TestTableLoaders:
     def test_csv_pandas_loader(self, tmp_path, noaa_jfk_schema):
         "Test the basic functioning of CSVPandasLoader."
 
-        dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        dataset = Dataset(tmp_path, schema=noaa_jfk_schema, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         data = dataset.data['jfk_weather_cleaned']
         assert isinstance(data, pd.DataFrame)
         assert data.shape == (75119, 16)
@@ -237,7 +237,7 @@ class TestTableLoaders:
             if col.dtype is not None:
                 column_dict[col.name] = col.dtype
 
-        dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        dataset = Dataset(tmp_path, schema=noaa_jfk_schema, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         data = dataset.data['jfk_weather_cleaned']
         for col in columns:
             assert col.check(data.dtypes[col.name])
@@ -269,7 +269,7 @@ class TestTableLoaders:
         column_dict[err_column.name] = err_column.dtype
 
         with pytest.raises(ValueError) as e:
-            Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+            Dataset(tmp_path, schema=noaa_jfk_schema, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         # Pandas is a 3rd-party library. We don't check for the exact wording but only some keywords
         # Examples:
         #   ValueError: cannot safely convert passed user dtype of int64 for float64 dtyped data in column 1
@@ -282,7 +282,7 @@ class TestTableLoaders:
         "Test when no delimiter is given."
         # Remove the delimiter option
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['delimiter']
-        data = Dataset(noaa_jfk_schema, tmp_path,
+        data = Dataset(tmp_path, schema=noaa_jfk_schema,
                        mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD).data['jfk_weather_cleaned']
         assert len(data.columns) == 16  # number of columns remain the same
 
@@ -293,7 +293,7 @@ class TestTableLoaders:
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['columns']
         # Change delimiter to tab, |, ;, space
         noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['delimiter'] = delimiter
-        data = Dataset(noaa_jfk_schema, tmp_path,
+        data = Dataset(tmp_path, schema=noaa_jfk_schema,
                        mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD).data['jfk_weather_cleaned']
         # None of these delimiters exist in the file, number of columns should be 1.
         assert len(data.columns) == 1
@@ -311,7 +311,7 @@ class TestTableLoaders:
         "Test CSVPandasLoader when None option is passed."
 
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']
-        dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        dataset = Dataset(tmp_path, schema=noaa_jfk_schema, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         data = dataset.data['jfk_weather_cleaned']
         assert isinstance(data, pd.DataFrame)
         assert len(data) == 75119
@@ -326,7 +326,7 @@ class TestTableLoaders:
         "Test CSVPandasLoader header options"
 
         noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header'] = True
-        noaa_dataset = Dataset(noaa_jfk_schema, tmp_path, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        noaa_dataset = Dataset(tmp_path, schema=noaa_jfk_schema, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         with pytest.raises(ValueError) as exinfo:  # Pandas should error from trying to read string as another dtype
             noaa_dataset.load()
         assert('could not convert string to float' in str(exinfo.value))

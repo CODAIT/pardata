@@ -52,7 +52,7 @@ class TestInit:
         init(DATADIR=tmp_path)
         assert get_config().DATADIR == tmp_path
         assert isinstance(get_config().DATADIR, pathlib.Path)
-        wikitext = Dataset(wikitext103_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
+        wikitext = Dataset(schema=wikitext103_schema, data_dir=tmp_path, mode=Dataset.InitializationMode.LAZY)
         assert wikitext._data_dir == tmp_path
         assert isinstance(wikitext._data_dir, pathlib.Path)
 
@@ -172,7 +172,7 @@ class TestLoadDataset:
 
         init(DATADIR=tmp_path)
         data_dir = tmp_path / 'default' / 'gmb' / '1.0.2'
-        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        gmb = Dataset(schema=gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         _get_schema_collections().schema_collections['datasets']._schema_collection.pop('name')  # Remove the "name" key
         gmb_data = load_dataset('gmb', version='1.0.2', download=False)
         assert gmb.data == gmb_data
@@ -182,7 +182,7 @@ class TestLoadDataset:
 
         init(DATADIR=tmp_path)
         data_dir = tmp_path / 'dax' / 'gmb' / '1.0.2'
-        gmb = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
+        gmb = Dataset(schema=gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_AND_LOAD)
         gmb_data = load_dataset('gmb', version='1.0.2', download=False)
         assert gmb.data == gmb_data
 

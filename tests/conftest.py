@@ -366,26 +366,26 @@ def schema_file_https_url(local_https_server_root_url) -> str:
 @pytest.fixture
 def downloaded_gmb_dataset(gmb_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(gmb_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        yield Dataset(schema=gmb_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
 
 
 @pytest.fixture
 def downloaded_noaa_jfk_dataset(noaa_jfk_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(noaa_jfk_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        yield Dataset(schema=noaa_jfk_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
 
 
 @pytest.fixture
 def downloaded_tensorflow_speech_commands_dataset(tensorflow_speech_commands_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(tensorflow_speech_commands_schema, data_dir=tmp_data_dir,
+        yield Dataset(schema=tensorflow_speech_commands_schema, data_dir=tmp_data_dir,
                       mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
 
 
 @pytest.fixture
 def downloaded_wikitext103_dataset(wikitext103_schema) -> Dataset:
     with TemporaryDirectory() as tmp_data_dir:
-        yield Dataset(wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
+        yield Dataset(schema=wikitext103_schema, data_dir=tmp_data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
 
 
 # Assets -------------------------------------------------
