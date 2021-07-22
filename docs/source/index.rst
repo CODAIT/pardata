@@ -23,10 +23,10 @@ Top-Level
    :toctree: api-references
    :template: our-module.rst
 
-   pydax
-   pydax.dataset
-   pydax.exceptions
-   pydax.schema
+   pardata
+   pardata.dataset
+   pardata.exceptions
+   pardata.schema
 
 Loaders
 -------
@@ -36,9 +36,9 @@ Loaders
    :toctree: api-references
    :template: our-module.rst
 
-   pydax.loaders
-   pydax.loaders.table
-   pydax.loaders.text
+   pardata.loaders
+   pardata.loaders.table
+   pardata.loaders.text
 
 .. toctree::
    :caption: Schema File Format References

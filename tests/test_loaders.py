@@ -23,14 +23,14 @@ from pandas.api.types import is_datetime64_any_dtype, is_float_dtype, is_integer
 from PIL import Image, ImageChops
 import wave
 
-from pydax.dataset import Dataset
-from pydax.loaders import Loader
-from pydax.loaders import FormatLoaderMap
-from pydax.loaders._format_loader_map import load_data_files
-from pydax.loaders.audio import WaveLoader
-from pydax.loaders.image import PillowLoader
-from pydax.loaders.text import PlainTextLoader
-from pydax.loaders.table import CSVPandasLoader
+from pardata.dataset import Dataset
+from pardata.loaders import Loader
+from pardata.loaders import FormatLoaderMap
+from pardata.loaders._format_loader_map import load_data_files
+from pardata.loaders.audio import WaveLoader
+from pardata.loaders.image import PillowLoader
+from pardata.loaders.text import PlainTextLoader
+from pardata.loaders.table import CSVPandasLoader
 
 
 class TestBaseLoader:

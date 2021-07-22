@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"High-level functions tailored for new users to quickly get started with PyDAX for common tasks."
+"High-level functions tailored for new users to quickly get started with ParData for common tasks."
 
 
 # We don't use __all__ in this file because having every exposed function shown in __init__.py is more clear.
@@ -39,7 +39,7 @@ _global_config: Config
 
 
 def get_config() -> Config:
-    """Returns global PyDAX configs.
+    """Returns global ParData configs.
 
     :return: Read-only global configs represented as a data class
 
@@ -67,7 +67,7 @@ def init(update_only: bool = True, **kwargs: Any) -> None:
     :param LICENSE_SCHEMA_FILE_URL: The default license schema file URL.
     :param DATADIR: Default dataset directory to download/load to/from. The path can be either absolute or relative to
         the current working directory, but will be converted to the absolute path immediately in this function.
-        Defaults to: :file:`~/.pydax/data`.
+        Defaults to: :file:`~/.pardata/data`.
     """
     global _global_config, _schema_collection_manager
 
@@ -88,7 +88,7 @@ init(update_only=False)
 
 
 def list_all_datasets() -> Dict[str, Tuple]:
-    """Show all available pydax datasets and their versions.
+    """Show all available pardata datasets and their versions.
 
     :return: Mapping of available datasets and their versions.
 
@@ -118,7 +118,7 @@ def _handle_name_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
     """Decorator for handling ``name`` parameter.
 
     :raises TypeError: ``name`` is not a string.
-    :raises KeyError: ``name`` is not a valid PyDAX dataset name.
+    :raises KeyError: ``name`` is not a valid ParData dataset name.
     :return: Wrapped function that handles ``name`` parameter properly.
     """
     @functools.wraps(func)
@@ -128,8 +128,9 @@ def _handle_name_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
             raise TypeError('The name parameter must be supplied a str.')
         all_datasets = list_all_datasets()
         if name not in all_datasets.keys():
-            raise KeyError(f'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their versions '
-                           'by running the function pydax.list_all_datasets().')
+            raise KeyError(f'"{name}" is not a valid ParData dataset. '
+                           'You can view all valid datasets and their versions '
+                           'by running the function pardata.list_all_datasets().')
         return func(name, *args, **kwargs)
     return cast(_DecoratedFuncType, name_wrapper)
 
@@ -138,7 +139,7 @@ def _handle_version_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
     """Decorator for handling ``version`` parameter. Must still be supplied a dataset ``name``.
 
     :raises TypeError: ``version`` is not a string.
-    :raises KeyError: ``version`` is not a valid PyDAX version of ``name``.
+    :raises KeyError: ``version`` is not a valid ParData version of ``name``.
     :return: Wrapped function that handles ``version`` parameter properly.
     """
     @functools.wraps(func)
@@ -151,8 +152,8 @@ def _handle_version_param(func: _DecoratedFuncType) -> _DecoratedFuncType:
             # Grab latest available version
             version = str(max(version_parser(v) for v in all_datasets[name]))
         elif version not in all_datasets[name]:
-            raise KeyError(f'"{version}" is not a valid PyDAX version for the dataset "{name}". You can view all '
-                           'valid datasets and their versions by running the function pydax.list_all_datasets().')
+            raise KeyError(f'"{version}" is not a valid ParData version for the dataset "{name}". You can view all '
+                           'valid datasets and their versions by running the function pardata.list_all_datasets().')
         return func(name=name, version=version, *args, **kwargs)
     return cast(_DecoratedFuncType, version_wrapper)
 
@@ -165,9 +166,9 @@ def load_dataset(name: str, *,
                  subdatasets: Union[Iterable[str], None] = None) -> Dict[str, Any]:
     """High level function that wraps :class:`dataset.Dataset` class's load and download functionality. Downloads to and
     loads from directory: :file:`DATADIR/schema_name/name/version` where ``DATADIR`` is in
-    ``pydax.get_config().DATADIR``. ``DATADIR`` can be changed by calling :func:`init`.
+    ``pardata.get_config().DATADIR``. ``DATADIR`` can be changed by calling :func:`init`.
 
-    :param name: Name of the dataset you want to load from PyDAX's available datasets. You can get a list of these
+    :param name: Name of the dataset you want to load from ParData's available datasets. You can get a list of these
         datasets by calling :func:`list_all_datasets`.
     :param version: Version of the dataset to load. Latest version is used by default. You can get a list of all
         available versions for a dataset by calling :func:`list_all_datasets`.

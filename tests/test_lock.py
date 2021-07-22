@@ -18,8 +18,8 @@ import os
 
 import pytest
 
-from pydax._lock import DirectoryLock
-from pydax.exceptions import DirectoryLockAcquisitionError
+from pardata._lock import DirectoryLock
+from pardata.exceptions import DirectoryLockAcquisitionError
 
 
 class TestDirectoryLock:

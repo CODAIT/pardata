@@ -52,8 +52,8 @@ class Dataset:
 
     >>> from tempfile import TemporaryDirectory
     >>> import pprint
-    >>> import pydax
-    >>> dataset_schemata = pydax.schema.DatasetSchemaCollection('./tests/schemata/datasets.yaml')
+    >>> import pardata
+    >>> dataset_schemata = pardata.schema.DatasetSchemaCollection('./tests/schemata/datasets.yaml')
     >>> jfk_schema_dict = dataset_schemata.export_schema('datasets', 'noaa_jfk', '1.1.4')
     >>> pprint.pprint(jfk_schema_dict)
     {'description': ...
@@ -96,9 +96,9 @@ class Dataset:
         self._schema: SchemaDict = schema
         self._data_dir_: pathlib.Path = pathlib.Path(os.path.abspath(data_dir))
         self._data: Optional[Dict[str, Any]] = None
-        # Put directory lock under self._pydax_dir. We use self._pydax_dir_ instead of self._pydax_dir because we don't
-        # want to have the directory created in lazy mode upon construction of a Dataset object.
-        self._lock: DirectoryLock = DirectoryLock(self._pydax_dir_)
+        # Put directory lock under self._pardata_dir. We use self._pardata_dir_ instead of self._pardata_dir because we
+        # don't want to have the directory created in lazy mode upon construction of a Dataset object.
+        self._lock: DirectoryLock = DirectoryLock(self._pardata_dir_)
 
         if not isinstance(mode, Dataset.InitializationMode):
             raise ValueError(f'{mode} not a valid mode')
@@ -118,28 +118,28 @@ class Dataset:
         return self._data_dir_
 
     @property
-    def _pydax_dir_(self) -> pathlib.Path:
+    def _pardata_dir_(self) -> pathlib.Path:
         "Cache, metainfo, etc. directory used by this class."
-        return self._data_dir_ / '.pydax.dataset'
+        return self._data_dir_ / '.pardata.dataset'
 
     @property
-    def _pydax_dir(self) -> pathlib.Path:
-        "Same as :attr:`_pydax_dir_`, but create it if it does not exist."
-        if not self._pydax_dir_.exists():
-            self._pydax_dir_.mkdir(parents=True)
-        elif not self._pydax_dir_.is_dir():  # pydax_dir exists and is not a directory
-            raise NotADirectoryError(f'"{self._pydax_dir_}" exists and is not a directory.')
-        return self._pydax_dir_
+    def _pardata_dir(self) -> pathlib.Path:
+        "Same as :attr:`_pardata_dir_`, but create it if it does not exist."
+        if not self._pardata_dir_.exists():
+            self._pardata_dir_.mkdir(parents=True)
+        elif not self._pardata_dir_.is_dir():  # pardata_dir exists and is not a directory
+            raise NotADirectoryError(f'"{self._pardata_dir_}" exists and is not a directory.')
+        return self._pardata_dir_
 
     @property
     def _file_list_file_(self) -> pathlib.Path:
         "Path to the file that stores the list of files in the downloaded dataset."
-        return self._pydax_dir_ / 'files.list'
+        return self._pardata_dir_ / 'files.list'
 
     @property
     def _file_list_file(self) -> pathlib.Path:
         "Same as :attr:`_file_list_file_`, but create the parent directory if it does not exist."
-        return self._pydax_dir / 'files.list'
+        return self._pardata_dir / 'files.list'
 
     def _extract_as_tar(self, archive_fp: typing_.PathLike) -> None:
         """Extract ``archive_fp`` as tar. Raise the :exception:`tar.ReadError` object raised by :meth:`tarfile.open` if
@@ -210,7 +210,7 @@ class Dataset:
         download_file_name = pathlib.Path(os.path.basename(download_url))
 
         with self._lock.locking_with_exception(write=True):
-            archive_fp = self._pydax_dir / download_file_name
+            archive_fp = self._pardata_dir / download_file_name
             response = requests.get(download_url, stream=True)
             archive_fp.write_bytes(response.content)
 

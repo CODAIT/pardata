@@ -32,11 +32,11 @@ import uuid
 import certifi
 import pytest
 
-from pydax import init
-from pydax._high_level import _get_schema_collections
-from pydax.dataset import Dataset
-from pydax.schema import (DatasetSchemaCollection, FormatSchemaCollection, LicenseSchemaCollection,
-                          SchemaDict, SchemaCollectionManager)
+from pardata import init
+from pardata._high_level import _get_schema_collections
+from pardata.dataset import Dataset
+from pardata.schema import (DatasetSchemaCollection, FormatSchemaCollection, LicenseSchemaCollection,
+                            SchemaDict, SchemaCollectionManager)
 
 # Basic utilities --------------------------------
 
@@ -145,7 +145,7 @@ def untrust_self_signed_cert(local_https_server):
 
 
 @pytest.fixture(autouse=True)
-def pydax_initialization(schema_file_https_url, schema_localized_url):
+def pardata_initialization(schema_file_https_url, schema_localized_url):
     """Create the default initialization used for all tests. This is mainly for having a uniform initialization for all
     tests as well as avoiding using the actual default schema file URLs so as to decouple the two lines of development
     (default schema files and this library). It also replaces all download URLs with localized URLs."""

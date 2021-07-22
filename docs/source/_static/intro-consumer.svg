@@ -550,14 +550,14 @@
       <g class="com.sun.star.drawing.TextShape">
        <g id="id16">
         <rect class="BoundingBox" stroke="none" fill="none" x="24176" y="6657" width="4082" height="963"/>
-        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="24426" y="7358"><tspan fill="rgb(0,111,60)" stroke="none">With PyDAX</tspan></tspan></tspan></text>
+        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="24426" y="7358"><tspan fill="rgb(0,111,60)" stroke="none">With ParData</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="com.sun.star.drawing.CustomShape">
        <g id="id17">
         <rect class="BoundingBox" stroke="none" fill="none" x="18143" y="8253" width="9209" height="3176"/>
         <path fill="rgb(39,179,118)" stroke="none" d="M 22747,11428 L 18143,11428 18143,8253 27351,8253 27351,11428 22747,11428 Z"/>
-        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="18154" y="9147"><tspan fill="rgb(0,0,0)" stroke="none">2 lines of code:</tspan></tspan><tspan class="TextPosition" x="18154" y="10404"><tspan font-family="Liberation Mono, monospace" font-size="494px" fill="rgb(0,0,0)" stroke="none">import pydax</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Mono, monospace" font-size="494px" font-weight="400"><tspan class="TextPosition" x="18154" y="10963"><tspan fill="rgb(0,0,0)" stroke="none">pydax.load_dataset(&apos;mydataset&apos;)</tspan></tspan></tspan></text>
+        <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="635px" font-weight="400"><tspan class="TextPosition" x="18154" y="9147"><tspan fill="rgb(0,0,0)" stroke="none">2 lines of code:</tspan></tspan><tspan class="TextPosition" x="18154" y="10404"><tspan font-family="Liberation Mono, monospace" font-size="494px" fill="rgb(0,0,0)" stroke="none">import pardata</tspan></tspan></tspan><tspan class="TextParagraph" font-family="Liberation Mono, monospace" font-size="494px" font-weight="400"><tspan class="TextPosition" x="18154" y="10963"><tspan fill="rgb(0,0,0)" stroke="none">pardata.load_dataset(&apos;mydataset&apos;)</tspan></tspan></tspan></text>
        </g>
       </g>
       <g class="com.sun.star.drawing.LineShape">

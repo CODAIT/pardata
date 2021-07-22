@@ -142,8 +142,8 @@ dmypy.json
 docs/build/
 docs/source/api-references
 
-### pydax ###
-/pydax/_version.py
+### pardata ###
+/pardata/_version.py
 /tests/datasets
 /tests/doctests
 /tests/tls/test_ca_bundle.pem

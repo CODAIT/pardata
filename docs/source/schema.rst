@@ -12,7 +12,7 @@ reasons. It is typically structured as:
 
 .. code-block:: yaml
 
-   api_name: com.ibm.pydax.v1
+   api_name: com.ibm.pardata.v1
    last_updated: <ISO date string of last update>
    datasets:
      <dataset1_id>:
@@ -30,7 +30,7 @@ reasons. It is typically structured as:
 
 .. object:: api_name
 
-   Should always be ``com.ibm.pydax.v1``.
+   Should always be ``com.ibm.pardata.v1``.
 
 .. object:: last_updated
 

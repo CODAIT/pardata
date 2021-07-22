@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ from urllib.parse import urlparse
 import pytest
 import requests.exceptions
 
-from pydax import init
-from pydax._config import Config
-from pydax._schema_retrieval import retrieve_schema_file
+from pardata import init
+from pardata._config import Config
+from pardata._schema_retrieval import retrieve_schema_file
 
 
 class TestConfig:

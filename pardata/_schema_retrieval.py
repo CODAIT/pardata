@@ -38,9 +38,9 @@ def retrieve_schema_file(url_or_path: Union[typing_.PathLike, str], *,
 
     :param url_or_path: URL or path to the schema file.
     :param encoding: The encoding of the text in ``url_or_path``.
-    :param tls_verification: Same as ``tls_verification`` in :class:`pydax.Schema`.
-    :raises ValueError: See :class:`pydax.Schema`.
-    :raises InsecureConnectionError: See :class:`pydax.Schema`.
+    :param tls_verification: Same as ``tls_verification`` in :class:`pardata.Schema`.
+    :raises ValueError: See :class:`pardata.Schema`.
+    :raises InsecureConnectionError: See :class:`pardata.Schema`.
     :return: A string of the content.
     """
 

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-api_name: com.ibm.pydax.v1
+api_name: com.ibm.pardata.v1
 name: 'dax'
 last_updated: 2020-10-08
 datasets:
@@ -91,7 +91,7 @@ datasets:
       published: 2020-03-17
       homepage: https://developer.ibm.com/exchanges/data/all/speech-commands/
       # The following URL is a sample dataset for testing purpose only
-      download_url: https://github.com/CODAIT/pydax/raw/test-data/tensorflow-speech-commands.tar.xz
+      download_url: https://github.com/CODAIT/pardata/raw/test-data/tensorflow-speech-commands.tar.xz
       sha512sum: c96487b79d65fdf9068163e8b6a02511f08252f96600997072cc0a541a05aeefb8124cb8813f6d736d8d979cc5ad47757ed588598c0252e178d5f0cf25ca70c8
       license: cc_by_40
       estimated_size: 33M

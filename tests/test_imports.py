@@ -17,15 +17,15 @@
 from pathlib import Path
 
 
-def test_import_pydax_namespace():
+def test_import_pardata_namespace():
     "Test to make sure top level public modules & subpackages are available in the global namespace."
 
-    import pydax as test_pydax
-    assert all(module.stem in dir(test_pydax) for module in Path('pydax').glob('[a-zA-Z]*'))
+    import pardata as test_pardata
+    assert all(module.stem in dir(test_pardata) for module in Path('pardata').glob('[a-zA-Z]*'))
 
 
-def test_import_pydax_loaders_namespace():
+def test_import_pardata_loaders_namespace():
     "Test to make sure public modules are available in the loaders subpackage namespace."
 
-    import pydax.loaders as test_pydax_loaders
-    assert all(module.stem in dir(test_pydax_loaders) for module in Path('pydax/loaders').glob('[a-zA-Z]*'))
+    import pardata.loaders as test_pardata_loaders
+    assert all(module.stem in dir(test_pardata_loaders) for module in Path('pardata/loaders').glob('[a-zA-Z]*'))

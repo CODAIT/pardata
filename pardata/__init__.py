@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-"PyDAX package and high level functions."
+"ParData package and high level functions."
 
 
 from . import dataset, exceptions, loaders, schema
