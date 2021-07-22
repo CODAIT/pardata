@@ -20,7 +20,8 @@ import setuptools
 
 setuptools.setup(
     name="pardata",
-    description="Access DAX datasets.",
+    description=("A Python API that enables data consumers and distributors to easily use and share datasets, "
+                 "and establishes a standard for exchanging data assets."),
     long_description=pathlib.Path('README.rst').read_text(),
     long_description_content_type="text/x-rst",
     keywords="machine-learning data-mining data-science",
