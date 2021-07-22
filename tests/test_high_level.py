@@ -23,11 +23,11 @@ from packaging.version import parse as version_parser
 import pytest
 from pydantic import ValidationError
 
-from pydax import (describe_dataset, export_schema_collections, get_config, get_dataset_metadata, init,
-                   list_all_datasets, load_dataset, load_schema_collections)
-from pydax.dataset import Dataset
-from pydax._config import Config
-from pydax._high_level import _get_schema_collections
+from pardata import (describe_dataset, export_schema_collections, get_config, get_dataset_metadata, init,
+                     list_all_datasets, load_dataset, load_schema_collections)
+from pardata.dataset import Dataset
+from pardata._config import Config
+from pardata._high_level import _get_schema_collections
 
 # Global configurations --------------------------------------------------
 
@@ -38,8 +38,8 @@ class TestGetConfig:
     def test_default_data_dir(self):
         "Test default data dir."
 
-        pydax_data_home = pathlib.Path.home() / '.pydax' / 'data'
-        assert get_config().DATADIR == pydax_data_home
+        pardata_data_home = pathlib.Path.home() / '.pardata' / 'data'
+        assert get_config().DATADIR == pardata_data_home
         assert isinstance(get_config().DATADIR, pathlib.Path)
 
 
@@ -47,7 +47,7 @@ class TestInit:
     "Test high-level init function."
 
     def test_custom_data_dir(self, tmp_path, wikitext103_schema):
-        "Test to make sure Dataset constructor uses new global data dir if one was supplied earlier to pydax.init."
+        "Test to make sure Dataset constructor uses new global data dir if one was supplied earlier to pardata.init."
 
         init(DATADIR=tmp_path)
         assert get_config().DATADIR == tmp_path
@@ -123,8 +123,8 @@ class TestLoadDataset:
         name = 'fake_dataset'
         with pytest.raises(KeyError) as e:
             load_dataset(name)
-        assert str(e.value) == (f'\'"{name}" is not a valid PyDAX dataset. You can view all valid datasets and their '
-                                'versions by running the function pydax.list_all_datasets().\'')
+        assert str(e.value) == (f'\'"{name}" is not a valid ParData dataset. You can view all valid datasets and their '
+                                'versions by running the function pardata.list_all_datasets().\'')
 
     def test_version_param(self, tmp_path):
         "Test to see the version parameter is being handled properly."
@@ -138,16 +138,16 @@ class TestLoadDataset:
         name, version = 'gmb', ''
         with pytest.raises(KeyError) as e:
             load_dataset('gmb', version=version)
-        assert str(e.value) == (f'\'"{version}" is not a valid PyDAX version for the dataset "{name}". '
+        assert str(e.value) == (f'\'"{version}" is not a valid ParData version for the dataset "{name}". '
                                 'You can view all valid datasets and their versions by running the function '
-                                'pydax.list_all_datasets().\'')
+                                'pardata.list_all_datasets().\'')
 
         name, version = 'gmb', 'fake_version'
         with pytest.raises(KeyError) as e:
             load_dataset('gmb', version=version)
-        assert str(e.value) == (f'\'"{version}" is not a valid PyDAX version for the dataset "{name}". '
+        assert str(e.value) == (f'\'"{version}" is not a valid ParData version for the dataset "{name}". '
                                 'You can view all valid datasets and their versions by running the function '
-                                'pydax.list_all_datasets().\'')
+                                'pardata.list_all_datasets().\'')
 
         # If no version specified, make sure latest version grabbed
         all_datasets = list_all_datasets()
@@ -273,7 +273,7 @@ class TestSchemataFunctions:
                 json.dumps(_get_schema_collections().schema_collections['datasets'].export_schema(),
                            sort_keys=True, indent=2, default=str))
 
-        # Different from https url used by pydax_initialization autouse fixture
+        # Different from https url used by pardata_initialization autouse fixture
         new_urls = {
             'DATASET_SCHEMA_FILE_URL': schema_file_absolute_dir / 'datasets.yaml',
             'LICENSE_SCHEMA_FILE_URL': schema_file_absolute_dir / 'licenses.yaml'

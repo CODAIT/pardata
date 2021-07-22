@@ -19,7 +19,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="pydax",
+    name="pardata",
     description="Access DAX datasets.",
     long_description=pathlib.Path('README.rst').read_text(),
     long_description_content_type="text/x-rst",
@@ -54,6 +54,6 @@ setuptools.setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries",
     ],
-    use_scm_version={'write_to': 'pydax/_version.py'},
+    use_scm_version={'write_to': 'pardata/_version.py'},
     setup_requires=['setuptools_scm']
 )

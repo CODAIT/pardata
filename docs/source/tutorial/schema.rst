@@ -56,7 +56,7 @@ reasons. It is typically structured as
 
 .. code-block:: yaml
 
-   api_name: com.ibm.pydax.v1
+   api_name: com.ibm.pardata.v1
    name: <Identifier of the schema file>
    last_updated: <ISO date string of last update>
    datasets:
@@ -73,7 +73,7 @@ reasons. It is typically structured as
          <the schema of dataset2_id version2>
        ...
 
-Check out :doc:`../schema` for a complete reference and `default PyDAX repository
+Check out :doc:`../schema` for a complete reference and `default ParData repository
 <https://github.com/CODAIT/dax-schemata/blob/master/datasets.yaml>`__ for a live example.
 
 For further details, check out :doc:`../schema`.

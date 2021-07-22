@@ -12,7 +12,7 @@ Use ``tox``
 ~~~~~~~~~~~
 
 To start developing, the recommended way is to use ``tox``. This way, your development environment is automatically
-prepared by ``tox``, including virtual environment setup, dependency management, installing `pydax` in development mode.
+prepared by ``tox``, including virtual environment setup, dependency management, installing `pardata` in development mode.
 
 1. Install ``tox``:
 
@@ -21,7 +21,7 @@ prepared by ``tox``, including virtual environment setup, dependency management,
       $ pip install -U -r requirements/tox.txt  # If you are inside a virtual environment, conda environment
       $ pip3 install --user -U -r requirements/tox.txt  # If you are outside any virtual environment or conda environment and don't have tox installed
 
-2. At the root directory of ``pydax``, run:
+2. At the root directory of ``pardata``, run:
 
    .. code-block:: console
 
@@ -60,13 +60,13 @@ Run All Tests
 
 Before and after one stage of development, you may want to try whether the code would pass all tests.
 
-To run all tests on the Python versions that are supported by PyDAX and available on your system, run:
+To run all tests on the Python versions that are supported by ParData and available on your system, run:
 
 .. code-block:: console
 
    $ tox -s
 
-When you are brave, to force running all tests on all Python versions that are supported by PyDAX, run:
+When you are brave, to force running all tests on all Python versions that are supported by ParData, run:
 
 .. code-block:: console
 
@@ -124,15 +124,15 @@ Where to Expose a Symbol (Function, Class, etc.)?
 
 Generally speaking:
 
-- If a symbol is likely used by a casual user regularly, it should be exposed in :file:`pydax/__init__.py`. This gives
+- If a symbol is likely used by a casual user regularly, it should be exposed in :file:`pardata/__init__.py`. This gives
   casual users the cleanest and the most direct access.
 - If a symbol is used only by a power user, but is unlikely used by a casual user regularly, it should be exposed in a
-  file that does not start with an underscore, such as :file:`pydax/schema.py`; or in the :file:`__init__.py` file in a
-  subdirectory that does not start with an underscore, such as :file:`pydax/loaders/__init__.py`. The rationale is that
+  file that does not start with an underscore, such as :file:`pardata/schema.py`; or in the :file:`__init__.py` file in a
+  subdirectory that does not start with an underscore, such as :file:`pardata/loaders/__init__.py`. The rationale is that
   the amount of such symbols is usually large and if we expose them at the root level of the package, it would be messy
   and likely confuse casual users.
 - If a symbol is solely used for internal purpose, it should be exposed only in files starting with a single underscore,
-  such as :file:`pydax/_dataset.py`.
+  such as :file:`pardata/_dataset.py`.
 
 Please keep in mind that the criteria above are not meant to be rigid: They should be applied flexibly in light of
 factors such as where existing symbols are placed and other potentially important considerations (if any).
@@ -197,8 +197,8 @@ these packages solely for deployment of our development environment (i.e., runni
 want stable packages that are used by us for these purposes. We let `Renovate`_ verify that bumping the versions won't
 break anything before we actually upgrade any of these dependencies.
 
-We should not pin the actual dependencies of PyDAX (as specified in :file:`setup.py`), because PyDAX is an intermediate
-software layer -- those should be pinned only by the actual deployed application that depends on PyDAX. We should only
+We should not pin the actual dependencies of ParData (as specified in :file:`setup.py`), because ParData is an intermediate
+software layer -- those should be pinned only by the actual deployed application that depends on ParData. We should only
 code the info of supported versions of these dependencies. If there is some regression or incompatibilities in the
 latest versions of our dependencies, we should either work around them, or update :file:`setup.py` to avoid depending on
 those versions.

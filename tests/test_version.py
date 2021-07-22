@@ -16,11 +16,11 @@
 
 import packaging
 
-import pydax
+import pardata
 
 
 def test_version():
     "Test version handling."
 
-    packaging.version.Version(pydax.__version__)  # this line must not raise packaging.version.InvalidVersion
-    assert pydax.__version__ == pydax._version.version
+    packaging.version.Version(pardata.__version__)  # this line must not raise packaging.version.InvalidVersion
+    assert pardata.__version__ == pardata._version.version

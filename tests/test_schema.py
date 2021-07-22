@@ -19,7 +19,7 @@ import datetime
 
 import pytest
 
-from pydax.schema import SchemaCollection, SchemaCollectionManager
+from pardata.schema import SchemaCollection, SchemaCollectionManager
 
 
 class TestBaseSchemaCollection:

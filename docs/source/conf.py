@@ -23,7 +23,7 @@
 
 import sphinx_rtd_theme  # noqa: F401
 
-from pydax import __version__ as pydax_version
+from pardata import __version__ as pardata_version
 
 # -- Path setup --------------------------------------------------------------
 
@@ -37,9 +37,9 @@ from pydax import __version__ as pydax_version
 
 # -- Project information -----------------------------------------------------
 
-project = 'PyDAX'
+project = 'ParData'
 copyright = '2020–2021, International Business Machines Corp. (IBM)'
-version = pydax_version
+version = pardata_version
 release = version
 
 

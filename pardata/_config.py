@@ -26,7 +26,7 @@ from pydantic.dataclasses import dataclass
 
 @dataclass(frozen=True)
 class Config:
-    """Global read-only configurations for PyDAX.
+    """Global read-only configurations for ParData.
     """
 
     # Default schema URLs
@@ -40,7 +40,7 @@ class Config:
         'https://raw.githubusercontent.com/CODAIT/dax-schemata/master/licenses.yaml'
 
     # DATADIR is the default dir where datasets files are downloaded/loaded to/from.
-    DATADIR: pathlib.Path = pathlib.Path.home() / '.pydax' / 'data'
+    DATADIR: pathlib.Path = pathlib.Path.home() / '.pardata' / 'data'
 
     def __post_init_post_parse__(self) -> None:
         "This is called by :meth:`.__init__()` after data type validation."
