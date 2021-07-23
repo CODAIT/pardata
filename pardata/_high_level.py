@@ -1,5 +1,5 @@
 #
-# Copyright 2020 IBM Corp. All Rights Reserved.
+# Copyright 2020--2021 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,15 +23,19 @@ from collections import namedtuple
 from copy import deepcopy
 import dataclasses
 import functools
+import hashlib
 from textwrap import dedent
 from typing import Any, Callable, Dict, Iterable, Optional, Tuple, TypeVar, Union, cast
+import os
 from packaging.version import parse as version_parser
+import re
 
 from ._config import Config
 from ._dataset import Dataset
 from . import typing as typing_
 from ._schema import (DatasetSchemaCollection, FormatSchemaCollection, LicenseSchemaCollection,
                       SchemaDict, SchemaCollectionManager)
+from ._schema_retrieval import is_url
 
 # Global configurations --------------------------------------------------
 
@@ -206,6 +210,69 @@ def load_dataset(name: str, *,
             'Failed to load the dataset. This may be caused by missing dataset files or file corruption.\n'
             'Did you forget to download the dataset (by calling this function with `download=True` for at least once)?'
             f'\nCaused by:\n{e}')
+
+
+def load_dataset_from_location(url_or_path: Union[str, typing_.PathLike], *,
+                               schema: Optional[SchemaDict] = None,
+                               force_redownload: bool = False) -> Dict[str, Any]:
+    """ Load the dataset from ``url_or_path``. This function is equivalent to calling :class:`~pardata.Dataset`, where
+    ``schema['download_url']`` is set to ``url_or_path``. In the returned :class:`dict` object, keys corresponding to
+    empty values are removed (unlike :meth:`~pardata.Dataset.load`).
+
+    :param url_or_path: The URL or path of the dataset archive.
+    :param schema: The schema used for loading the dataset. If ``None``, it is set to a default schema that is designed
+         to accommodate most common use cases.
+    :param force_redownload: ``True`` if to force redownloading the dataset.
+    :return: A dictionary that holds the dataset. It is structured the same as the return value of :func:`load_dataset`.
+    """
+
+    if not is_url(str(url_or_path)):
+        url_or_path = os.path.abspath(url_or_path)  # Don't use pathlib.Path.resolve because it resolves symlinks
+    url_or_path = cast(str, url_or_path)
+
+    # Name of the data dir: {url_or_path with non-alphanums replaced by dashes}-sha512. The sha512 suffix is there to
+    # prevent collision.
+    data_dir_name = (f'{re.sub("[^0-9a-zA-Z]+", "-", url_or_path)}-'
+                     f'{hashlib.sha512(url_or_path.encode("utf-8")).hexdigest()}')
+    data_dir = get_config().DATADIR / '_location_direct' / data_dir_name
+    if schema is None:
+        # Construct the default schema
+        schema = {
+            'name': 'Direct from a location',
+            'description': 'Loaded directly from a location',
+            'subdatasets': {
+            }
+        }
+
+        RegexFormatPair = namedtuple('RegexFormatPair', ['regex', 'format'])
+        regex_format_pairs = (
+            RegexFormatPair(regex=r'.*\.csv', format='table/csv'),
+            RegexFormatPair(regex=r'.*\.wav', format='audio/wav'),
+            RegexFormatPair(regex=r'.*\.(txt|log)', format='text/plain'),
+            RegexFormatPair(regex=r'.*\.(jpg|jpeg)', format='image/jpeg'),
+            RegexFormatPair(regex=r'.*\.png', format='image/png'),
+        )
+
+        for regex_format_pair in regex_format_pairs:
+            schema['subdatasets'][regex_format_pair.format] = {
+                'format': {
+                    'id': regex_format_pair.format,
+                },
+                'path': {
+                    'type': 'regex',
+                    'value': regex_format_pair.regex
+                }
+            }
+    schema['download_url'] = url_or_path
+
+    dataset = Dataset(schema=schema, data_dir=data_dir, mode=Dataset.InitializationMode.LAZY)
+    if force_redownload or not dataset.is_downloaded():
+        dataset.download(check=False,  # Already checked by `is_downloaded` call above
+                         verify_checksum=False)
+    dataset.load()
+
+    # strip empty values
+    return {k: v for k, v in dataset.data.items() if len(v) > 0}
 
 
 @_handle_name_param

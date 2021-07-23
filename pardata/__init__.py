@@ -25,5 +25,6 @@ from ._high_level import (describe_dataset,
                           init,
                           list_all_datasets,
                           load_dataset,
+                          load_dataset_from_location,
                           load_schema_collections)
 from ._version import version as __version__
