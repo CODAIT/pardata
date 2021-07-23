@@ -30,6 +30,21 @@ from . import typing as typing_
 from .exceptions import InsecureConnectionError
 
 
+def is_url(url_or_path: str) -> bool:
+    """Determine if ``url_or_path`` is a URL or path.
+
+    We don't detect fully whether the input is a URL or a file path because I couldn't find a reliable way. Almost any
+    string with no backslash can be a file name on a POSIX filesystem. URL detection often involves either giant
+    dependencies such as Django, or tediously long regular expression that we can't assure that it would work. Here, we
+    detect the beginning of the string. If it doesn't look like a URL, treat it as a file path.
+
+    :param url_or_path: A string that is should be treated as either a URL or path.
+    :return: ``True`` if ``url_or_path`` is a URL. ``False`` otherwise.
+    """
+
+    return re.match(r'[a-zA-Z0-9]+:\/\/', url_or_path) is not None
+
+
 # Semantically, typing_.PathLike doesn't cover strings that represent URLs
 def retrieve_schema_file(url_or_path: Union[typing_.PathLike, str], *,
                          encoding: str = 'utf-8',
@@ -46,11 +61,7 @@ def retrieve_schema_file(url_or_path: Union[typing_.PathLike, str], *,
 
     url_or_path = str(url_or_path)
 
-    # We don't detect fully whether the input is a URL or a file path because I couldn't find a reliable way. Almost any
-    # string with no backslash can be a file name on Linux. URL detection often involves either giant dependencies such
-    # as Django, or tediously long regular expression that we can't assure that it would work. Here, we detect the
-    # beginning of the string. If it doesn't look like a URL, treat it as a file path.
-    if re.match(r'[a-zA-Z0-9]+:\/\/', url_or_path):
+    if is_url(url_or_path):
         parse_result = urlparse(url_or_path)
         scheme = parse_result.scheme
         if scheme in ('http', 'https'):
