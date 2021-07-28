@@ -212,7 +212,9 @@ class Dataset:
         with self._lock.locking_with_exception(write=True):
             archive_fp = self._pardata_dir / download_file_name
             response = requests.get(download_url, stream=True)
-            archive_fp.write_bytes(response.content)
+            # We don't use response.content here because we don't let requests process as the format it thinks it is.
+            # This can be problematic because requests' processing sometimes generates unexpected results.
+            archive_fp.write_bytes(response.raw.read())
 
             if verify_checksum:
                 computed_hash = hashlib.sha512(archive_fp.read_bytes()).hexdigest()
