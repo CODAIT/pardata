@@ -34,6 +34,7 @@ from .loaders import FormatLoaderMap
 from .loaders._format_loader_map import load_data_files
 from .schema import SchemaDict
 from ._lock import DirectoryLock
+from ._schema_retrieval import is_url
 
 
 class Dataset:
@@ -183,7 +184,8 @@ class Dataset:
     def download(self, *,
                  check: bool = True,
                  verify_checksum: bool = True) -> None:
-        """Downloads, extracts, and removes dataset archive. It adds a directory write lock during execution.
+        """Downloads, extracts, and removes dataset archive. It adds a directory write lock during execution. If
+        ``download_url`` in the schema is a file path, then this method only extracts.
 
         :param check: Check to make sure the data files are not already present in :attr:`._data_dir` (passed in via
             ``data_dir`` in the constructor :class:`Dataset`) by running :meth:`.is_downloaded`. If set to ``True``,
@@ -210,11 +212,14 @@ class Dataset:
         download_file_name = pathlib.Path(os.path.basename(download_url))
 
         with self._lock.locking_with_exception(write=True):
-            archive_fp = self._pardata_dir / download_file_name
-            response = requests.get(download_url, stream=True)
-            # We don't use response.content here because we don't let requests process as the format it thinks it is.
-            # This can be problematic because requests' processing sometimes generates unexpected results.
-            archive_fp.write_bytes(response.raw.read())
+            if is_url(download_url):
+                archive_fp = self._pardata_dir / download_file_name
+                response = requests.get(download_url, stream=True)
+                # We don't use response.content here because we don't let requests process as the format it thinks it
+                # is. This can be problematic because requests' processing sometimes generates unexpected results.
+                archive_fp.write_bytes(response.raw.read())
+            else:
+                archive_fp = pathlib.Path(download_url)
 
             if verify_checksum:
                 computed_hash = hashlib.sha512(archive_fp.read_bytes()).hexdigest()
