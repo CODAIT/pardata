@@ -16,6 +16,7 @@
 
 import copy
 import hashlib
+import itertools
 import json
 from json import JSONDecodeError
 import os
@@ -83,11 +84,18 @@ class TestDataset:
         #   'D:\\\\a\\\\pardata\\\\pardata\\\\setup.py'"
         assert str(pathlib.Path.cwd() / "setup.py").replace('\\', '\\\\') in str(e.value)
 
-    @pytest.mark.parametrize('schema', ('gmb_schema', 'gmb_schema_zip'))
-    def test_dataset_download(self, tmp_path, schema, request):
+    @pytest.mark.parametrize(('schema', 'is_url'), itertools.product(('gmb_schema', 'gmb_schema_zip'), (True, False)))
+    def test_dataset_download(self, tmp_path, dataset_dir, schema, is_url, request):
         "Test Dataset class downloads a dataset properly."
 
         gmb_schema = request.getfixturevalue(schema)
+        if not is_url:  # patch download_url as a local file
+            download_url = gmb_schema['download_url']
+            download_url = download_url[download_url.rfind("/") + 1:]
+            if download_url.endswith('.tar.gz'):
+                download_url[:-len('.tar.gz')]
+            gmb_schema['download_url'] = (dataset_dir / download_url).as_posix()
+
         data_dir = tmp_path / 'gmb'
         gmb_dataset = Dataset(gmb_schema, data_dir=data_dir, mode=Dataset.InitializationMode.DOWNLOAD_ONLY)
         assert len(list(data_dir.iterdir())) == 2  # 'groningen_meaning_bank_modified' and '.pardata.dataset'
