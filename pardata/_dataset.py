@@ -210,9 +210,10 @@ class Dataset:
 
         download_url = self._schema['download_url']
         download_file_name = pathlib.Path(os.path.basename(download_url))
+        is_download_url_url = is_url(download_url)
 
         with self._lock.locking_with_exception(write=True):
-            if is_url(download_url):
+            if is_download_url_url:
                 archive_fp = self._pardata_dir / download_file_name
                 response = requests.get(download_url, stream=True)
                 # We don't use response.content here because we don't let requests process as the format it thinks it
@@ -238,7 +239,8 @@ class Dataset:
                 except zipfile.BadZipFile as e_zip:
                     raise RuntimeError((f'Failed to unarchive "{archive_fp}" as neither a tarball nor a zip archive. '
                                         f'Caused by:\nAs a tarball:\n{e_tar}\nAs a zip archive:\n{e_zip}'))
-            os.remove(archive_fp)
+            if is_download_url_url:
+                os.remove(archive_fp)  # archive_fp is a temporary local dataset archive
 
     def load(self,
              subdatasets: Optional[Iterable[str]] = None,

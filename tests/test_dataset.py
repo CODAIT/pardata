@@ -111,6 +111,9 @@ class TestDataset:
         assert str(e.value) == ('Dataset.download() was previously called. To overwrite existing data files, rerun '
                                 'Dataset.download() with ``check`` set to ``False``.')
 
+        if not is_url:  # Ensure the local dataset archive is not deleted if it is loaded from there
+            assert pathlib.Path(gmb_schema['download_url']).exists()
+
     def test_invalid_sha512(self, tmp_path, gmb_schema):
         "Test if Dataset class catches an invalid hash."
 
