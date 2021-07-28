@@ -17,7 +17,6 @@
 "Format to loader map."
 
 
-import os
 from pathlib import Path
 import re
 from typing import Any, Dict, Mapping, Optional, Union
@@ -127,12 +126,11 @@ def load_data_files(fmt: Union[str, SchemaDict], data_dir: PathLike, path: Union
         if path_type == 'regex':
             loaded_data = {}
             path_value = path['value']
-            # We don't use pathlib to operate the string here because of Windows compatibility and character escaping.
-            path_pattern = re.compile(re.escape(str(data_dir) + os.path.sep) +
-                                      path_value.replace('/', re.escape(os.path.sep)))
+            # We match under the POSIX path scheme. Be careful to not escape the regex of path_value only
+            path_pattern = re.compile(re.escape(data_dir.as_posix() + '/') + path_value.replace('/', r'\/'))
             for f in data_dir.rglob('*'):
-                if path_pattern.fullmatch(str(f)):
-                    loaded_data[str(f)] = loader.load(data_dir / f, fmt_options)
+                if path_pattern.fullmatch(f.as_posix()):
+                    loaded_data[f.relative_to(data_dir).as_posix()] = loader.load(data_dir / f, fmt_options)
             return loaded_data
         else:
             raise ValueError(f'Unknown type of path "{path_type}".')

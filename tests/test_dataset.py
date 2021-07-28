@@ -170,6 +170,10 @@ class TestDataset:
         assert len(house_data) == 1750
         for k, v in house_data.items():
             assert k.endswith('.wav')
+            assert '\\' not in k  # Ensure we have switched to POSIX path scheme
+            # Ensure that k is relative to the data dir
+            assert pathlib.Path(k).parent == pathlib.Path('TensorFlow-Speech-Commands/house')
+            assert not pathlib.Path(k).is_absolute()
             assert isinstance(v, wave.Wave_read)
             v.close()
 
