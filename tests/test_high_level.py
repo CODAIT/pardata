@@ -24,7 +24,7 @@ import pytest
 from pydantic import ValidationError
 
 from pardata import (describe_dataset, export_schema_collections, get_config, get_dataset_metadata, init,
-                     list_all_datasets, load_dataset, load_schema_collections)
+                     list_all_datasets, load_dataset, load_dataset_from_location, load_schema_collections)
 from pardata.dataset import Dataset
 from pardata._config import Config
 from pardata._high_level import _get_schema_collections
@@ -202,6 +202,36 @@ class TestLoadDataset:
             load_dataset('wikitext103', version='1.0.1', download=False)
         assert ('Did you forget to download the dataset '
                 '(by calling this function with `download=True` for at least once)?') in str(e.value)
+
+
+class TestLoadDatasetFromLocation:
+    "Test ``load_dataset_from_location."
+
+    def test_loading_dataset_from_path(self, downloaded_gmb_dataset, dataset_dir):
+        for force_redownload in ('False', 'False', 'True'):
+            data = load_dataset_from_location(dataset_dir / 'gmb-1.0.2.zip', force_redownload=force_redownload)
+            assert frozenset(data.keys()) == frozenset(('text/plain',))
+            assert frozenset(data['text/plain'].keys()) == frozenset((
+                'groningen_meaning_bank_modified/gmb_subset_full.txt',
+                'groningen_meaning_bank_modified/LICENSE.txt',
+                'groningen_meaning_bank_modified/README.txt'
+            ))
+
+    def test_loading_dataset_from_url(self, gmb_schema):
+        for force_redownload in ('False', 'False', 'True'):
+            data = load_dataset_from_location(gmb_schema['download_url'], force_redownload=force_redownload)
+            assert frozenset(data.keys()) == frozenset(('text/plain',))
+            assert frozenset(data['text/plain'].keys()) == frozenset((
+                'groningen_meaning_bank_modified/gmb_subset_full.txt',
+                'groningen_meaning_bank_modified/LICENSE.txt',
+                'groningen_meaning_bank_modified/README.txt'
+            ))
+
+    def test_custom_schema(self, gmb_schema):
+        data = load_dataset_from_location(gmb_schema['download_url'], schema=gmb_schema)
+        assert frozenset(data.keys()) == frozenset(('gmb_subset_full',))
+        assert data['gmb_subset_full'].startswith('Masked VBN O\n')
+        assert data['gmb_subset_full'].endswith('. . O\n\n')
 
 
 def test_get_dataset_metadata():
