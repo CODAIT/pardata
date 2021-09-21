@@ -33,10 +33,10 @@ jobs:
           - os: macos-10.15
             python-version: 3.6
             LC_ALL: en.UTF-8
-          - os: ubuntu-16.04
+          - os: ubuntu-18.04
             LC_ALL: C
             python-version: 3.6
-          - os: ubuntu-16.04
+          - os: ubuntu-20.04
             python-version: 3.7
             LC_ALL: en.UTF-8
           - os: ubuntu-18.04
