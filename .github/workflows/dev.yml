@@ -58,13 +58,13 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: |
           . ./.tox/dev/bin/activate
-          pytest -vk test_default_data_dir
+          pytest tests -vk test_default_data_dir
           flake8 setup.py
       - name: Activate dev environment and run a couple of commands (Windows)
         if: ${{ runner.os == 'Windows' }}
         run: |
           . .\\.tox\\dev\\Scripts\\activate.ps1
-          pytest -vk test_default_data_dir
+          pytest tests -vk test_default_data_dir
           flake8 setup.py
 
       # Only notify if a test fails because there are 3 tests -- don't spam the channel.

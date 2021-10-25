@@ -35,6 +35,6 @@ python app.py
 5. Copy paste the URL to a browser
 
 6. In the browser you can now:
-	1. Upload an data archive file (e.g. [dakota-height-history.tar.gz](https://github.com/CODAIT/pardata/blob/master/docs/source/_static/dakota-height-history.tar.gz))
+	1. Upload an data archive file (e.g. [dakota-height-history.tar.gz](https://pardata.readthedocs.io/en/latest/_static/dakota-height-history.tar.gz))
 	2. Click upload
 	3. View the CSV files extracted with `pardata`
