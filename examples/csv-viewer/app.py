@@ -16,9 +16,9 @@ def index():
     """
 
     if request.method == 'POST':
-        # Get the uploaded file 
+        # Get the uploaded file
         data_archive_file = request.files.get("data_archive")
-        
+
         if data_archive_file:
             filename = data_archive_file.filename
             # Store the file in DATA_DIR to access later
@@ -28,11 +28,11 @@ def index():
         else:
             # No file uploaded so reset the filename in session
             session['data_archive_name'] = None
-        
+
         return redirect(url_for('index'))
 
     else:
-        df_objects = dict()
+        df_objects = {}
         # Get the saved filename from session
         data_archive_name = session.get('data_archive_name')
 
@@ -41,7 +41,7 @@ def index():
             file_path = os.path.join(DATA_DIR, data_archive_name)
             # Use pardata to extract the data
             df_objects = pardata.load_dataset_from_location(file_path)['table/csv']
-        
+
         return render_template('index.html', df_objects=df_objects)
 
 
