@@ -15,7 +15,7 @@ The CSV Viewer provides a simple [Flask](https://flask.palletsprojects.com/en/2.
 cd csv-viewer
 ```
 
-2. (Optional) Create a virtual environmnet (use `deactivate` to deactivate the environment)
+2. (Optional) Create a virtual environment (use `deactivate` to deactivate the environment)
 ```
 virtualenv venv
 source venv/bin/activate

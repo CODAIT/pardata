@@ -37,7 +37,7 @@ def index():
         data_archive_name = session.get('data_archive_name')
 
         if data_archive_name:
-            # Acccess the data that was stored in DATA_DIR
+            # Access the data that was stored in DATA_DIR
             file_path = os.path.join(DATA_DIR, data_archive_name)
             # Use pardata to extract the data
             df_objects = pardata.load_dataset_from_location(file_path)['table/csv']
