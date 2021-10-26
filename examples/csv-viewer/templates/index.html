@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div>
+    <form action="/" method="POST" enctype="multipart/form-data">
+
+    <div class="form-group">
+      <label>Select data archive (e.g. tar file)</label>
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" name="data_archive" id="data_archive">
+        <label class="custom-file-label" for="data_archive">Select file...</label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+
+    </form>
+</div>
+
+<br>
+
+<div>
+    {% for name, df in df_objects.items() %}
+        <h3>Data File: {{name}}</h3>
+        {{ df.to_html(classes="table table-bordered table-striped table-hover", border="0", header="true", justify="left") | safe }}
+    {% endfor %}
+</div>
+
+{% endblock %}
