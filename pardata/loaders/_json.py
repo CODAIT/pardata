@@ -26,8 +26,7 @@ from ._base import Loader
 
 
 class JSONLoader(Loader):
-    """JSON file to :class: list object loader.
-    """
+    """JSON file to :class: list object loader."""
 
     def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> list:
         """The type hint says Dict, because this loader will be handling those situations in the future.
