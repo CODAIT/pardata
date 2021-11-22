@@ -29,6 +29,7 @@ from .audio import WaveLoader
 from .image import PillowLoader
 from .text import PlainTextLoader
 from .table import CSVPandasLoader
+from .json import JSONLoader
 
 
 class FormatLoaderMap:
@@ -79,6 +80,7 @@ _default_format_loader_map: FormatLoaderMap = FormatLoaderMap({
     'image/jpeg': PillowLoader(),
     'image/png': PillowLoader(),
     'audio/wav': WaveLoader(),
+    'json': JSONLoader(),
 })
 
 
