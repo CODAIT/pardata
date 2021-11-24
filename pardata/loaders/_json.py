@@ -29,12 +29,11 @@ class JSONLoader(Loader):
     """JSON file to :class: list object loader."""
 
     def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> list:
-        """The type hint says Dict, because this loader will be handling those situations in the future.
-        :param path: The path to the wave file.
-        :param options:
-               - ``encoding`` key specifies the encoding of the plain text.
+        """
+        :param path: The path to the JSON file.
+        :param options: None for JSON loader.
         :raises TypeError: ``path`` is not a path object.
-        :return: Data loaded into a :class:`wave.Wave_read` object.
+        :return: Data loaded into a :class: list object.
         """
 
         super().load(path, options)
