@@ -29,9 +29,8 @@ setuptools.setup(
     license="Apache v2",
     packages=setuptools.find_packages(),
     data_files=[("", ["LICENSE"])],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=[
-        "dataclasses; python_version < '3.7.0'",  # backported dataclasses
         "packaging >= 20.4",
         "pandas >= 1.1.0",
         "Pillow >= 8.2.0",
@@ -45,10 +44,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
