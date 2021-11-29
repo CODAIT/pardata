@@ -17,7 +17,7 @@
 "JSON file loaders."
 
 
-from typing import cast, Dict, Union
+from typing import cast, Dict, Union, Any
 import json
 
 from .. import typing as typing_
@@ -26,14 +26,14 @@ from ._base import Loader
 
 
 class JSONLoader(Loader):
-    """JSON file to :class: list object loader."""
+    """JSON file to :class: Any object loader."""
 
-    def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> list:
+    def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> Any:
         """
         :param path: The path to the JSON file.
         :param options: None for JSON loader.
-        :raises TypeError: ``path`` is not a path object.
-        :return: Data loaded into a :class: list object.
+        :raises TypeError: ``path`` is not a path-like object.
+        :return: Data loaded into a :class: Any object.
         """
 
         super().load(path, options)
@@ -42,4 +42,4 @@ class JSONLoader(Loader):
         path = cast(typing_.PathLike, path)
 
         with open(path) as json_file:
-            return [json.load(json_file)]
+            return json.load(json_file)

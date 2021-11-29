@@ -348,7 +348,7 @@ class TestJSONLoaders:
         "Test the normal functionality of JSONLoader"
 
         with open(people_json) as local:
-            local_content = [json.load(local)]
+            local_content = json.load(local)
 
         loaded_content = JSONLoader().load(people_json, {})
 
