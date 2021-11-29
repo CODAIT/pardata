@@ -26,14 +26,14 @@ from ._base import Loader
 
 
 class JSONLoader(Loader):
-    """JSON file to :class: Any object loader."""
+    """Loads a JSON file to an object representing the data."""
 
     def load(self, path: Union[typing_.PathLike, Dict[str, str]], options: SchemaDict) -> Any:
         """
         :param path: The path to the JSON file.
         :param options: None for JSON loader.
         :raises TypeError: ``path`` is not a path-like object.
-        :return: Data loaded into a :class: Any object.
+        :return: An object representing loaded data. See :meth:`json.load` for details.
         """
 
         super().load(path, options)
