@@ -251,6 +251,7 @@ def load_dataset_from_location(url_or_path: Union[str, typing_.PathLike], *,
             RegexFormatPair(regex=r'.*\.(txt|log)', format='text/plain'),
             RegexFormatPair(regex=r'.*\.(jpg|jpeg)', format='image/jpeg'),
             RegexFormatPair(regex=r'.*\.png', format='image/png'),
+            RegexFormatPair(regex=r'.*\.json', format='json'),
         )
 
         for regex_format_pair in regex_format_pairs:

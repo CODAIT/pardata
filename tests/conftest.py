@@ -409,3 +409,10 @@ def bell_sound(asset_dir) -> Path:
     "Path to the service-bell.wav."
 
     return asset_dir / 'service-bell.wav'
+
+
+@pytest.fixture
+def people_json(asset_dir) -> Path:
+    "Path to people.json"
+
+    return asset_dir / 'people.json'

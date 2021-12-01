@@ -22,6 +22,7 @@ import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype, is_float_dtype, is_integer_dtype, is_string_dtype
 from PIL import Image, ImageChops
 import wave
+import json
 
 from pardata.dataset import Dataset
 from pardata.loaders import Loader
@@ -31,6 +32,7 @@ from pardata.loaders.audio import WaveLoader
 from pardata.loaders.image import PillowLoader
 from pardata.loaders.text import PlainTextLoader
 from pardata.loaders.table import CSVPandasLoader
+from pardata.loaders.json import JSONLoader
 
 
 class TestBaseLoader:
@@ -339,3 +341,15 @@ class TestTableLoaders:
 
         del noaa_jfk_schema['subdatasets']['jfk_weather_cleaned']['format']['options']['no_header']
         self.test_csv_pandas_loader(tmp_path, noaa_jfk_schema)
+
+
+class TestJSONLoaders:
+    def test_json_loader(self, people_json):
+        "Test the normal functionality of JSONLoader"
+
+        with open(people_json) as local:
+            local_content = json.load(local)
+
+        loaded_content = JSONLoader().load(people_json, {})
+
+        assert local_content == loaded_content
