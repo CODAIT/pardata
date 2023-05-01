@@ -1,2 +1,2 @@
-Flask==2.0.2
+Flask==2.3.2
 pardata==0.4.0
